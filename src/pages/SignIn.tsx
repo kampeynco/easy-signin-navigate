@@ -74,6 +74,7 @@ const SignIn = () => {
           ) : (
             <div className="space-y-4 animate-fade-in">
               <button
+                type="button"
                 onClick={() => setShowEmailForm(false)}
                 className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
               >
