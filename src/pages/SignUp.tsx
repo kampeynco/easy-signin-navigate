@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 
 const SignUp = () => {
   const [password, setPassword] = useState("");
@@ -28,10 +27,10 @@ const SignUp = () => {
   };
 
   const getPasswordStrengthColor = (strength: number): string => {
-    if (strength <= 25) return "bg-red-500/50";
-    if (strength <= 50) return "bg-orange-500/50";
-    if (strength <= 75) return "bg-yellow-500/50";
-    return "bg-emerald-500/50";
+    if (strength <= 25) return "bg-rose-500";
+    if (strength <= 50) return "bg-amber-500";
+    if (strength <= 75) return "bg-yellow-400";
+    return "bg-emerald-400";
   };
 
   const getPasswordStrengthText = (strength: number): string => {
