@@ -33,7 +33,7 @@ export function NavigationMenu() {
         <SidebarMenuItem key={item.label}>
           <SidebarMenuButton
             asChild
-            className="hover:bg-white/10 data-[active=true]:bg-white/10"
+            className="hover:bg-white/10 data-[active=true]:bg-white/10 hover:text-white"
           >
             <Link to={item.to}>
               <item.icon className="h-5 w-5 opacity-70" />
@@ -49,7 +49,7 @@ export function NavigationMenu() {
         <SidebarMenuItem key={item.label}>
           <SidebarMenuButton
             asChild
-            className="hover:bg-white/10 data-[active=true]:bg-white/10"
+            className="hover:bg-white/10 data-[active=true]:bg-white/10 hover:text-white"
           >
             <Link to={item.to}>
               <item.icon className="h-5 w-5 opacity-70" />
