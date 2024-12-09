@@ -13,7 +13,7 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col h-full">
       <DashboardTopNav />
-      <div className="flex-1 p-8 space-y-8">
+      <div className="flex-1 px-8 pb-8 space-y-8">
         <DashboardHeader userName={userName} />
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
