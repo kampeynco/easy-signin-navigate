@@ -34,6 +34,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Progress } from "@/components/ui/progress"
 
 const topMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
@@ -141,9 +142,25 @@ export function DashboardSidebar() {
                 <div className="text-sm font-medium">Starter Plan</div>
               </div>
               <Separator className="mb-4 bg-white/10" />
-              <p className="mb-4 text-sm opacity-70">
-                Upgrade to Pro to get the latest and exclusive features
-              </p>
+              
+              {/* Tasks Usage */}
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm">Tasks</span>
+                  <span className="text-sm text-muted-foreground">(0 out of 1000)</span>
+                </div>
+                <Progress value={0} className="h-1 bg-white/10" />
+              </div>
+
+              {/* Workflows Usage */}
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm">Workflows</span>
+                  <span className="text-sm text-muted-foreground">(0 out of 5)</span>
+                </div>
+                <Progress value={0} className="h-1 bg-white/10" />
+              </div>
+
               <Button className="w-full justify-center gap-2" variant="secondary">
                 <Zap className="h-4 w-4" />
                 Upgrade to Pro
