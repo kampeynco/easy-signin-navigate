@@ -9,7 +9,6 @@ import {
 import { WorkspaceSelector } from "./dashboard/sidebar/WorkspaceSelector"
 import { NavigationMenu } from "./dashboard/sidebar/NavigationMenu"
 import { UsageCard } from "./dashboard/sidebar/UsageCard"
-import { UserMenu } from "./dashboard/sidebar/UserMenu"
 
 export function DashboardSidebar() {
   return (
@@ -32,8 +31,6 @@ export function DashboardSidebar() {
             <UsageCard />
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <UserMenu />
       </SidebarContent>
     </Sidebar>
   )
