@@ -11,41 +11,43 @@ const Dashboard = () => {
   const userName = "Lenox Ramsey Jr"
 
   return (
-    <div className="flex flex-col h-full relative">
+    <>
       <DashboardTopNav />
-      <div className="flex-1 pb-8 space-y-8 pt-20">
-        <DashboardHeader userName={userName} />
-        
-        <div className="container">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <StatCard title="Task" current={0} max={1000} showGetMore />
-            <StatCard title="Active Workflows" current={0} max={5} />
-            <TeamMemberCard />
-          </div>
+      <div className="flex flex-col h-full">
+        <main className="flex-1 pb-8 space-y-8 pt-20">
+          <DashboardHeader userName={userName} />
+          
+          <div className="container">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <StatCard title="Task" current={0} max={1000} showGetMore />
+              <StatCard title="Active Workflows" current={0} max={5} />
+              <TeamMemberCard />
+            </div>
 
-          <div className="grid gap-6 md:grid-cols-2 mt-8">
-            <GetStartedCard />
-            <VideoCard />
-          </div>
+            <div className="grid gap-6 md:grid-cols-2 mt-8">
+              <GetStartedCard />
+              <VideoCard />
+            </div>
 
-          <div className="space-y-6 mt-8">
-            <h2 className="text-2xl font-semibold tracking-tight">Integrations</h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              <IntegrationCard
-                icon="/lovable-uploads/adb2244e-db69-4eaf-9458-a582f1297174.png"
-                title="WordPress"
-                buttonText="Install & Activate"
-              />
-              <IntegrationCard
-                icon={Menu}
-                title="Apps"
-                buttonText="Connect your Apps"
-              />
+            <div className="space-y-6 mt-8">
+              <h2 className="text-2xl font-semibold tracking-tight">Integrations</h2>
+              <div className="grid gap-6 md:grid-cols-2">
+                <IntegrationCard
+                  icon="/lovable-uploads/adb2244e-db69-4eaf-9458-a582f1297174.png"
+                  title="WordPress"
+                  buttonText="Install & Activate"
+                />
+                <IntegrationCard
+                  icon={Menu}
+                  title="Apps"
+                  buttonText="Connect your Apps"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
-    </div>
+    </>
   )
 }
 
