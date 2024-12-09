@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +11,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 
 const SignUp = () => {
+  const [password, setPassword] = useState("");
+
+  const calculatePasswordStrength = (password: string): number => {
+    let strength = 0;
+    
+    if (password.length >= 8) strength += 25;
+    if (password.match(/[A-Z]/)) strength += 25;
+    if (password.match(/[0-9]/)) strength += 25;
+    if (password.match(/[^A-Za-z0-9]/)) strength += 25;
+    
+    return strength;
+  };
+
+  const getPasswordStrengthColor = (strength: number): string => {
+    if (strength <= 25) return "bg-red-500";
+    if (strength <= 50) return "bg-orange-500";
+    if (strength <= 75) return "bg-yellow-500";
+    return "bg-emerald-500";
+  };
+
+  const getPasswordStrengthText = (strength: number): string => {
+    if (strength <= 25) return "Weak";
+    if (strength <= 50) return "Fair";
+    if (strength <= 75) return "Good";
+    return "Strong";
+  };
+
+  const strength = calculatePasswordStrength(password);
+
   return (
     <div className="container flex items-center justify-center py-10">
       <Card className="w-full max-w-md">
@@ -26,7 +57,38 @@ const SignUp = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Create a password" />
+            <Input 
+              id="password" 
+              type="password" 
+              placeholder="Create a password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {password && (
+              <div className="space-y-2">
+                <Progress 
+                  value={strength} 
+                  className={`h-2 ${getPasswordStrengthColor(strength)}`}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Password strength: {getPasswordStrengthText(strength)}
+                </p>
+                <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                  <li className={password.length >= 8 ? "text-emerald-500" : ""}>
+                    At least 8 characters
+                  </li>
+                  <li className={password.match(/[A-Z]/) ? "text-emerald-500" : ""}>
+                    At least one uppercase letter
+                  </li>
+                  <li className={password.match(/[0-9]/) ? "text-emerald-500" : ""}>
+                    At least one number
+                  </li>
+                  <li className={password.match(/[^A-Za-z0-9]/) ? "text-emerald-500" : ""}>
+                    At least one special character
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirm-password">Confirm Password</Label>
