@@ -11,7 +11,7 @@ const Navigation = () => {
           </Link>
         </div>
         <div className="ml-auto flex items-center space-x-4">
-          <Link to="/signin">
+          <Link to="/signin" state={{ showEmailForm: false }}>
             <Button variant="ghost">Sign In</Button>
           </Link>
           <Link to="/signup">
