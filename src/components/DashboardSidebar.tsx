@@ -23,14 +23,16 @@ export function DashboardSidebar() {
         <WorkspaceSelector />
       </SidebarHeader>
 
-      <SidebarContent className="overflow-hidden">
+      <SidebarContent className="flex flex-col h-[calc(100vh-96px)]">
         <SidebarGroup>
           <SidebarGroupContent>
             <NavigationMenu />
-            <div className="h-16" />
-            <UsageCard />
           </SidebarGroupContent>
         </SidebarGroup>
+        
+        <div className="mt-auto">
+          <UsageCard />
+        </div>
       </SidebarContent>
     </Sidebar>
   )
