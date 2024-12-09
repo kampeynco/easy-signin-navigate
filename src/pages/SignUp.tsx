@@ -130,6 +130,12 @@ const SignUp = () => {
             </svg>
             Continue with Google
           </Button>
+          <div className="text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/signin" className="text-blue-600 hover:underline">
+              Sign in
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>
