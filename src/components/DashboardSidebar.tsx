@@ -1,11 +1,10 @@
 import {
   LayoutGrid,
-  BarChart2,
-  FileBarChart,
-  FileText,
-  Files,
-  Building2,
-  Trash2,
+  FolderClosed,
+  PlayCircle,
+  History,
+  AppWindow,
+  BookOpen,
   Settings,
   Moon,
   HelpCircle,
@@ -26,6 +25,7 @@ import {
 import { Link } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,14 +33,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const mainMenuItems = [
+const topMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
-  { icon: BarChart2, label: "Product analytics", to: "#" },
-  { icon: FileBarChart, label: "Reporting", to: "#" },
-  { icon: FileText, label: "Order summary", to: "#" },
-  { icon: Files, label: "Invoices", to: "#" },
-  { icon: Building2, label: "Manufactures", to: "#" },
-  { icon: Trash2, label: "Trash", to: "#" },
+  { icon: PlayCircle, label: "Workflows", to: "#" },
+  { icon: FolderClosed, label: "Folders", to: "#" },
+]
+
+const bottomMenuItems = [
+  { icon: History, label: "History", to: "#" },
+  { icon: AppWindow, label: "Apps", to: "#" },
+  { icon: BookOpen, label: "Recipes", to: "#" },
 ]
 
 const profileMenuItems = [
@@ -52,7 +54,6 @@ const profileMenuItems = [
 export function DashboardSidebar() {
   return (
     <Sidebar className="border-r-0">
-      {/* Top Section - Workspace Menu */}
       <SidebarHeader className="border-b border-white/10 p-4">
         <button className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
@@ -66,13 +67,27 @@ export function DashboardSidebar() {
         </button>
       </SidebarHeader>
 
-      {/* Middle Section - Navigation Menu */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            {/* Main Menu Items */}
             <SidebarMenu>
-              {mainMenuItems.map((item) => (
+              {topMenuItems.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    className="hover:bg-white/10 data-[active=true]:bg-white/10"
+                  >
+                    <Link to={item.to}>
+                      <item.icon className="h-5 w-5 opacity-70" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+              
+              <Separator className="my-4 bg-white/10" />
+              
+              {bottomMenuItems.map((item) => (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     asChild
@@ -87,10 +102,8 @@ export function DashboardSidebar() {
               ))}
             </SidebarMenu>
 
-            {/* Space between navigation and current plan card */}
             <div className="h-16" />
 
-            {/* Pro Trial Card */}
             <div className="mx-4 mb-8 rounded-lg bg-white/5 p-4">
               <div className="mb-4 flex items-center gap-2">
                 <Avatar className="h-8 w-8">
@@ -113,7 +126,6 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* User Profile with Dropdown */}
         <div className="mt-auto border-t border-white/10 p-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
