@@ -28,10 +28,10 @@ const SignUp = () => {
   };
 
   const getPasswordStrengthColor = (strength: number): string => {
-    if (strength <= 25) return "bg-red-500";
-    if (strength <= 50) return "bg-orange-500";
-    if (strength <= 75) return "bg-yellow-500";
-    return "bg-emerald-500";
+    if (strength <= 25) return "bg-red-500/50";
+    if (strength <= 50) return "bg-orange-500/50";
+    if (strength <= 75) return "bg-yellow-500/50";
+    return "bg-emerald-500/50";
   };
 
   const getPasswordStrengthText = (strength: number): string => {
@@ -66,10 +66,12 @@ const SignUp = () => {
             />
             {password && (
               <div className="space-y-2">
-                <Progress 
-                  value={strength} 
-                  className={`h-2 ${getPasswordStrengthColor(strength)}`}
-                />
+                <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                  <Progress 
+                    value={strength} 
+                    className={`h-full transition-all ${getPasswordStrengthColor(strength)}`}
+                  />
+                </div>
                 <p className="text-sm text-muted-foreground">
                   Password strength: {getPasswordStrengthText(strength)}
                 </p>
