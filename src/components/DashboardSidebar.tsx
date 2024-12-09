@@ -137,16 +137,10 @@ export function DashboardSidebar() {
             <div className="h-16" />
 
             <div className="mx-4 mb-8 rounded-lg bg-white/5 p-4">
-              <div className="mb-4 flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>PT</AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="text-sm font-medium">Current plan:</div>
-                  <div className="text-sm opacity-70">Pro trial</div>
-                </div>
+              <div className="mb-4">
+                <div className="text-sm font-medium">Starter Plan</div>
               </div>
+              <Separator className="mb-4 bg-white/10" />
               <p className="mb-4 text-sm opacity-70">
                 Upgrade to Pro to get the latest and exclusive features
               </p>
