@@ -14,11 +14,9 @@ const Dashboard = () => {
     <div className="flex flex-col h-full relative">
       <DashboardTopNav />
       <div className="flex-1 pb-8 space-y-8 pt-20">
-        <div className="px-8">
-          <DashboardHeader userName={userName} />
-        </div>
-
-        <div className="px-8">
+        <DashboardHeader userName={userName} />
+        
+        <div className="container">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <StatCard title="Task" current={0} max={1000} showGetMore />
             <StatCard title="Active Workflows" current={0} max={5} />
