@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/hooks/use-toast"
 
 const workspaces = [
   { name: "Personal", avatar: "P" },
@@ -15,6 +16,22 @@ const workspaces = [
 ]
 
 export function WorkspaceSelector() {
+  const { toast } = useToast()
+
+  const handleWorkspaceChange = (workspace: string) => {
+    toast({
+      title: "Workspace Changed",
+      description: `Switched to ${workspace} workspace.`,
+    })
+  }
+
+  const handleCreateWorkspace = () => {
+    toast({
+      title: "Create Workspace",
+      description: "Opening workspace creation form...",
+    })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -29,7 +46,11 @@ export function WorkspaceSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[240px]">
         {workspaces.map((workspace) => (
-          <DropdownMenuItem key={workspace.name} className="flex items-center gap-2">
+          <DropdownMenuItem 
+            key={workspace.name} 
+            className="flex items-center gap-2"
+            onClick={() => handleWorkspaceChange(workspace.name)}
+          >
             <Avatar className="h-6 w-6">
               <AvatarFallback>{workspace.avatar}</AvatarFallback>
             </Avatar>
@@ -37,7 +58,10 @@ export function WorkspaceSelector() {
           </DropdownMenuItem>
         ))}
         <Separator className="my-2" />
-        <DropdownMenuItem className="flex items-center gap-2">
+        <DropdownMenuItem 
+          className="flex items-center gap-2"
+          onClick={handleCreateWorkspace}
+        >
           <Plus className="h-4 w-4" />
           <span>Create New Workspace</span>
         </DropdownMenuItem>

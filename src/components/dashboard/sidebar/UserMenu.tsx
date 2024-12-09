@@ -9,14 +9,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useToast } from "@/hooks/use-toast"
 
 const profileMenuItems = [
-  { icon: Users, label: "Profile Settings", to: "#" },
-  { icon: Settings, label: "Manage Workspace", to: "#" },
+  { icon: Settings, label: "Profile Settings", to: "#" },
+  { icon: Users, label: "Manage Workspace", to: "#" },
   { icon: HelpCircle, label: "Get Help", to: "#" },
 ]
 
 export function UserMenu() {
+  const { toast } = useToast()
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    })
+  }
+
+  const handleMenuItemClick = (label: string) => {
+    toast({
+      title: "Navigation",
+      description: `Navigating to ${label}...`,
+    })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -42,7 +60,11 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {profileMenuItems.map((item) => (
-          <DropdownMenuItem key={item.label} asChild>
+          <DropdownMenuItem 
+            key={item.label} 
+            asChild
+            onClick={() => handleMenuItemClick(item.label)}
+          >
             <Link to={item.to} className="flex items-center gap-2">
               <item.icon className="h-4 w-4" />
               <span>{item.label}</span>
@@ -50,7 +72,10 @@ export function UserMenu() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem 
+          asChild
+          onClick={handleLogout}
+        >
           <Link to="#" className="flex items-center gap-2 text-destructive">
             <LogOut className="h-4 w-4" />
             <span>Log out</span>
