@@ -11,9 +11,9 @@ const Dashboard = () => {
   const userName = "Lenox Ramsey Jr"
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen">
       <DashboardTopNav />
-      <div className="p-8 space-y-8 flex-1 overflow-auto">
+      <div className="p-8 space-y-8">
         <DashboardHeader userName={userName} />
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
