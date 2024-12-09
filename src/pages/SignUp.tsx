@@ -66,10 +66,10 @@ const SignUp = () => {
             />
             {password && (
               <div className="space-y-2">
-                <div className="w-full rounded-full overflow-hidden bg-muted">
-                  <Progress 
-                    value={strength} 
+                <div className="w-full rounded-full overflow-hidden bg-secondary/20">
+                  <div 
                     className={`h-2 transition-all ${getPasswordStrengthColor(strength)}`}
+                    style={{ width: `${strength}%` }}
                   />
                 </div>
                 <p className="text-sm text-muted-foreground">
