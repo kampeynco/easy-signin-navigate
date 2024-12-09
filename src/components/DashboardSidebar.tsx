@@ -88,7 +88,7 @@ export function DashboardSidebar() {
             </SidebarMenu>
 
             {/* Space between navigation and current plan card */}
-            <div className="h-8" />
+            <div className="h-16" />
 
             {/* Pro Trial Card */}
             <div className="mx-4 rounded-lg bg-white/5 p-4">
