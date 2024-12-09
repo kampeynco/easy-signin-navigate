@@ -18,26 +18,29 @@ const SignUp = () => {
   const calculatePasswordStrength = (password: string): number => {
     let strength = 0;
     
-    if (password.length >= 8) strength += 25;
-    if (password.match(/[A-Z]/)) strength += 25;
-    if (password.match(/[0-9]/)) strength += 25;
-    if (password.match(/[^A-Za-z0-9]/)) strength += 25;
+    if (password.length >= 8) strength += 20;
+    if (password.match(/[A-Z]/)) strength += 20;
+    if (password.match(/[0-9]/)) strength += 20;
+    if (password.match(/[^A-Za-z0-9]/)) strength += 20;
+    if (password.length >= 12) strength += 20;
     
     return strength;
   };
 
   const getPasswordStrengthColor = (strength: number): string => {
-    if (strength <= 25) return "bg-rose-500";
-    if (strength <= 50) return "bg-amber-500";
-    if (strength <= 75) return "bg-yellow-400";
-    return "bg-emerald-400";
+    if (strength <= 20) return "bg-rose-500";
+    if (strength <= 40) return "bg-red-500";
+    if (strength <= 60) return "bg-amber-500";
+    if (strength <= 80) return "bg-emerald-400";
+    return "bg-green-500";
   };
 
   const getPasswordStrengthText = (strength: number): string => {
-    if (strength <= 25) return "Weak";
-    if (strength <= 50) return "Fair";
-    if (strength <= 75) return "Good";
-    return "Strong";
+    if (strength <= 20) return "Very Weak";
+    if (strength <= 40) return "Weak";
+    if (strength <= 60) return "Fair";
+    if (strength <= 80) return "Strong";
+    return "Very Strong";
   };
 
   const strength = calculatePasswordStrength(password);
@@ -86,6 +89,9 @@ const SignUp = () => {
                   </li>
                   <li className={password.match(/[^A-Za-z0-9]/) ? "text-emerald-500" : ""}>
                     At least one special character
+                  </li>
+                  <li className={password.length >= 12 ? "text-emerald-500" : ""}>
+                    12+ characters for maximum strength
                   </li>
                 </ul>
               </div>
