@@ -90,9 +90,6 @@ const SignUp = () => {
                   <li className={password.match(/[^A-Za-z0-9]/) ? "text-emerald-500" : ""}>
                     At least one special character
                   </li>
-                  <li className={password.length >= 12 ? "text-emerald-500" : ""}>
-                    12+ characters for maximum strength
-                  </li>
                 </ul>
               </div>
             )}
