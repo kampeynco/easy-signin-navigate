@@ -91,7 +91,7 @@ export function DashboardSidebar() {
             <div className="h-16" />
 
             {/* Pro Trial Card */}
-            <div className="mx-4 rounded-lg bg-white/5 p-4">
+            <div className="mx-4 mb-8 rounded-lg bg-white/5 p-4">
               <div className="mb-4 flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/placeholder.svg" />
