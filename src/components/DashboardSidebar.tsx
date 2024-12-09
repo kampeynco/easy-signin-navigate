@@ -21,10 +21,10 @@ import {
 } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
 import { useSidebar } from "@/components/ui/sidebar"
+import { MenuItem } from "@/components/ui/sidebar/types"
 
-const menuItems = [
+const menuItems: MenuItem[] = [
   { icon: Home, label: "Dashboard", to: "/dashboard" },
   { icon: Link2, label: "Workflows", to: "/workflows" },
   { icon: FolderClosed, label: "Folders", to: "/folders" },
@@ -37,13 +37,16 @@ export function DashboardSidebar() {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Sidebar className="bg-[#1A1F2C] text-white border-r-0">
+    <Sidebar className="border-r-0">
+      {/* Top Section - Workspace Menu */}
       <SidebarHeader className="border-b border-white/10 p-4">
-        <div className="flex items-center justify-between">
+        <button className="flex w-full items-center justify-between">
           <span className="font-semibold text-lg">Demleads's Team</span>
           <ChevronDown className="h-4 w-4 opacity-70" />
-        </div>
+        </button>
       </SidebarHeader>
+
+      {/* Middle Section - Navigation Menu */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -65,6 +68,7 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Bottom Section - Plan Usage Card */}
         <div className="mt-auto px-4 py-6">
           <div className="rounded-lg bg-white/5 p-4">
             <h3 className="text-lg mb-4">Free (Legacy) Plan</h3>
@@ -94,6 +98,7 @@ export function DashboardSidebar() {
         </div>
       </SidebarContent>
 
+      {/* Footer - Collapse Button */}
       <SidebarFooter className="p-4 border-t border-white/10">
         <button
           onClick={toggleSidebar}
