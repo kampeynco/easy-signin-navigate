@@ -73,7 +73,7 @@ const App = () => (
                 <div className="min-h-screen flex w-full">
                   <DashboardSidebar />
                   <div className="flex-1 w-full">
-                    <main className="p-4 md:p-8">
+                    <main className="px-4 md:px-8">
                       <Dashboard />
                     </main>
                   </div>
