@@ -70,6 +70,23 @@ export function DashboardSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
+            {/* Main Menu Items */}
+            <SidebarMenu>
+              {mainMenuItems.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    className="hover:bg-white/10 data-[active=true]:bg-white/10"
+                  >
+                    <Link to={item.to}>
+                      <item.icon className="h-5 w-5 opacity-70" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+
             {/* Pro Trial Card */}
             <div className="mx-4 my-6 rounded-lg bg-white/5 p-4">
               <div className="mb-4 flex items-center gap-2">
@@ -90,23 +107,6 @@ export function DashboardSidebar() {
                 Upgrade to Pro
               </Button>
             </div>
-
-            {/* Main Menu Items */}
-            <SidebarMenu>
-              {mainMenuItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    asChild
-                    className="hover:bg-white/10 data-[active=true]:bg-white/10"
-                  >
-                    <Link to={item.to}>
-                      <item.icon className="h-5 w-5 opacity-70" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
