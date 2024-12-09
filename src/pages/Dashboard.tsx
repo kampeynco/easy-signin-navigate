@@ -12,7 +12,9 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <DashboardTopNav />
+      <div className="sticky top-0 z-50 border-b bg-background">
+        <DashboardTopNav />
+      </div>
       <div className="p-8 space-y-8">
         <DashboardHeader userName={userName} />
 
