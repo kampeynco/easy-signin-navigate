@@ -18,25 +18,72 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <SidebarProvider>
-          <div className="min-h-screen flex w-full">
-            <DashboardSidebar />
-            <div className="flex-1">
-              <Navigation />
-              <main>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/signin" element={<SignIn />} />
-                  <Route path="/signup" element={<SignUp />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                </Routes>
-              </main>
-            </div>
-          </div>
-          <Toaster />
-          <Sonner />
-        </SidebarProvider>
+        <Routes>
+          {/* Auth and public routes */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Navigation />
+                <main>
+                  <Index />
+                </main>
+              </>
+            }
+          />
+          <Route
+            path="/signin"
+            element={
+              <>
+                <Navigation />
+                <main>
+                  <SignIn />
+                </main>
+              </>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <>
+                <Navigation />
+                <main>
+                  <SignUp />
+                </main>
+              </>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <>
+                <Navigation />
+                <main>
+                  <ResetPassword />
+                </main>
+              </>
+            }
+          />
+
+          {/* Dashboard routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <SidebarProvider>
+                <div className="min-h-screen flex w-full">
+                  <DashboardSidebar />
+                  <div className="flex-1">
+                    <main>
+                      <Dashboard />
+                    </main>
+                  </div>
+                </div>
+              </SidebarProvider>
+            }
+          />
+        </Routes>
+        <Toaster />
+        <Sonner />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
