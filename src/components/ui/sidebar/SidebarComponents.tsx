@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useSidebar } from "./SidebarContext"
 
 // Constants
-const SIDEBAR_WIDTH = "17.5rem" // 280px
+const SIDEBAR_WIDTH = "20rem" // 320px
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 

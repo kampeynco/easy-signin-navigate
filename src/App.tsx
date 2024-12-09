@@ -25,7 +25,7 @@ const App = () => (
             element={
               <>
                 <Navigation />
-                <main>
+                <main className="min-h-screen">
                   <Index />
                 </main>
               </>
@@ -36,7 +36,7 @@ const App = () => (
             element={
               <>
                 <Navigation />
-                <main>
+                <main className="min-h-screen">
                   <SignIn />
                 </main>
               </>
@@ -47,7 +47,7 @@ const App = () => (
             element={
               <>
                 <Navigation />
-                <main>
+                <main className="min-h-screen">
                   <SignUp />
                 </main>
               </>
@@ -58,7 +58,7 @@ const App = () => (
             element={
               <>
                 <Navigation />
-                <main>
+                <main className="min-h-screen">
                   <ResetPassword />
                 </main>
               </>
@@ -72,8 +72,8 @@ const App = () => (
               <SidebarProvider>
                 <div className="min-h-screen flex w-full">
                   <DashboardSidebar />
-                  <div className="flex-1">
-                    <main>
+                  <div className="flex-1 w-full">
+                    <main className="p-4 md:p-8">
                       <Dashboard />
                     </main>
                   </div>
