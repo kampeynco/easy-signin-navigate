@@ -23,41 +23,39 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="container px-4 md:px-8 py-8">
-          <div className="space-y-8">
-            {/* Stats Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <StatCard title="Task" current={0} max={1000} showGetMore />
-              <StatCard title="Active Workflows" current={0} max={5} />
-              <TeamMemberCard />
-            </div>
+        <main className="container px-4 md:px-8 py-8 space-y-8">
+          {/* Stats Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <StatCard title="Task" current={0} max={1000} showGetMore />
+            <StatCard title="Active Workflows" current={0} max={5} />
+            <TeamMemberCard />
+          </div>
 
-            {/* Getting Started Section */}
+          {/* Getting Started Section */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <GetStartedCard />
+            <VideoCard />
+          </div>
+
+          {/* Integrations Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+              Integrations
+            </h2>
             <div className="grid gap-6 md:grid-cols-2">
-              <GetStartedCard />
-              <VideoCard />
-            </div>
-
-            {/* Integrations Section */}
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
-                Integrations
-              </h2>
-              <div className="grid gap-6 md:grid-cols-2">
-                <IntegrationCard
-                  icon="/lovable-uploads/adb2244e-db69-4eaf-9458-a582f1297174.png"
-                  title="WordPress"
-                  buttonText="Install & Activate"
-                />
-                <IntegrationCard
-                  icon={Menu}
-                  title="Apps"
-                  buttonText="Connect your Apps"
-                />
-              </div>
+              <IntegrationCard
+                icon="/lovable-uploads/adb2244e-db69-4eaf-9458-a582f1297174.png"
+                title="WordPress"
+                buttonText="Install & Activate"
+              />
+              <IntegrationCard
+                icon={Menu}
+                title="Apps"
+                buttonText="Connect your Apps"
+              />
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   )
