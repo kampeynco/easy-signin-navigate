@@ -14,7 +14,7 @@ export const IntegrationCard = ({
   buttonText,
 }: IntegrationCardProps) => {
   return (
-    <Card>
+    <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="flex items-center gap-4 p-6">
         <div className="w-10 h-10">
           {typeof Icon === "string" ? (
@@ -26,9 +26,9 @@ export const IntegrationCard = ({
           )}
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-lg">{title}</h3>
+          <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
         </div>
-        <Button variant="outline" size="lg">
+        <Button variant="outline" size="lg" className="hover:bg-gray-50">
           {buttonText}
         </Button>
       </CardContent>

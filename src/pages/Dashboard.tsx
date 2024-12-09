@@ -13,11 +13,13 @@ const Dashboard = () => {
   return (
     <>
       <DashboardTopNav />
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full bg-[#f0f3fa]">
         <main className="flex-1 pb-8 space-y-8 pt-20">
-          <DashboardHeader userName={userName} />
+          <div className="px-8 mb-8 bg-white shadow-sm">
+            <DashboardHeader userName={userName} />
+          </div>
           
-          <div className="container">
+          <div className="container px-8">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <StatCard title="Task" current={0} max={1000} showGetMore />
               <StatCard title="Active Workflows" current={0} max={5} />

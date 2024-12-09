@@ -4,12 +4,12 @@ import { Link } from "react-router-dom"
 
 export const GetStartedCard = () => {
   return (
-    <Card>
+    <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader>
-        <CardTitle className="text-2xl">Let's Get Started!</CardTitle>
+        <CardTitle className="text-2xl text-gray-900">Let's Get Started!</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground text-base mb-6">
+        <p className="text-gray-600 text-base mb-6">
           Easiest way to automate your repeating tasks. We bring together your
           favorite apps and tools into one place, so you can finish more work in
           less time.
