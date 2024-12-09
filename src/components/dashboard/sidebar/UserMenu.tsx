@@ -1,4 +1,4 @@
-import { Settings, Moon, HelpCircle, ChevronDown } from "lucide-react"
+import { Settings, Users, HelpCircle, LogOut, ChevronDown } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const profileMenuItems = [
-  { icon: Settings, label: "Preferences", to: "#" },
-  { icon: Moon, label: "Dark mode", to: "#" },
-  { icon: HelpCircle, label: "Help", to: "#" },
+  { icon: Settings, label: "Profile Settings", to: "#" },
+  { icon: Users, label: "Manage Workspace", to: "#" },
+  { icon: HelpCircle, label: "Get Help", to: "#" },
 ]
 
 export function UserMenu() {
@@ -49,6 +49,13 @@ export function UserMenu() {
             </Link>
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="#" className="flex items-center gap-2 text-destructive">
+            <LogOut className="h-4 w-4" />
+            <span>Log out</span>
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
