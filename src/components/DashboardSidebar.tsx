@@ -1,7 +1,4 @@
 import {
-  Search,
-  Inbox,
-  Bell,
   LayoutGrid,
   BarChart2,
   FileBarChart,
@@ -30,12 +27,6 @@ import {
 import { Link } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-
-const topMenuItems = [
-  { icon: Search, label: "Quick search", to: "#" },
-  { icon: Inbox, label: "Inbox", to: "#", badge: "12" },
-  { icon: Bell, label: "Notifications", to: "#", badge: "15+" },
-]
 
 const mainMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
@@ -75,31 +66,6 @@ export function DashboardSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            {/* Top Menu Items */}
-            <SidebarMenu>
-              {topMenuItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    asChild
-                    className="hover:bg-white/10 data-[active=true]:bg-white/10"
-                  >
-                    <Link to={item.to}>
-                      <item.icon className="h-5 w-5 opacity-70" />
-                      <span className="flex-1">{item.label}</span>
-                      {item.badge && (
-                        <span className="text-xs opacity-70">{item.badge}</span>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-
-            {/* Menu Label */}
-            <div className="px-4 py-2">
-              <h3 className="text-sm font-medium opacity-70">Menu</h3>
-            </div>
-
             {/* Main Menu Items */}
             <SidebarMenu>
               {mainMenuItems.map((item) => (
