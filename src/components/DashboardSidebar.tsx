@@ -8,7 +8,6 @@ import {
   Trash2,
   Settings,
   Moon,
-  Palette,
   HelpCircle,
   ChevronDown,
   Zap,
@@ -27,6 +26,12 @@ import {
 import { Link } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const mainMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
@@ -38,10 +43,9 @@ const mainMenuItems = [
   { icon: Trash2, label: "Trash", to: "#" },
 ]
 
-const bottomMenuItems = [
+const profileMenuItems = [
   { icon: Settings, label: "Preferences", to: "#" },
   { icon: Moon, label: "Dark mode", to: "#" },
-  { icon: Palette, label: "Themes", to: "#" },
   { icon: HelpCircle, label: "Help", to: "#" },
 ]
 
@@ -66,23 +70,6 @@ export function DashboardSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            {/* Main Menu Items */}
-            <SidebarMenu>
-              {mainMenuItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    asChild
-                    className="hover:bg-white/10 data-[active=true]:bg-white/10"
-                  >
-                    <Link to={item.to}>
-                      <item.icon className="h-5 w-5 opacity-70" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-
             {/* Pro Trial Card */}
             <div className="mx-4 my-6 rounded-lg bg-white/5 p-4">
               <div className="mb-4 flex items-center gap-2">
@@ -104,9 +91,9 @@ export function DashboardSidebar() {
               </Button>
             </div>
 
-            {/* Bottom Menu Items */}
+            {/* Main Menu Items */}
             <SidebarMenu>
-              {bottomMenuItems.map((item) => (
+              {mainMenuItems.map((item) => (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     asChild
@@ -123,19 +110,33 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* User Profile */}
+        {/* User Profile with Dropdown */}
         <div className="mt-auto border-t border-white/10 p-4">
-          <button className="flex w-full items-center gap-2">
-            <Avatar>
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>BR</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 text-left">
-              <div className="font-medium">Brooklyn</div>
-              <div className="text-sm opacity-70">Pro trial</div>
-            </div>
-            <ChevronDown className="h-4 w-4 opacity-70" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex w-full items-center gap-2">
+                <Avatar>
+                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarFallback>BR</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 text-left">
+                  <div className="font-medium">Brooklyn</div>
+                  <div className="text-sm opacity-70">Pro trial</div>
+                </div>
+                <ChevronDown className="h-4 w-4 opacity-70" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="start" side="right">
+              {profileMenuItems.map((item) => (
+                <DropdownMenuItem key={item.label} asChild>
+                  <Link to={item.to} className="flex items-center gap-2">
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </SidebarContent>
     </Sidebar>
