@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const SignIn = () => {
+  const [showEmailForm, setShowEmailForm] = useState(false);
+
   return (
     <div className="container flex items-center justify-center py-10">
       <Card className="w-full max-w-md">
@@ -20,30 +23,6 @@ const SignIn = () => {
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="Enter your email" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Enter your password" />
-          </div>
-          <Button className="w-full">Sign In</Button>
-          <div className="text-center">
-            <Link to="/reset-password" className="text-sm text-blue-600 hover:underline">
-              Forgot your password?
-            </Link>
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="relative w-full">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-            </div>
-          </div>
           <Button variant="outline" className="w-full">
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
@@ -65,6 +44,53 @@ const SignIn = () => {
             </svg>
             Continue with Google
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => setShowEmailForm(true)}
+          >
+            Continue with email
+          </Button>
+
+          {showEmailForm && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="Enter your email" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" placeholder="Enter your password" />
+              </div>
+              <div className="text-right">
+                <Link 
+                  to="/reset-password" 
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <Button className="w-full">Sign In</Button>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-blue-600 hover:underline">
+              Sign up
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>
