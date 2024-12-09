@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,10 +17,14 @@ const SignIn = () => {
   const [showEmailForm, setShowEmailForm] = useState(false);
   const location = useLocation();
 
-  // Show email form by default if coming from reset-password
-  if (location.state?.fromReset && !showEmailForm) {
-    setShowEmailForm(true);
-  }
+  useEffect(() => {
+    // Set showEmailForm based on location state
+    if (location.state?.showEmailForm !== undefined) {
+      setShowEmailForm(location.state.showEmailForm);
+    } else if (location.state?.fromReset) {
+      setShowEmailForm(true);
+    }
+  }, [location.state]);
 
   return (
     <div className="container flex items-center justify-center py-10">
