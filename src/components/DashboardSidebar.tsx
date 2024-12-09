@@ -139,7 +139,7 @@ export function DashboardSidebar() {
 
             <div className="mx-4 mb-8 rounded-lg bg-white/5 p-4">
               <div className="mb-4">
-                <div className="text-sm font-medium">Starter Plan</div>
+                <div className="text-sm font-medium">Starter Plan (Current Plan)</div>
               </div>
               <Separator className="mb-4 bg-white/10" />
               
