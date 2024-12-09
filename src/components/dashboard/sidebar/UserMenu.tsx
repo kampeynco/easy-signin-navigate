@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const profileMenuItems = [
-  { icon: Settings, label: "Profile Settings", to: "#" },
-  { icon: Users, label: "Manage Workspace", to: "#" },
+  { icon: Users, label: "Profile Settings", to: "#" },
+  { icon: Settings, label: "Manage Workspace", to: "#" },
   { icon: HelpCircle, label: "Get Help", to: "#" },
 ]
 
