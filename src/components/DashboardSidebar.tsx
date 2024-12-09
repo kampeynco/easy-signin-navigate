@@ -62,7 +62,7 @@ const workspaces = [
 
 export function DashboardSidebar() {
   return (
-    <Sidebar className="border-r-0">
+    <Sidebar className="border-r-0 overflow-hidden">
       <SidebarHeader className="flex flex-col gap-4 border-b border-white/10 p-4">
         {/* App Branding */}
         <div className="flex items-center gap-2">
@@ -100,7 +100,7 @@ export function DashboardSidebar() {
         </DropdownMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="overflow-hidden">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
