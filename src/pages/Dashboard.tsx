@@ -11,53 +11,51 @@ const Dashboard = () => {
   const userName = "Lenox Ramsey Jr"
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <main className="flex-1 bg-[#f0f3fa]">
       <DashboardTopNav />
       
-      <div className="flex-1 bg-[#f0f3fa]">
-        {/* Header Section */}
-        <div className="w-full bg-white border-b">
-          <div className="container px-4 md:px-8 py-6">
-            <DashboardHeader userName={userName} />
-          </div>
+      {/* Header Section */}
+      <div className="w-full bg-white border-b">
+        <div className="container py-6">
+          <DashboardHeader userName={userName} />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container py-8 space-y-8">
+        {/* Stats Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <StatCard title="Task" current={0} max={1000} showGetMore />
+          <StatCard title="Active Workflows" current={0} max={5} />
+          <TeamMemberCard />
         </div>
 
-        {/* Main Content */}
-        <main className="container px-4 md:px-8 py-8 space-y-8">
-          {/* Stats Grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <StatCard title="Task" current={0} max={1000} showGetMore />
-            <StatCard title="Active Workflows" current={0} max={5} />
-            <TeamMemberCard />
-          </div>
+        {/* Getting Started Section */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <GetStartedCard />
+          <VideoCard />
+        </div>
 
-          {/* Getting Started Section */}
+        {/* Integrations Section */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+            Integrations
+          </h2>
           <div className="grid gap-6 md:grid-cols-2">
-            <GetStartedCard />
-            <VideoCard />
+            <IntegrationCard
+              icon="/lovable-uploads/adb2244e-db69-4eaf-9458-a582f1297174.png"
+              title="WordPress"
+              buttonText="Install & Activate"
+            />
+            <IntegrationCard
+              icon={Menu}
+              title="Apps"
+              buttonText="Connect your Apps"
+            />
           </div>
-
-          {/* Integrations Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
-              Integrations
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              <IntegrationCard
-                icon="/lovable-uploads/adb2244e-db69-4eaf-9458-a582f1297174.png"
-                title="WordPress"
-                buttonText="Install & Activate"
-              />
-              <IntegrationCard
-                icon={Menu}
-                title="Apps"
-                buttonText="Connect your Apps"
-              />
-            </div>
-          </div>
-        </main>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }
 

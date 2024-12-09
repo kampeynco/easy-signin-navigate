@@ -65,18 +65,14 @@ const App = () => (
             }
           />
 
-          {/* Dashboard routes */}
+          {/* Dashboard route */}
           <Route
             path="/dashboard"
             element={
               <SidebarProvider>
-                <div className="min-h-screen flex w-full">
+                <div className="flex min-h-screen w-full">
                   <DashboardSidebar />
-                  <div className="flex-1 w-full">
-                    <main className="px-4 md:px-8">
-                      <Dashboard />
-                    </main>
-                  </div>
+                  <Dashboard />
                 </div>
               </SidebarProvider>
             }
