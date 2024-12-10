@@ -1,4 +1,5 @@
 import { Menu } from "lucide-react"
+import { useSession } from '@supabase/auth-helpers-react'
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader"
 import { StatCard } from "@/components/dashboard/StatCard"
 import { TeamMemberCard } from "@/components/dashboard/TeamMemberCard"
@@ -6,9 +7,28 @@ import { GetStartedCard } from "@/components/dashboard/GetStartedCard"
 import { VideoCard } from "@/components/dashboard/VideoCard"
 import { IntegrationCard } from "@/components/dashboard/IntegrationCard"
 import { DashboardTopNav } from "@/components/dashboard/DashboardTopNav"
+import { useQuery } from "@tanstack/react-query"
+import { supabase } from "@/integrations/supabase/client"
 
 const Dashboard = () => {
-  const userName = "Lenox Ramsey Jr"
+  const { session } = useSession()
+  
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session?.user?.id)
+        .single()
+      
+      if (error) throw error
+      return data
+    },
+    enabled: !!session?.user?.id,
+  })
+
+  const userName = profile?.username || session?.user?.email?.split('@')[0] || 'User'
 
   return (
     <main className="flex-1 bg-[#f0f3fa] pt-16">
@@ -56,7 +76,7 @@ const Dashboard = () => {
         </div>
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
