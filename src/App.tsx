@@ -13,7 +13,7 @@ import ResetPassword from "./pages/ResetPassword"
 import Dashboard from "./pages/Dashboard"
 import { DashboardSidebar } from "./components/DashboardSidebar"
 import { supabase } from "@/integrations/supabase/client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 const queryClient = new QueryClient()
 
