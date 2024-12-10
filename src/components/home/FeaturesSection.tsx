@@ -1,20 +1,20 @@
-import { Rocket, Zap, Lock } from "lucide-react"
+import { DollarSign, ChartBarIncreasing, Workflow } from "lucide-react"
 
 const features = [
   {
-    title: "Quick Setup",
-    description: "Get started in minutes with our intuitive setup process. No technical knowledge required.",
-    icon: Rocket,
+    title: "Unified Fundraising Hub",
+    description: "Connect all your fundraising tools in one place - from donation processors to CRM systems. Streamline your tech stack and eliminate manual data entry.",
+    icon: DollarSign,
   },
   {
-    title: "Powerful Automations",
-    description: "Create complex workflows with our drag-and-drop builder. Connect multiple apps seamlessly.",
-    icon: Zap,
+    title: "Smart Automation",
+    description: "Automate donor communications, receipt generation, and reporting. Let technology handle the repetitive tasks while your team focuses on building relationships.",
+    icon: Workflow,
   },
   {
-    title: "Secure & Reliable",
-    description: "Your data is protected with enterprise-grade security. Run your automations with confidence.",
-    icon: Lock,
+    title: "Growth Analytics",
+    description: "Track your fundraising performance across all channels. Get real-time insights and make data-driven decisions to optimize your campaigns.",
+    icon: ChartBarIncreasing,
   },
 ]
 
@@ -24,13 +24,13 @@ export const FeaturesSection = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-primary">
-            Automation Made Simple
+            Fundraising Made Simple
           </h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Everything you need to automate your workflow
+            Purpose-Built for Political & Nonprofit Organizations
           </p>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Build powerful automations without code. Connect your favorite apps and let your workflows run on autopilot.
+            Designed specifically for organizations that need to manage complex fundraising operations efficiently. Automate your workflows and focus on your mission.
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
