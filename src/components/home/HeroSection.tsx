@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { ArrowRight } from "lucide-react"
 
 export const HeroSection = () => {
   return (
@@ -15,7 +16,7 @@ export const HeroSection = () => {
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link to="/signup">
               <Button size="lg" className="text-base">
-                Start Raising More
+                Connect Your Apps <ArrowRight />
               </Button>
             </Link>
           </div>
