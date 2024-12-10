@@ -1,5 +1,5 @@
 import { Settings, Users, HelpCircle, LogOut, ChevronDown } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
+import { supabase } from "@/integrations/supabase/client"
 
 const profileMenuItems = [
   { icon: Settings, label: "Profile Settings", to: "#" },
@@ -19,13 +20,27 @@ const profileMenuItems = [
 
 export function UserMenu() {
   const { toast } = useToast()
+  const navigate = useNavigate()
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    })
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      })
+      
+      navigate('/signin')
+    } catch (error) {
+      console.error('Error signing out:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "There was a problem signing out. Please try again.",
+      })
+    }
   }
 
   const handleMenuItemClick = (label: string) => {
@@ -73,13 +88,11 @@ export function UserMenu() {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          asChild
           onClick={handleLogout}
+          className="text-destructive focus:text-destructive cursor-pointer"
         >
-          <Link to="#" className="flex items-center gap-2 text-destructive">
-            <LogOut className="h-4 w-4" />
-            <span>Log out</span>
-          </Link>
+          <LogOut className="h-4 w-4 mr-2" />
+          <span>Sign out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
