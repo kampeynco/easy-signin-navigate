@@ -15,6 +15,7 @@ import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import ResetPassword from "./pages/ResetPassword"
 import Dashboard from "./pages/Dashboard"
+import Onboarding from "./pages/Onboarding"
 
 const queryClient = new QueryClient()
 
@@ -35,6 +36,7 @@ const App = () => {
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
               <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+              <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
 
               {/* Protected Dashboard route */}
               <Route
