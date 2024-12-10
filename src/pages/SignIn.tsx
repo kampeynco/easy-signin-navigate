@@ -32,15 +32,9 @@ const SignIn = () => {
   const handleGoogleSignIn = async () => {
     try {
       console.log("Starting Google sign in process...");
-      let redirectUrl;
-      
-      // Check if we're in development or production
-      if (window.location.hostname === 'localhost') {
-        redirectUrl = 'http://localhost:8080/auth/callback';
-      } else {
-        // For production (kampeyn.com)
-        redirectUrl = 'https://kampeyn.com/auth/callback';
-      }
+      const redirectUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:8080/auth/callback'
+        : 'https://kampeyn.com/auth/callback';
       
       console.log("Using redirect URL:", redirectUrl);
       
