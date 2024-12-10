@@ -32,14 +32,18 @@ const SignIn = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log("Starting Google sign in process...");
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       });
       
+      console.log("Auth response:", { data, error });
+      
       if (error) {
+        console.error("Google sign in error:", error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -47,6 +51,7 @@ const SignIn = () => {
         });
       }
     } catch (error) {
+      console.error("Unexpected error during sign in:", error);
       toast({
         variant: "destructive",
         title: "Error",

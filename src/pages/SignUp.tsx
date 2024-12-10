@@ -50,6 +50,8 @@ const SignUp = () => {
   const handleGoogleSignUp = async () => {
     try {
       console.log("Starting Google sign up process...");
+      console.log("Redirect URL:", `${window.location.origin}/auth/callback`);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -66,8 +68,6 @@ const SignUp = () => {
           title: "Error",
           description: error.message
         });
-      } else {
-        console.log("Google sign up successful:", data);
       }
     } catch (error) {
       console.error("Unexpected error during Google sign up:", error);

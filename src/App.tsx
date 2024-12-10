@@ -20,15 +20,24 @@ const queryClient = new QueryClient()
 // Auth callback handler component
 const AuthCallback = () => {
   useEffect(() => {
+    console.log("Auth callback component mounted");
     supabase.auth.getSession().then(({ data: { session }}) => {
+      console.log("Session data:", session);
       if (session) {
-        window.location.href = '/dashboard'
+        console.log("Redirecting to dashboard...");
+        window.location.href = '/dashboard';
+      } else {
+        console.log("No session found");
+        window.location.href = '/signin';
       }
-    })
-  }, [])
+    }).catch(error => {
+      console.error("Error getting session:", error);
+      window.location.href = '/signin';
+    });
+  }, []);
   
-  return null
-}
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -106,17 +115,17 @@ const App = () => (
       </TooltipProvider>
     </SessionContextProvider>
   </QueryClientProvider>
-)
+);
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const session = useSession()
+  const session = useSession();
   
   if (!session) {
-    return <Navigate to="/signin" replace />
+    return <Navigate to="/signin" replace />;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default App
+export default App;
