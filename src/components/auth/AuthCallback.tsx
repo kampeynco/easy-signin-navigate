@@ -16,6 +16,8 @@ export const AuthCallback = () => {
         const params = new URLSearchParams(window.location.search)
         const error = params.get('error')
         const errorDescription = params.get('error_description')
+        const accessToken = params.get('access_token')
+        const refreshToken = params.get('refresh_token')
         
         if (error) {
           console.error('Auth callback error:', error, errorDescription)
@@ -28,6 +30,26 @@ export const AuthCallback = () => {
           return
         }
 
+        // If we have tokens in the URL, set them
+        if (accessToken && refreshToken) {
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          })
+          
+          if (sessionError) {
+            console.error('Session set error:', sessionError)
+            toast({
+              variant: "destructive",
+              title: "Authentication Error",
+              description: "Failed to set session"
+            })
+            navigate('/signin')
+            return
+          }
+        }
+
+        // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
