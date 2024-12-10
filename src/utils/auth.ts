@@ -1,18 +1,12 @@
 export const getRedirectUrl = () => {
-  // Extract hostname and protocol, removing any trailing characters
-  const protocol = window.location.protocol;
-  const hostname = window.location.hostname;
-  const port = window.location.port ? `:${window.location.port}` : '';
-  
-  // Construct clean URL
-  const baseUrl = `${protocol}//${hostname}${port}`;
-  console.log("Protocol:", protocol);
-  console.log("Hostname:", hostname);
-  console.log("Port:", port);
+  // Use window.location.origin to get the full base URL including protocol
+  const baseUrl = window.location.origin;
   console.log("Base URL:", baseUrl);
   
+  // Construct the redirect URL
   const redirectUrl = `${baseUrl}/auth/callback`;
   console.log("Final redirect URL:", redirectUrl);
+  
   return redirectUrl;
 };
 
