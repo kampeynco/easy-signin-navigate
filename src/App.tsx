@@ -18,42 +18,46 @@ import Dashboard from "./pages/Dashboard"
 
 const queryClient = new QueryClient()
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <SessionContextProvider supabaseClient={supabase}>
-      <TooltipProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Auth callback route */}
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            
-            {/* Public routes */}
-            <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
-            <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
-            <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-            <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+const App = () => {
+  console.log('App: Initializing...')
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SessionContextProvider supabaseClient={supabase}>
+        <TooltipProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Auth callback route - must be before other routes */}
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              
+              {/* Public routes */}
+              <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
+              <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+              <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-            {/* Protected Dashboard route */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <SidebarProvider>
-                    <div className="flex min-h-screen w-full">
-                      <DashboardSidebar />
-                      <Dashboard />
-                    </div>
-                  </SidebarProvider>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </BrowserRouter>
-      </TooltipProvider>
-    </SessionContextProvider>
-  </QueryClientProvider>
-)
+              {/* Protected Dashboard route */}
+              <Route
+                path="/dashboard/*"
+                element={
+                  <ProtectedRoute>
+                    <SidebarProvider>
+                      <div className="flex min-h-screen w-full">
+                        <DashboardSidebar />
+                        <Dashboard />
+                      </div>
+                    </SidebarProvider>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+            <Toaster />
+            <Sonner />
+          </BrowserRouter>
+        </TooltipProvider>
+      </SessionContextProvider>
+    </QueryClientProvider>
+  )
+}
 
 export default App

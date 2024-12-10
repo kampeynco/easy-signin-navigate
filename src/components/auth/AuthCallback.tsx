@@ -6,23 +6,30 @@ export const AuthCallback = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard')
-      } else {
+    const handleAuthCallback = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Auth callback error:', error)
+          navigate('/signin')
+          return
+        }
+
+        if (session) {
+          console.log('Session found, redirecting to dashboard')
+          navigate('/dashboard')
+        } else {
+          console.log('No session found, redirecting to signin')
+          navigate('/signin')
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error)
         navigate('/signin')
       }
-    })
+    }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        navigate('/dashboard')
-      } else if (!session) {
-        navigate('/signin')
-      }
-    })
-
-    return () => subscription.unsubscribe()
+    handleAuthCallback()
   }, [navigate])
 
   return null
