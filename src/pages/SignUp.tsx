@@ -51,14 +51,16 @@ const SignUp = () => {
     try {
       console.log("Starting Google sign up process...");
       let redirectUrl;
+      
+      // Check if we're in development or production
       if (window.location.hostname === 'localhost') {
-        redirectUrl = `${window.location.protocol}//${window.location.hostname}:8080/auth/callback`;
+        redirectUrl = 'http://localhost:8080/auth/callback';
       } else {
-        // Remove any trailing slashes and don't add port for production
-        const baseUrl = `${window.location.protocol}//${window.location.hostname}`;
-        redirectUrl = `${baseUrl}/auth/callback`;
+        // For production (kampeyn.com)
+        redirectUrl = 'https://kampeyn.com/auth/callback';
       }
-      console.log("Full redirect URL:", redirectUrl);
+      
+      console.log("Using redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
