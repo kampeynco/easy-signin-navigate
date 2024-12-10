@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/integrations/supabase/client"
 import { useSession } from "@supabase/auth-helpers-react"
+import Navigation from "@/components/Navigation"
 
 const Index = () => {
   const navigate = useNavigate()
@@ -46,18 +47,20 @@ const Index = () => {
         console.log('Workspaces found, redirecting to dashboard...')
         navigate('/dashboard')
       }
-    } else {
-      // Show landing page content for non-authenticated users
-      console.log('User not authenticated, showing landing page...')
     }
   }, [session, workspaces, isLoading, navigate])
 
   // Landing page content for non-authenticated users
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Kampeyn</h1>
-        <p className="text-xl text-gray-600">Sign in to get started!</p>
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navigation />
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">Welcome to Kampeyn</h1>
+          <p className="text-xl text-muted-foreground">
+            Sign in to get started with your workflows
+          </p>
+        </div>
       </div>
     </div>
   )
