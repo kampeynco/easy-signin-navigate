@@ -49,25 +49,32 @@ const SignUp = () => {
 
   const handleGoogleSignUp = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log("Starting Google sign up process...");
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/dashboard`,
         }
       });
       
+      console.log("Auth response:", { data, error });
+      
       if (error) {
+        console.error("Google sign up error:", error);
         toast({
           variant: "destructive",
           title: "Error",
           description: error.message
         });
+      } else {
+        console.log("Google sign up successful:", data);
       }
     } catch (error) {
+      console.error("Unexpected error during Google sign up:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "An error occurred while signing up with Google"
+        description: "An unexpected error occurred during sign up"
       });
     }
   };
@@ -113,7 +120,7 @@ const SignUp = () => {
               <div className="w-full border-t"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">Or</span>
             </div>
           </div>
 
