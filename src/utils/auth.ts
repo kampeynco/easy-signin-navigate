@@ -1,6 +1,5 @@
 export const getRedirectUrl = () => {
-  const origin = window.location.origin.replace(/\/$/, '');
-  return `${origin}/auth/callback`;
+  return window.location.origin.replace(/\/$/, '') + '/auth/callback';
 };
 
 export const handleGoogleAuth = async (supabase: any) => {
@@ -9,7 +8,7 @@ export const handleGoogleAuth = async (supabase: any) => {
     const redirectUrl = getRedirectUrl();
     console.log("Using redirect URL:", redirectUrl);
     
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: redirectUrl,
@@ -20,10 +19,10 @@ export const handleGoogleAuth = async (supabase: any) => {
       }
     });
     
-    return { error };
+    return { data, error };
   } catch (error) {
     console.error("Unexpected error during Google auth:", error);
-    return { error };
+    return { data: null, error };
   }
 };
 
@@ -31,7 +30,7 @@ export const handleEmailSignUp = async (supabase: any, email: string, password: 
   try {
     const redirectUrl = getRedirectUrl();
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -39,9 +38,9 @@ export const handleEmailSignUp = async (supabase: any, email: string, password: 
       }
     });
 
-    return { error };
+    return { data, error };
   } catch (error) {
     console.error("Sign up error:", error);
-    return { error };
+    return { data: null, error };
   }
 };

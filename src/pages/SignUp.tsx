@@ -32,7 +32,7 @@ const SignUp = () => {
     }
   };
 
-  const handleEmailSignUp = async (email: string, password: string) => {
+  const handleEmailSignUpSubmit = async (email: string, password: string) => {
     setIsLoading(true);
 
     try {
@@ -74,7 +74,7 @@ const SignUp = () => {
           ) : (
             <SignUpForm
               onBack={() => setShowEmailForm(false)}
-              onSubmit={handleEmailSignUp}
+              onSubmit={handleEmailSignUpSubmit}
               isLoading={isLoading}
             />
           )}
