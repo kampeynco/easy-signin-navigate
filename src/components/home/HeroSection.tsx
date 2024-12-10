@@ -10,7 +10,7 @@ export const HeroSection = () => {
             Your All-in-One Automation Platform for Fundraising
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Automate Your Workflow & Streamline Your Fundraising Processes to focus on what matters most - your mission
+            Automate Your Workflow & Streamline Your Fundraising Processes to focus on what<span className="hidden md:inline"><br /></span> matters most - your mission
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link to="/signup">
