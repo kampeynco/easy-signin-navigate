@@ -11,7 +11,7 @@ const Dashboard = () => {
   const userName = "Lenox Ramsey Jr"
 
   return (
-    <main className="flex-1 bg-[#f0f3fa]">
+    <main className="flex-1 bg-[#f0f3fa] pt-16">
       <DashboardTopNav />
       
       {/* Header Section */}
