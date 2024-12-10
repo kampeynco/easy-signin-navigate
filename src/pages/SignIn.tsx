@@ -33,24 +33,16 @@ const SignIn = () => {
     try {
       console.log("Starting Google sign in process...");
       
-      // Get the current origin
-      const origin = window.location.origin;
-      const redirectUrl = `${origin}/auth/callback`;
-      
-      console.log("Using redirect URL:", redirectUrl);
-      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
           }
         }
       });
-      
-      console.log("Auth response:", { data, error });
       
       if (error) {
         console.error("Google sign in error:", error);

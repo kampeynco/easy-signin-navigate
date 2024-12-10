@@ -23,44 +23,35 @@ const AuthCallback = () => {
     const handleCallback = async () => {
       try {
         console.log("Auth callback component mounted");
-        console.log("Current URL:", window.location.href);
         
-        // Get the current URL and parse it
-        const url = new URL(window.location.href);
-        console.log("Parsed URL:", url);
-        
-        // Check for error in URL parameters
-        const error = url.searchParams.get('error');
-        const errorDescription = url.searchParams.get('error_description');
-        
-        if (error) {
-          console.error("Auth error:", error, errorDescription);
-          window.location.href = '/signin';
-          return;
-        }
-        
-        // Check for access token in hash or query parameters
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token') || url.searchParams.get('access_token');
-        console.log("Access token present:", !!accessToken);
-        
-        // Get current session
+        // Get current session immediately after callback
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        console.log("Session check result:", { session: !!session, error: sessionError });
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          window.location.href = '/signin';
-          return;
-        }
+        console.log("Initial session check:", { session: !!session, error: sessionError });
         
         if (session) {
+          // We have a session, redirect to dashboard
           console.log("Valid session found, redirecting to dashboard");
           window.location.href = '/dashboard';
-        } else {
-          console.log("No session found, redirecting to signin");
-          window.location.href = '/signin';
+          return;
         }
+        
+        // If no session, set up a listener for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log("Auth state changed:", event, !!session);
+          
+          if (event === 'SIGNED_IN' && session) {
+            console.log("User signed in, redirecting to dashboard");
+            window.location.href = '/dashboard';
+          } else if (!session) {
+            console.log("No session found, redirecting to signin");
+            window.location.href = '/signin';
+          }
+        });
+
+        // Cleanup subscription
+        return () => {
+          subscription.unsubscribe();
+        };
       } catch (error) {
         console.error("Unexpected error in callback:", error);
         window.location.href = '/signin';
