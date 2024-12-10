@@ -76,9 +76,9 @@ export function UserMenu() {
           asChild
           onClick={handleLogout}
         >
-          <Link to="#" className="flex items-center gap-2 text-destructive">
+          <Link to="#" className="flex items-center gap-2 text-destructive hover:text-white">
             <LogOut className="h-4 w-4" />
-            <span>Log out</span>
+            <span>Sign out</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
