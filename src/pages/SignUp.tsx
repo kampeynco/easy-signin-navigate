@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -7,91 +7,56 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { supabase } from "@/integrations/supabase/client"
-import { useToast } from "@/hooks/use-toast"
-import { AuthOptions } from "@/components/auth/AuthOptions"
-import { SignUpForm } from "@/components/auth/SignUpForm"
+} from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { AuthOptions } from "@/components/auth/AuthOptions";
+import { SignUpForm } from "@/components/auth/SignUpForm";
+import { handleGoogleAuth, handleEmailSignUp } from "@/utils/auth";
 
 const SignUp = () => {
-  const [showEmailForm, setShowEmailForm] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const { toast } = useToast()
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleGoogleSignUp = async () => {
-    try {
-      console.log("Starting Google sign up process...")
-      
-      // Get the current origin without any trailing slashes or colons
-      const origin = window.location.origin.replace(/\/$/, '');
-      const redirectUrl = `${origin}/auth/callback`
-      console.log("Using redirect URL:", redirectUrl)
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
-        }
-      })
-      
-      if (error) {
-        console.error("Google sign up error:", error)
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message
-        })
-      }
-    } catch (error) {
-      console.error("Unexpected error during sign up:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An unexpected error occurred during sign up"
-      })
-    }
-  }
-
-  const handleEmailSignUp = async (email: string, password: string) => {
-    setIsLoading(true)
-
-    try {
-      // Get the current origin without any trailing slashes or colons
-      const origin = window.location.origin.replace(/\/$/, '');
-      const redirectUrl = `${origin}/auth/callback`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl
-        }
-      })
-
-      if (error) throw error
-
-      toast({
-        title: "Success",
-        description: "Account created successfully"
-      })
-      
-      // The redirect will be handled by the callback
-    } catch (error: any) {
-      console.error("Sign up error:", error)
+    const { error } = await handleGoogleAuth(supabase);
+    
+    if (error) {
+      console.error("Google sign up error:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message
-      })
-    } finally {
-      setIsLoading(false)
+      });
     }
-  }
+  };
+
+  const handleEmailSignUp = async (email: string, password: string) => {
+    setIsLoading(true);
+
+    try {
+      const { error } = await handleEmailSignUp(supabase, email, password);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Account created successfully"
+      });
+      
+      // The redirect will be handled by the callback
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="container flex items-center justify-center py-10">
@@ -124,7 +89,7 @@ const SignUp = () => {
         </CardFooter>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;
