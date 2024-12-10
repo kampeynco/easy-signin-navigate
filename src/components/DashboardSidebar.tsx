@@ -1,4 +1,3 @@
-import { Globe } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -16,8 +15,12 @@ export function DashboardSidebar() {
       <SidebarHeader className="flex flex-col gap-4 border-b border-white/10 p-4">
         {/* App Branding */}
         <div className="flex items-center gap-2">
-          <Globe className="h-6 w-6" />
-          <span className="font-semibold">Pointsale</span>
+          <img 
+            src="/lovable-uploads/b3bfeefb-4d63-4032-80a8-9e4200f651e7.png" 
+            alt="Kampeyn Logo" 
+            className="h-6 w-auto"
+          />
+          <span className="font-semibold">Kampeyn</span>
         </div>
 
         <WorkspaceSelector />
