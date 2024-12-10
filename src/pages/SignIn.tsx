@@ -40,8 +40,9 @@ const SignIn = () => {
     try {
       console.log("Starting Google sign in process...");
       
-      // Get the current domain and construct the redirect URL
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+      // Get the current origin without any trailing slashes or colons
+      const origin = window.location.origin.replace(/\/$/, '');
+      const redirectUrl = `${origin}/auth/callback`;
       console.log("Using redirect URL:", redirectUrl);
       
       const { error } = await supabase.auth.signInWithOAuth({

@@ -23,8 +23,9 @@ const SignUp = () => {
     try {
       console.log("Starting Google sign up process...")
       
-      // Get the current domain and construct the redirect URL
-      const redirectUrl = `${window.location.origin}/auth/callback`
+      // Get the current origin without any trailing slashes or colons
+      const origin = window.location.origin.replace(/\/$/, '');
+      const redirectUrl = `${origin}/auth/callback`
       console.log("Using redirect URL:", redirectUrl)
       
       const { error } = await supabase.auth.signInWithOAuth({
@@ -60,11 +61,15 @@ const SignUp = () => {
     setIsLoading(true)
 
     try {
+      // Get the current origin without any trailing slashes or colons
+      const origin = window.location.origin.replace(/\/$/, '');
+      const redirectUrl = `${origin}/auth/callback`;
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback` // Changed from redirectTo to emailRedirectTo
+          emailRedirectTo: redirectUrl
         }
       })
 
