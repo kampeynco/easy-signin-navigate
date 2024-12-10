@@ -64,7 +64,7 @@ const SignUp = () => {
         email,
         password,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/callback` // Changed from redirectTo to emailRedirectTo
         }
       })
 
