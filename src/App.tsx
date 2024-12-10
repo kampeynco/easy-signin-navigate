@@ -17,21 +17,31 @@ import { useEffect, useState } from "react"
 
 const queryClient = new QueryClient()
 
-// Simplified AuthCallback component
+// Simplified AuthCallback component that handles the OAuth redirect
 const AuthCallback = () => {
+  const navigate = useNavigate()
+
   useEffect(() => {
-    // Handle the OAuth callback
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, !!session)
-      
-      if (event === 'SIGNED_IN' && session) {
-        window.location.href = '/dashboard'
-      } else if (!session) {
-        window.location.href = '/signin'
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard')
+      } else {
+        navigate('/signin')
       }
     })
-  }, [])
-  
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/dashboard')
+      } else if (!session) {
+        navigate('/signin')
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [navigate])
+
   return null
 }
 

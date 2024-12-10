@@ -22,12 +22,19 @@ const SignIn = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check if user is already signed in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+
     if (location.state?.showEmailForm !== undefined) {
       setShowEmailForm(location.state.showEmailForm);
     } else if (location.state?.fromReset) {
       setShowEmailForm(true);
     }
-  }, [location.state]);
+  }, [location.state, navigate]);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -116,7 +123,7 @@ const SignIn = () => {
               </Button>
             </>
           ) : (
-            <div className="space-y-4 animate-fade-in">
+            <>
               <button
                 type="button"
                 onClick={() => setShowEmailForm(false)}
@@ -142,7 +149,7 @@ const SignIn = () => {
                 </Link>
               </div>
               <Button className="w-full">Sign In</Button>
-            </div>
+            </>
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
