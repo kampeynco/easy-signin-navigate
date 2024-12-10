@@ -40,10 +40,26 @@ const SignIn = () => {
     try {
       console.log("Starting Google sign in process...");
       
+      // Get the current domain
+      const currentDomain = window.location.hostname;
+      let redirectUrl;
+      
+      // Set redirect URL based on the current domain
+      if (currentDomain === 'dev.kampeyn.com') {
+        redirectUrl = 'https://dev.kampeyn.com/auth/callback';
+      } else if (currentDomain === 'kampeyn.com') {
+        redirectUrl = 'https://kampeyn.com/auth/callback';
+      } else {
+        // Local development fallback
+        redirectUrl = `${window.location.origin}/auth/callback`;
+      }
+      
+      console.log("Using redirect URL:", redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
