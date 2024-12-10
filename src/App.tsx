@@ -4,8 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { createBrowserSupabaseClient } from '@supabase/auth-helpers-react'
-import { SessionContextProvider } from '@supabase/auth-helpers-react'
+import { SessionContextProvider, useSession } from '@supabase/auth-helpers-react'
 import Navigation from "./components/Navigation"
 import Index from "./pages/Index"
 import SignIn from "./pages/SignIn"
@@ -94,7 +93,7 @@ const App = () => (
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { session } = useSession()
+  const session = useSession()
   
   if (!session) {
     return <Navigate to="/signin" replace />

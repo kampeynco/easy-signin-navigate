@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/integrations/supabase/client"
 
 const Dashboard = () => {
-  const { session } = useSession()
+  const session = useSession()
   
   const { data: profile } = useQuery({
     queryKey: ['profile', session?.user?.id],
