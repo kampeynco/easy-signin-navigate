@@ -6,15 +6,15 @@ export const GetStartedCard = () => {
   return (
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader>
-        <CardTitle className="text-2xl text-gray-900">Let's Get Started!</CardTitle>
+        <CardTitle className="text-lg text-gray-900">Let's Get Started!</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-600 text-base mb-6">
+        <p className="text-sm text-gray-600 mb-4">
           Easiest way to automate your repeating tasks. We bring together your
           favorite apps and tools into one place, so you can finish more work in
           less time.
         </p>
-        <Button asChild className="bg-[#2B4079] hover:bg-[#1e2d54] text-white">
+        <Button asChild className="bg-[#2B4079] hover:bg-[#1e2d54] text-white text-sm h-9">
           <Link to="/create-workflow">Create Workflow</Link>
         </Button>
       </CardContent>

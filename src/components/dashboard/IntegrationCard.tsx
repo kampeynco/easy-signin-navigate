@@ -15,20 +15,20 @@ export const IntegrationCard = ({
 }: IntegrationCardProps) => {
   return (
     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-      <CardContent className="flex items-center gap-4 p-6">
-        <div className="w-10 h-10">
+      <CardContent className="flex items-center gap-3 p-4">
+        <div className="w-8 h-8">
           {typeof Icon === "string" ? (
             <img src={Icon} alt={`${title} Logo`} className="w-full h-full object-contain" />
           ) : (
-            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-              <Icon className="w-6 h-6 text-gray-600" />
+            <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
+              <Icon className="w-4 h-4 text-gray-600" />
             </div>
           )}
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
+          <h3 className="font-medium text-sm text-gray-900">{title}</h3>
         </div>
-        <Button variant="outline" size="lg" className="hover:bg-gray-50">
+        <Button variant="outline" size="sm" className="hover:bg-gray-50 text-sm">
           {buttonText}
         </Button>
       </CardContent>
