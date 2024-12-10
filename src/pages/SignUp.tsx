@@ -50,9 +50,10 @@ const SignUp = () => {
   const handleGoogleSignUp = async () => {
     try {
       console.log("Starting Google sign up process...");
-      const redirectUrl = window.location.hostname === 'localhost'
-        ? 'http://localhost:8080/auth/callback'
-        : 'https://kampeyn.com/auth/callback';
+      
+      // Get the current origin
+      const origin = window.location.origin;
+      const redirectUrl = `${origin}/auth/callback`;
       
       console.log("Using redirect URL:", redirectUrl);
       

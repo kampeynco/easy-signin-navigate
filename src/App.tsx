@@ -25,15 +25,31 @@ const AuthCallback = () => {
         console.log("Auth callback component mounted");
         console.log("Current URL:", window.location.href);
         
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        console.log("Access token from URL:", accessToken ? 'Present' : 'Not present');
+        // Get the current URL and parse it
+        const url = new URL(window.location.href);
+        console.log("Parsed URL:", url);
         
-        const { data: { session }, error } = await supabase.auth.getSession();
-        console.log("Session check result:", { session: !!session, error });
+        // Check for error in URL parameters
+        const error = url.searchParams.get('error');
+        const errorDescription = url.searchParams.get('error_description');
         
         if (error) {
-          console.error("Error getting session:", error);
+          console.error("Auth error:", error, errorDescription);
+          window.location.href = '/signin';
+          return;
+        }
+        
+        // Check for access token in hash or query parameters
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token') || url.searchParams.get('access_token');
+        console.log("Access token present:", !!accessToken);
+        
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log("Session check result:", { session: !!session, error: sessionError });
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
           window.location.href = '/signin';
           return;
         }
