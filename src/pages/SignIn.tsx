@@ -33,9 +33,14 @@ const SignIn = () => {
   const handleGoogleSignIn = async () => {
     try {
       console.log("Starting Google sign in process...");
-      const redirectUrl = window.location.hostname === 'localhost' 
-        ? `${window.location.protocol}//${window.location.hostname}:8080/auth/callback`
-        : `${window.location.protocol}//${window.location.hostname}/auth/callback`;
+      let redirectUrl;
+      if (window.location.hostname === 'localhost') {
+        redirectUrl = `${window.location.protocol}//${window.location.hostname}:8080/auth/callback`;
+      } else {
+        // Remove any trailing slashes and don't add port for production
+        const baseUrl = `${window.location.protocol}//${window.location.hostname}`;
+        redirectUrl = `${baseUrl}/auth/callback`;
+      }
       console.log("Full redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
