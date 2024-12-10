@@ -50,12 +50,13 @@ const SignUp = () => {
   const handleGoogleSignUp = async () => {
     try {
       console.log("Starting Google sign up process...");
-      console.log("Redirect URL:", `${window.location.origin}/auth/callback`);
+      const redirectUrl = `${window.location.protocol}//${window.location.hostname}:8080/auth/callback`;
+      console.log("Redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl
         }
       });
       
