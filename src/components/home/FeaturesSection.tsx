@@ -1,20 +1,20 @@
-import { Check } from "lucide-react"
+import { Rocket, Zap, Lock } from "lucide-react"
 
 const features = [
   {
-    title: "Easy Setup",
-    description: "Get started in minutes with our intuitive setup process",
-    icon: Check,
+    title: "Quick Setup",
+    description: "Get started in minutes with our intuitive setup process. No technical knowledge required.",
+    icon: Rocket,
   },
   {
-    title: "Powerful Integrations",
-    description: "Connect with your favorite tools and services seamlessly",
-    icon: Check,
+    title: "Powerful Automations",
+    description: "Create complex workflows with our drag-and-drop builder. Connect multiple apps seamlessly.",
+    icon: Zap,
   },
   {
-    title: "No Code Required",
-    description: "Build complex workflows without writing a single line of code",
-    icon: Check,
+    title: "Secure & Reliable",
+    description: "Your data is protected with enterprise-grade security. Run your automations with confidence.",
+    icon: Lock,
   },
 ]
 
@@ -29,18 +29,19 @@ export const FeaturesSection = () => {
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Everything you need to automate your workflow
           </p>
+          <p className="mt-6 text-lg leading-8 text-gray-600">
+            Build powerful automations without code. Connect your favorite apps and let your workflows run on autopilot.
+          </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
           <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
             {features.map((feature) => (
-              <div key={feature.title} className="flex flex-col">
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                  <feature.icon className="h-5 w-5 flex-none text-primary" aria-hidden="true" />
-                  {feature.title}
-                </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-                  <p className="flex-auto">{feature.description}</p>
-                </dd>
+              <div key={feature.title} className="flex flex-col items-start">
+                <div className="rounded-lg bg-primary/10 p-2 ring-1 ring-primary/20">
+                  <feature.icon className="h-6 w-6 text-primary" aria-hidden="true" />
+                </div>
+                <dt className="mt-4 font-semibold text-gray-900">{feature.title}</dt>
+                <dd className="mt-2 leading-7 text-gray-600">{feature.description}</dd>
               </div>
             ))}
           </dl>
