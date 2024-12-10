@@ -20,20 +20,38 @@ const queryClient = new QueryClient()
 // Auth callback handler component
 const AuthCallback = () => {
   useEffect(() => {
-    console.log("Auth callback component mounted");
-    supabase.auth.getSession().then(({ data: { session }}) => {
-      console.log("Session data:", session);
-      if (session) {
-        console.log("Redirecting to dashboard...");
-        window.location.href = '/dashboard';
-      } else {
-        console.log("No session found");
+    const handleCallback = async () => {
+      try {
+        console.log("Auth callback component mounted");
+        console.log("Current URL:", window.location.href);
+        
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        console.log("Access token from URL:", accessToken ? 'Present' : 'Not present');
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
+        console.log("Session check result:", { session: !!session, error });
+        
+        if (error) {
+          console.error("Error getting session:", error);
+          window.location.href = '/signin';
+          return;
+        }
+        
+        if (session) {
+          console.log("Valid session found, redirecting to dashboard");
+          window.location.href = '/dashboard';
+        } else {
+          console.log("No session found, redirecting to signin");
+          window.location.href = '/signin';
+        }
+      } catch (error) {
+        console.error("Unexpected error in callback:", error);
         window.location.href = '/signin';
       }
-    }).catch(error => {
-      console.error("Error getting session:", error);
-      window.location.href = '/signin';
-    });
+    };
+
+    handleCallback();
   }, []);
   
   return null;
