@@ -1,6 +1,12 @@
 export const getRedirectUrl = () => {
-  // Use window.location.origin to get the full base URL including protocol
+  // Get the full origin (protocol + hostname + port)
   const baseUrl = window.location.origin;
+  console.log("Full window.location:", {
+    origin: window.location.origin,
+    protocol: window.location.protocol,
+    hostname: window.location.hostname,
+    port: window.location.port
+  });
   console.log("Base URL:", baseUrl);
   
   // Construct the redirect URL
