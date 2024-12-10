@@ -23,20 +23,8 @@ const SignUp = () => {
     try {
       console.log("Starting Google sign up process...")
       
-      // Get the current domain
-      const currentDomain = window.location.hostname
-      let redirectUrl
-      
-      // Set redirect URL based on the current domain
-      if (currentDomain === 'dev.kampeyn.com') {
-        redirectUrl = 'https://dev.kampeyn.com/auth/callback'
-      } else if (currentDomain === 'kampeyn.com') {
-        redirectUrl = 'https://kampeyn.com/auth/callback'
-      } else {
-        // Local development fallback
-        redirectUrl = `${window.location.origin}/auth/callback`
-      }
-      
+      // Get the current domain and construct the redirect URL
+      const redirectUrl = `${window.location.origin}/auth/callback`
       console.log("Using redirect URL:", redirectUrl)
       
       const { error } = await supabase.auth.signInWithOAuth({
@@ -75,6 +63,9 @@ const SignUp = () => {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
       })
 
       if (error) throw error
@@ -84,7 +75,7 @@ const SignUp = () => {
         description: "Account created successfully"
       })
       
-      navigate('/onboarding')
+      // The redirect will be handled by the callback
     } catch (error: any) {
       console.error("Sign up error:", error)
       toast({
