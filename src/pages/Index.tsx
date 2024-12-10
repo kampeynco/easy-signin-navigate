@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { supabase } from "@/integrations/supabase/client"
 import { useSession } from "@supabase/auth-helpers-react"
+import { HeroSection } from "@/components/home/HeroSection"
+import { FeaturesSection } from "@/components/home/FeaturesSection"
 
 const Index = () => {
   const navigate = useNavigate()
@@ -51,13 +53,9 @@ const Index = () => {
 
   // Landing page content for non-authenticated users
   return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Welcome to Kampeyn</h1>
-        <p className="text-xl text-muted-foreground">
-          Sign in to get started with your workflows
-        </p>
-      </div>
+    <div className="bg-background">
+      <HeroSection />
+      <FeaturesSection />
     </div>
   )
 }
