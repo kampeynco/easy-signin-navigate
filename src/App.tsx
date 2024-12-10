@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { SessionContextProvider, useSession } from '@supabase/auth-helpers-react'
+import { useEffect } from 'react'
 import Navigation from "./components/Navigation"
 import Index from "./pages/Index"
 import SignIn from "./pages/SignIn"
@@ -16,12 +17,28 @@ import { supabase } from "@/integrations/supabase/client"
 
 const queryClient = new QueryClient()
 
+// Auth callback handler component
+const AuthCallback = () => {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session }}) => {
+      if (session) {
+        window.location.href = '/dashboard'
+      }
+    })
+  }, [])
+  
+  return null
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <SessionContextProvider supabaseClient={supabase}>
       <TooltipProvider>
         <BrowserRouter>
           <Routes>
+            {/* Auth callback route */}
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            
             {/* Auth and public routes */}
             <Route
               path="/"
