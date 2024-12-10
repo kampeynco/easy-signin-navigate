@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +12,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const SignIn = () => {
   const [showEmailForm, setShowEmailForm] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Set showEmailForm based on location state
@@ -25,6 +29,31 @@ const SignIn = () => {
       setShowEmailForm(true);
     }
   }, [location.state]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An error occurred while signing in with Google"
+      });
+    }
+  };
 
   return (
     <div className="container flex items-center justify-center py-10">
@@ -36,7 +65,11 @@ const SignIn = () => {
         <CardContent className="space-y-4">
           {!showEmailForm ? (
             <>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={handleGoogleSignIn}
+              >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
