@@ -1,7 +1,10 @@
 export const getRedirectUrl = () => {
-  // Remove any trailing slashes and ensure proper URL formatting
-  const origin = window.location.origin.replace(/:\/$/, '').replace(/:$/, '');
-  return `${origin}/auth/callback`;
+  // Get the base URL without any trailing characters
+  const origin = window.location.origin.replace(/[:/]+$/, '');
+  console.log("Base URL:", origin);
+  const redirectUrl = `${origin}/auth/callback`;
+  console.log("Generated redirect URL:", redirectUrl);
+  return redirectUrl;
 };
 
 export const handleGoogleAuth = async (supabase: any) => {
