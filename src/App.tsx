@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import { PublicRoute } from "./routes/PublicRoute"
 import { DashboardSidebar } from "./components/DashboardSidebar"
 import { supabase } from "@/integrations/supabase/client"
+import { OTPVerification } from "./components/auth/OTPVerification"
 import Index from "./pages/Index"
 import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
@@ -41,6 +42,7 @@ const App = () => {
               <Route path="/docs" element={<PublicRoute><Documentation /></PublicRoute>} />
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+              <Route path="/verify-email" element={<PublicRoute><OTPVerification /></PublicRoute>} />
               <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
 

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
   Card,
   CardContent,
@@ -11,12 +11,11 @@ import {
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { SignUpForm } from "@/components/auth/SignUpForm"
-import { OTPVerification } from "@/components/auth/OTPVerification"
 
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [verificationEmail, setVerificationEmail] = useState<string | null>(null)
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const handleEmailSignUp = async (email: string, password: string) => {
     setIsLoading(true)
@@ -36,7 +35,9 @@ const SignUp = () => {
 
       if (error) throw error
 
-      setVerificationEmail(email)
+      // Redirect to verification page with email in state
+      navigate('/verify-email', { state: { email } })
+      
       toast({
         title: "Verification Required",
         description: "Please check your email for the verification code.",
@@ -54,12 +55,6 @@ const SignUp = () => {
     }
   }
 
-  // If we have an email waiting for verification, show the OTP screen
-  if (verificationEmail) {
-    return <OTPVerification email={verificationEmail} />
-  }
-
-  // Otherwise show the signup form
   return (
     <div className="container flex items-center justify-center py-10">
       <Card className="w-full max-w-md">
