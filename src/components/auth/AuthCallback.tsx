@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
+// Updated interface to correctly extend Error
 interface AuthError extends Error {
-  name?: string;
   status?: number;
 }
 

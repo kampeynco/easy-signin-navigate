@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { PasswordInput } from "./PasswordInput"
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator"
 import { calculatePasswordStrength, validateEmail, isCommonPassword } from "@/utils/auth-validation"
+import { useToast } from "@/hooks/use-toast"
 
 interface SignUpFormProps {
   onSubmit: (email: string, password: string) => void
@@ -16,6 +17,7 @@ export const SignUpForm = ({ onSubmit, isLoading }: SignUpFormProps) => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [emailError, setEmailError] = useState("")
+  const { toast } = useToast()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
