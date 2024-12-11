@@ -37,9 +37,10 @@ export const AuthCallback = () => {
           throw sessionError
         }
 
-        if (session) {
+        if (session?.user) {
           console.log('AuthCallback: Session found, checking workspaces...')
           
+          // More robust workspace check with user filtering
           const { data: workspaces, error: workspacesError } = await supabase
             .from('workspaces')
             .select('id')
@@ -70,7 +71,12 @@ export const AuthCallback = () => {
           throw new Error("No session found")
         }
       } catch (error: unknown) {
-        console.error('AuthCallback: Error:', error)
+        console.error('AuthCallback: Complete error details:', {
+          name: error instanceof Error ? error.name : 'Unknown error',
+          message: error instanceof Error ? error.message : 'An unexpected error occurred',
+          error // Log the full error object
+        })
+        
         const errorMessage = error instanceof Error ? error.message : 'An unexpected authentication error occurred'
         
         toast({
