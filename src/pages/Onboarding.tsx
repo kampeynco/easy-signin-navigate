@@ -43,7 +43,7 @@ const Onboarding = () => {
       // Insert workspace
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
-        .insert({ name: workspaceName.trim() })
+        .insert([{ name: workspaceName.trim() }])
         .select()
         .single()
 
@@ -57,11 +57,11 @@ const Onboarding = () => {
       // Add creator as admin
       const { error: memberError } = await supabase
         .from('workspace_members')
-        .insert({
+        .insert([{
           workspace_id: workspace.id,
           user_id: session.user.id,
           role: 'admin'
-        })
+        }])
 
       if (memberError) {
         console.error('Error adding workspace member:', memberError)
@@ -80,7 +80,7 @@ const Onboarding = () => {
       console.error('Error in workspace creation:', error)
       toast({
         title: "Error",
-        description: "Failed to create workspace. Please try again.",
+        description: error.message || "Failed to create workspace. Please try again.",
         variant: "destructive",
       })
     } finally {
