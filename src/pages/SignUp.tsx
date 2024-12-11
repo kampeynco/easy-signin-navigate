@@ -22,7 +22,7 @@ const SignUp = () => {
     console.log('Starting signup process...')
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -35,13 +35,21 @@ const SignUp = () => {
 
       if (error) throw error
 
-      // Redirect to verification page with email in state
-      navigate('/verify-email', { state: { email } })
-      
-      toast({
-        title: "Verification Required",
-        description: "Please check your email for the verification code.",
-      })
+      // Only navigate if we have a user object returned
+      if (data?.user) {
+        // Redirect to verification page with email in state
+        navigate('/verify-email', { 
+          state: { email },
+          replace: true // Use replace to prevent going back to signup
+        })
+        
+        toast({
+          title: "Verification Required",
+          description: "Please check your email for the verification code.",
+        })
+      } else {
+        throw new Error("Signup failed - no user returned")
+      }
       
     } catch (error: any) {
       console.error("Sign up error:", error)
