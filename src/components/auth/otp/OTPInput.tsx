@@ -24,8 +24,9 @@ export const OTPInput = ({ value, onChange, isError }: OTPInputProps) => {
           <InputOTPGroup className="gap-2">
             {slots?.map((slot, index) => (
               <InputOTPSlot 
-                key={index} 
+                key={index}
                 {...slot}
+                index={index}
                 className={cn(
                   "w-10 h-10 text-center border-2",
                   isError && "border-destructive focus:ring-destructive"
