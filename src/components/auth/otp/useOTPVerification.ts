@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast"
 export const useOTPVerification = (email: string, onVerificationComplete?: () => void) => {
   const [otp, setOtp] = useState("")
   const [isVerifying, setIsVerifying] = useState(false)
+  const [isError, setIsError] = useState(false)
   const { toast } = useToast()
   const navigate = useNavigate()
 
@@ -20,6 +21,8 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
     }
 
     setIsVerifying(true)
+    setIsError(false)
+    
     try {
       const { error } = await supabase.auth.verifyOtp({
         email,
@@ -27,7 +30,10 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
         type: 'signup'
       })
 
-      if (error) throw error
+      if (error) {
+        setIsError(true)
+        throw error
+      }
 
       toast({
         title: "Success",
@@ -38,12 +44,13 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
         onVerificationComplete()
       }
       
-      navigate('/auth/callback')
+      navigate('/onboarding')
     } catch (error: any) {
+      setIsError(true)
       toast({
         variant: "destructive",
         title: "Verification Failed",
-        description: error.message,
+        description: "The verification code is invalid or has expired.",
       })
     } finally {
       setIsVerifying(false)
@@ -63,6 +70,8 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
         title: "Code Resent",
         description: "A new verification code has been sent to your email.",
       })
+      setOtp("")
+      setIsError(false)
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -76,6 +85,7 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
     otp,
     setOtp,
     isVerifying,
+    isError,
     handleVerify,
     handleResend
   }

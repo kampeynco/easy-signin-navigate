@@ -19,6 +19,7 @@ export const OTPVerification = ({ email, onVerificationComplete }: OTPVerificati
     otp,
     setOtp,
     isVerifying,
+    isError,
     handleVerify,
     handleResend
   } = useOTPVerification(email, onVerificationComplete)
@@ -35,6 +36,7 @@ export const OTPVerification = ({ email, onVerificationComplete }: OTPVerificati
         <OTPInput 
           value={otp}
           onChange={setOtp}
+          isError={isError}
         />
         <OTPActions
           onVerify={handleVerify}
