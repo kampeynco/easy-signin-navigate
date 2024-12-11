@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import { AuthCallback } from "./components/auth/AuthCallback"
@@ -42,11 +42,25 @@ const App = () => {
               <Route path="/docs" element={<PublicRoute><Documentation /></PublicRoute>} />
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-              <Route path="/verify-email" element={<PublicRoute><OTPVerification /></PublicRoute>} />
+              <Route 
+                path="/verify-email" 
+                element={
+                  <PublicRoute>
+                    <OTPVerification />
+                  </PublicRoute>
+                } 
+              />
               <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
-              <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
 
-              {/* Protected Dashboard route */}
+              {/* Protected routes */}
+              <Route 
+                path="/onboarding" 
+                element={
+                  <ProtectedRoute>
+                    <Onboarding />
+                  </ProtectedRoute>
+                } 
+              />
               <Route
                 path="/dashboard/*"
                 element={
@@ -60,6 +74,9 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+
+              {/* Catch all route */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <Toaster />
             <Sonner />

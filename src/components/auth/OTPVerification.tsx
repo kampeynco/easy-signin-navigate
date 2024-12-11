@@ -20,6 +20,9 @@ export const OTPVerification = () => {
 
   useEffect(() => {
     console.log('OTPVerification: Mounted with email:', email)
+    if (!email) {
+      console.log('OTPVerification: No email in state, will redirect to signup')
+    }
   }, [email])
 
   // If no email in state, redirect to signup

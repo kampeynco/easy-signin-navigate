@@ -41,12 +41,12 @@ const SignUp = () => {
         console.log('SignUp: User created, redirecting to verification...')
         navigate('/verify-email', { 
           state: { email },
-          replace: true
+          replace: true 
         })
         
         toast({
-          title: "Verification Required",
-          description: "Please check your email for the verification code.",
+          title: "Check your email",
+          description: "We've sent you a verification code.",
         })
       } else {
         throw new Error("Signup failed - no user returned")
