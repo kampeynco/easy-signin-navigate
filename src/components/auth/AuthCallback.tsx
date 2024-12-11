@@ -24,6 +24,16 @@ export const AuthCallback = () => {
           throw new Error("No valid session found")
         }
 
+        // Check if email is confirmed
+        if (!session.user.email_confirmed_at) {
+          console.log('AuthCallback: Email not confirmed, redirecting to verification')
+          navigate('/verify-email', { 
+            state: { email: session.user.email },
+            replace: true 
+          })
+          return
+        }
+
         console.log('AuthCallback: User authenticated:', session.user.email)
         
         // Check for existing workspaces with proper error handling
