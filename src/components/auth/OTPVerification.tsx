@@ -59,7 +59,7 @@ export const OTPVerification = () => {
   console.log('OTPVerification: Rendering component')
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
+    <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">Email Verification</CardTitle>
