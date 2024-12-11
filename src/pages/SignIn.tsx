@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import {
   Card,
   CardContent,
@@ -7,54 +7,52 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { EmailSignInForm } from "@/components/auth/EmailSignInForm";
+} from "@/components/ui/card"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
+import { EmailSignInForm } from "@/components/auth/EmailSignInForm"
 
 const SignIn = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const { toast } = useToast()
 
   const handleEmailSignIn = async (email: string, password: string) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      });
+      })
 
-      // Check if the error is due to an unconfirmed email
       if (error?.message?.includes('Email not confirmed')) {
-        console.log('SignIn: Email not confirmed, redirecting to verification page');
+        console.log('SignIn: Email not confirmed, redirecting to verification page')
         navigate('/verify-email', { 
           state: { email },
           replace: true 
-        });
-        return;
+        })
+        return
       }
 
-      if (error) throw error;
+      if (error) throw error
 
       toast({
         title: "Success",
         description: "Signed in successfully"
-      });
+      })
       
-      navigate('/dashboard');
+      navigate('/dashboard')
     } catch (error: any) {
-      console.error("Sign in error:", error);
+      console.error("Sign in error:", error)
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="container flex items-center justify-center py-10">
@@ -79,7 +77,7 @@ const SignIn = () => {
         </CardFooter>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default SignIn;
+export default SignIn

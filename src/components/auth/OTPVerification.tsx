@@ -1,5 +1,7 @@
-import { useEffect } from "react"
-import { useLocation, Navigate, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 import {
   Card,
   CardContent,
@@ -7,23 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { OTPInput } from "./otp/OTPInput"
-import { OTPActions } from "./otp/OTPActions"
-import { useOTPVerification } from "./otp/useOTPVerification"
-import { useToast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export const OTPVerification = () => {
-  console.log('OTPVerification: Component mounting...')
-  
+  const [otp, setOtp] = useState("")
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [resendTimer, setResendTimer] = useState(60)
   const location = useLocation()
   const navigate = useNavigate()
   const { toast } = useToast()
   const email = location.state?.email
 
   useEffect(() => {
-    console.log('OTPVerification: Component mounted')
-    console.log('OTPVerification: Email from state:', email)
-    
     if (!email) {
       console.log('OTPVerification: No email in state, redirecting to signup')
       toast({
@@ -31,54 +29,127 @@ export const OTPVerification = () => {
         title: "Error",
         description: "No email found for verification. Please sign up again.",
       })
+      navigate('/signup', { replace: true })
     }
-  }, [email, toast])
+  }, [email, navigate, toast])
 
-  // If no email in state, redirect to signup
-  if (!email) {
-    console.log('OTPVerification: No email in state, redirecting to signup')
-    return <Navigate to="/signup" replace />
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (resendTimer > 0) {
+      timer = setInterval(() => {
+        setResendTimer((prev) => prev - 1)
+      }, 1000)
+    }
+    return () => clearInterval(timer)
+  }, [resendTimer])
+
+  const handleVerify = async () => {
+    if (otp.length !== 6) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Code",
+        description: "Please enter a 6-digit verification code.",
+      })
+      return
+    }
+
+    setIsVerifying(true)
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'signup'
+      })
+
+      if (error) throw error
+
+      toast({
+        title: "Success",
+        description: "Email verified successfully.",
+      })
+      navigate('/dashboard', { replace: true })
+    } catch (error: any) {
+      console.error('Verification error:', error)
+      toast({
+        variant: "destructive",
+        title: "Verification Failed",
+        description: error.message || "Invalid verification code.",
+      })
+    } finally {
+      setIsVerifying(false)
+    }
   }
 
-  const {
-    otp,
-    setOtp,
-    isVerifying,
-    isError,
-    handleVerify,
-    handleResend
-  } = useOTPVerification(email, () => {
-    console.log('OTPVerification: Verification complete, redirecting to onboarding')
-    navigate('/onboarding', { replace: true })
-    toast({
-      title: "Success",
-      description: "Your email has been verified. Let's set up your account.",
-    })
-  })
+  const handleResend = async () => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      })
 
-  console.log('OTPVerification: Rendering component')
+      if (error) throw error
+
+      setResendTimer(60)
+      toast({
+        title: "Code Resent",
+        description: "A new verification code has been sent to your email.",
+      })
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to resend code.",
+      })
+    }
+  }
+
+  if (!email) return null
 
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)] py-8">
-      <Card className="w-full max-w-md">
+    <div className="container max-w-md mx-auto py-8">
+      <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl">Email Verification</CardTitle>
+          <CardTitle className="text-2xl">Verify your email</CardTitle>
           <CardDescription>
-            Enter the 6-digit code sent to {email}
+            Enter the verification code sent to {email}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <OTPInput 
-            value={otp}
-            onChange={setOtp}
-            isError={isError}
-          />
-          <OTPActions
-            onVerify={handleVerify}
-            onResend={handleResend}
-            isVerifying={isVerifying}
-            isValid={otp.length === 6}
-          />
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Input
+              type="text"
+              placeholder="Enter 6-digit code"
+              value={otp}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, '')
+                if (value.length <= 6) {
+                  setOtp(value)
+                }
+              }}
+              className="text-center text-lg tracking-widest"
+              maxLength={6}
+            />
+          </div>
+          <div className="space-y-2">
+            <Button 
+              onClick={handleVerify} 
+              disabled={isVerifying || otp.length !== 6}
+              className="w-full"
+            >
+              {isVerifying ? "Verifying..." : "Verify Email"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleResend}
+              disabled={resendTimer > 0}
+              className="w-full"
+            >
+              {resendTimer > 0 
+                ? `Resend code in ${resendTimer}s` 
+                : "Resend Code"
+              }
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
