@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PasswordInput } from "./PasswordInput"
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator"
-import { PasswordRequirements } from "./PasswordRequirements"
 
 interface SignUpFormProps {
   onSubmit: (email: string, password: string) => void
@@ -66,13 +65,10 @@ export const SignUpForm = ({ onSubmit, isLoading }: SignUpFormProps) => {
         />
 
         {password && (
-          <div className="space-y-4">
-            <PasswordStrengthIndicator 
-              password={password} 
-              strength={strength} 
-            />
-            <PasswordRequirements password={password} />
-          </div>
+          <PasswordStrengthIndicator 
+            password={password} 
+            strength={strength} 
+          />
         )}
 
         <Button 
