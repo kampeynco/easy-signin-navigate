@@ -54,10 +54,12 @@ const SignUp = () => {
     }
   }
 
+  // If we have an email waiting for verification, show the OTP screen
   if (verificationEmail) {
     return <OTPVerification email={verificationEmail} />
   }
 
+  // Otherwise show the signup form
   return (
     <div className="container flex items-center justify-center py-10">
       <Card className="w-full max-w-md">
