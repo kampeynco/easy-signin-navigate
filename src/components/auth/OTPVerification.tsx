@@ -13,6 +13,8 @@ import { useOTPVerification } from "./otp/useOTPVerification"
 import { useToast } from "@/hooks/use-toast"
 
 export const OTPVerification = () => {
+  console.log('OTPVerification: Component mounting...')
+  
   const location = useLocation()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -23,7 +25,7 @@ export const OTPVerification = () => {
     console.log('OTPVerification: Email from state:', email)
     
     if (!email) {
-      console.log('OTPVerification: No email in state, will redirect to signup')
+      console.log('OTPVerification: No email in state, redirecting to signup')
       toast({
         variant: "destructive",
         title: "Error",
@@ -54,10 +56,10 @@ export const OTPVerification = () => {
     })
   })
 
-  console.log('OTPVerification: Rendering with OTP:', otp)
+  console.log('OTPVerification: Rendering component')
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-10">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">Email Verification</CardTitle>
