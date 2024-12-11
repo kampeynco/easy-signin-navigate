@@ -11,6 +11,7 @@ import {
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { SignUpForm } from "@/components/auth/SignUpForm"
+import { getRedirectUrl } from "@/utils/auth"
 
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -22,11 +23,14 @@ const SignUp = () => {
     console.log('SignUp: Starting signup process...')
 
     try {
+      const redirectTo = getRedirectUrl();
+      console.log('SignUp: Redirect URL:', redirectTo);
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectTo,
           data: {
             email_confirm: true
           }

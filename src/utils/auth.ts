@@ -1,5 +1,6 @@
 export const getRedirectUrl = () => {
-  const baseUrl = window.location.origin;
+  // Remove any trailing slashes and ensure clean URL format
+  const baseUrl = window.location.origin.replace(/\/$/, '');
   console.log("Base URL:", baseUrl);
   
   const redirectUrl = `${baseUrl}/auth/callback`;
