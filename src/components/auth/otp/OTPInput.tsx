@@ -22,10 +22,19 @@ export const OTPInput = ({ value, onChange, isError }: OTPInputProps) => {
         maxLength={6}
         render={({ slots }) => (
           <InputOTPGroup className="gap-2">
-            {Array.from({ length: 6 }).map((_, index) => (
+            {slots?.map((slot, index) => (
               <InputOTPSlot 
                 key={index} 
-                {...(slots?.[index] || {})}
+                {...slot}
+                className={cn(
+                  "w-10 h-10 text-center border-2",
+                  isError && "border-destructive focus:ring-destructive"
+                )}
+              />
+            )) || 
+            Array.from({ length: 6 }).map((_, index) => (
+              <InputOTPSlot 
+                key={index}
                 index={index}
                 className={cn(
                   "w-10 h-10 text-center border-2",
