@@ -53,7 +53,7 @@ export const AuthCallback = () => {
           throw workspacesError
         }
 
-        if (!workspaces?.length) {
+        if (!workspaces || workspaces.length === 0) {
           console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
           toast({
             title: "Welcome!",
