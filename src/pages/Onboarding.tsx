@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useSession } from "@supabase/auth-helpers-react"
+import { Building } from "lucide-react"
 
 const Onboarding = () => {
   const [workspaceName, setWorkspaceName] = useState("")
@@ -72,7 +73,7 @@ const Onboarding = () => {
 
       toast({
         title: "Success",
-        description: "Workspace created successfully",
+        description: "Your workspace has been created",
       })
       
       navigate('/dashboard')
@@ -92,8 +93,13 @@ const Onboarding = () => {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md space-y-8 p-8">
         <div className="text-center space-y-2">
+          <div className="flex justify-center">
+            <div className="bg-primary/10 p-3 rounded-full">
+              <Building className="h-6 w-6 text-primary" />
+            </div>
+          </div>
           <h1 className="text-2xl font-bold tracking-tight">Welcome to Kampeyn</h1>
-          <p className="text-muted-foreground">Let's create your first workspace to get started</p>
+          <p className="text-muted-foreground">Let's create your first workspace</p>
         </div>
 
         <form onSubmit={handleCreateWorkspace} className="space-y-4">
