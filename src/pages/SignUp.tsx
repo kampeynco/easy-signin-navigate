@@ -20,11 +20,11 @@ const SignUp = () => {
 
   const handleEmailSignUp = async (email: string, password: string) => {
     setIsLoading(true)
-    console.log('SignUp: Starting signup process...')
+    console.log('SignUp: Starting signup process for email:', email)
 
     try {
-      const redirectTo = getRedirectUrl();
-      console.log('SignUp: Redirect URL:', redirectTo);
+      const redirectTo = getRedirectUrl()
+      console.log('SignUp: Using redirect URL:', redirectTo)
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -37,12 +37,15 @@ const SignUp = () => {
         }
       })
 
-      if (error) throw error
+      if (error) {
+        console.error('SignUp: Supabase error:', error)
+        throw error
+      }
 
       console.log('SignUp: Signup response:', data)
 
       if (data?.user) {
-        console.log('SignUp: User created, redirecting to verification...')
+        console.log('SignUp: User created successfully, navigating to verification')
         navigate('/verify-email', { 
           state: { email },
           replace: true 
@@ -53,6 +56,7 @@ const SignUp = () => {
           description: "We've sent you a verification code.",
         })
       } else {
+        console.error('SignUp: No user data in response')
         throw new Error("Signup failed - no user returned")
       }
       
@@ -61,7 +65,7 @@ const SignUp = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: error.message || "Failed to create account"
       })
     } finally {
       setIsLoading(false)

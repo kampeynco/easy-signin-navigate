@@ -10,6 +10,7 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
 
   const handleVerify = async () => {
     if (otp.length !== 6) {
+      console.log('useOTPVerification: Invalid OTP length')
       toast({
         variant: "destructive",
         title: "Invalid Code",
@@ -65,7 +66,10 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
         email,
       })
 
-      if (error) throw error
+      if (error) {
+        console.error('useOTPVerification: Resend error:', error)
+        throw error
+      }
 
       toast({
         title: "Code Resent",
