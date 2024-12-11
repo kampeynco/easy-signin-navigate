@@ -21,10 +21,20 @@ const SignIn = () => {
   const handleEmailSignIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      // Check if the error is due to an unconfirmed email
+      if (error?.message?.includes('Email not confirmed')) {
+        console.log('SignIn: Email not confirmed, redirecting to verification page');
+        navigate('/verify-email', { 
+          state: { email },
+          replace: true 
+        });
+        return;
+      }
 
       if (error) throw error;
 
