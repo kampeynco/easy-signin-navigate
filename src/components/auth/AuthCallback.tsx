@@ -3,27 +3,12 @@ import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
-// Updated interface to correctly extend Error
-interface AuthError extends Error {
-  status?: number;
-}
-
 export const AuthCallback = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      const timeoutId = setTimeout(() => {
-        console.error('AuthCallback: Timeout - auth callback took too long')
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: "The authentication process timed out. Please try again."
-        })
-        navigate('/signin', { replace: true })
-      }, 10000) // 10 second timeout
-
       try {
         console.log('AuthCallback: Starting auth callback handling...')
         
@@ -31,71 +16,79 @@ export const AuthCallback = () => {
         
         if (sessionError) {
           console.error('AuthCallback: Session error:', sessionError)
-          if (sessionError.name === 'AuthApiError') {
-            throw new Error('Authentication failed. Please try again.')
-          }
           throw sessionError
         }
 
-        if (session?.user) {
-          console.log('AuthCallback: Session found, checking workspaces...')
-          
-          // More robust workspace check with user filtering
-          const { data: workspaces, error: workspacesError } = await supabase
-            .from('workspaces')
-            .select('id')
-            .limit(1)
-          
-          if (workspacesError) {
-            console.error('AuthCallback: Workspaces error:', workspacesError)
-            throw workspacesError
-          }
-
-          if (!workspaces?.length) {
-            console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
-            toast({
-              title: "Welcome!",
-              description: "Let's set up your workspace."
-            })
-            navigate('/onboarding', { replace: true })
-          } else {
-            console.log('AuthCallback: Existing user, redirecting to dashboard...')
-            toast({
-              title: "Welcome back!",
-              description: "You have been successfully signed in."
-            })
-            navigate('/dashboard', { replace: true })
-          }
-        } else {
-          console.log('AuthCallback: No session found, redirecting to signin')
-          throw new Error("No session found")
+        if (!session?.user) {
+          console.log('AuthCallback: No valid session, redirecting to signin')
+          throw new Error("No valid session found")
         }
-      } catch (error: unknown) {
-        console.error('AuthCallback: Complete error details:', {
-          name: error instanceof Error ? error.name : 'Unknown error',
-          message: error instanceof Error ? error.message : 'An unexpected error occurred',
-          error // Log the full error object
-        })
+
+        console.log('AuthCallback: User authenticated:', session.user.email)
         
-        const errorMessage = error instanceof Error ? error.message : 'An unexpected authentication error occurred'
+        // Check for existing workspaces with proper error handling
+        const { data: workspaces, error: workspacesError } = await supabase
+          .from('workspaces')
+          .select(`
+            id,
+            workspace_members!inner (
+              role
+            )
+          `)
+          .eq('workspace_members.user_id', session.user.id)
+          .limit(1)
         
+        if (workspacesError) {
+          console.error('AuthCallback: Workspace query error:', workspacesError)
+          throw workspacesError
+        }
+
+        if (!workspaces?.length) {
+          console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
+          toast({
+            title: "Welcome!",
+            description: "Let's set up your first workspace.",
+          })
+          navigate('/onboarding', { replace: true })
+        } else {
+          console.log('AuthCallback: Existing workspaces found, redirecting to dashboard...')
+          toast({
+            title: "Welcome back!",
+            description: "You're all set.",
+          })
+          navigate('/dashboard', { replace: true })
+        }
+        
+      } catch (error: any) {
+        console.error('AuthCallback: Error:', error.message)
         toast({
           variant: "destructive",
           title: "Authentication Error",
-          description: errorMessage
+          description: error.message || "Please try signing in again"
         })
         navigate('/signin', { replace: true })
-      } finally {
-        clearTimeout(timeoutId)
       }
     }
 
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log('AuthCallback: Timeout reached, redirecting to signin')
+      toast({
+        variant: "destructive",
+        title: "Authentication Timeout",
+        description: "Please try signing in again"
+      })
+      navigate('/signin', { replace: true })
+    }, 10000) // 10 second timeout
+
     handleAuthCallback()
+
+    return () => clearTimeout(timeoutId)
   }, [navigate, toast])
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
+      <div className="text-center space-y-4">
         <h2 className="text-lg font-medium">Completing sign in...</h2>
         <p className="text-muted-foreground">Please wait while we redirect you.</p>
       </div>
