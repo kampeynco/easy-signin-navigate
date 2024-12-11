@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react"
+import { Link } from "react-router-dom"
 import {
   Card,
   CardContent,
@@ -7,51 +7,55 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { SignUpForm } from "@/components/auth/SignUpForm";
-import { OTPVerification } from "@/components/auth/OTPVerification";
+} from "@/components/ui/card"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
+import { SignUpForm } from "@/components/auth/SignUpForm"
+import { OTPVerification } from "@/components/auth/OTPVerification"
 
 const SignUp = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null)
+  const { toast } = useToast()
 
   const handleEmailSignUp = async (email: string, password: string) => {
-    setIsLoading(true);
+    setIsLoading(true)
+    console.log('Starting signup process...')
 
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            email_confirm: true
+          }
         }
-      });
+      })
 
-      if (error) throw error;
+      if (error) throw error
 
-      setVerificationEmail(email);
+      setVerificationEmail(email)
       toast({
         title: "Verification Required",
         description: "Please check your email for the verification code.",
-      });
+      })
       
     } catch (error: any) {
-      console.error("Sign up error:", error);
+      console.error("Sign up error:", error)
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   if (verificationEmail) {
-    return <OTPVerification email={verificationEmail} />;
+    return <OTPVerification email={verificationEmail} />
   }
 
   return (
@@ -77,7 +81,7 @@ const SignUp = () => {
         </CardFooter>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp
