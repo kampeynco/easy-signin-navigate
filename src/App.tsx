@@ -43,12 +43,12 @@ const App = () => {
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
               
-              {/* OTP Verification route with proper error handling */}
+              {/* OTP Verification route */}
               <Route 
                 path="/verify-email" 
                 element={
                   <PublicRoute>
-                    <div className="min-h-screen">
+                    <div className="min-h-screen bg-background">
                       <OTPVerification />
                     </div>
                   </PublicRoute>
