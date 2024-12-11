@@ -3,15 +3,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
 
 interface EmailSignInFormProps {
-  onBack: () => void;
   onSubmit: (email: string, password: string) => void;
   isLoading?: boolean;
 }
 
-export const EmailSignInForm = ({ onBack, onSubmit, isLoading }: EmailSignInFormProps) => {
+export const EmailSignInForm = ({ onSubmit, isLoading }: EmailSignInFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -22,15 +20,6 @@ export const EmailSignInForm = ({ onBack, onSubmit, isLoading }: EmailSignInForm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
-      </button>
-      
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
