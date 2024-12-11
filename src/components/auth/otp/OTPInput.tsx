@@ -20,12 +20,13 @@ export const OTPInput = ({ value, onChange, isError }: OTPInputProps) => {
         maxLength={6}
         render={({ slots }) => (
           <InputOTPGroup className="gap-2">
-            {slots.map((slot, idx) => (
+            {slots && slots.map((slot, idx) => (
               <InputOTPSlot 
                 key={idx} 
                 {...slot} 
                 index={idx}
                 className={cn(
+                  "w-10 h-10 text-center border-2",
                   isError && "border-destructive focus:ring-destructive"
                 )}
               />
