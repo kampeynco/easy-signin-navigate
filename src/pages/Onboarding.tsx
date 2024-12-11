@@ -76,7 +76,7 @@ const Onboarding = () => {
       })
       
       navigate('/dashboard')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in workspace creation:', error)
       toast({
         title: "Error",
