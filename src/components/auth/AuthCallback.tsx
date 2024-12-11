@@ -3,12 +3,27 @@ import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
+interface AuthError extends Error {
+  name?: string;
+  status?: number;
+}
+
 export const AuthCallback = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
 
   useEffect(() => {
     const handleAuthCallback = async () => {
+      const timeoutId = setTimeout(() => {
+        console.error('AuthCallback: Timeout - auth callback took too long')
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "The authentication process timed out. Please try again."
+        })
+        navigate('/signin', { replace: true })
+      }, 10000) // 10 second timeout
+
       try {
         console.log('AuthCallback: Starting auth callback handling...')
         
@@ -16,6 +31,9 @@ export const AuthCallback = () => {
         
         if (sessionError) {
           console.error('AuthCallback: Session error:', sessionError)
+          if (sessionError.name === 'AuthApiError') {
+            throw new Error('Authentication failed. Please try again.')
+          }
           throw sessionError
         }
 
@@ -51,14 +69,18 @@ export const AuthCallback = () => {
           console.log('AuthCallback: No session found, redirecting to signin')
           throw new Error("No session found")
         }
-      } catch (error: any) {
-        console.error('AuthCallback: Unexpected error:', error)
+      } catch (error: unknown) {
+        console.error('AuthCallback: Error:', error)
+        const errorMessage = error instanceof Error ? error.message : 'An unexpected authentication error occurred'
+        
         toast({
           variant: "destructive",
           title: "Authentication Error",
-          description: error.message || "An unexpected error occurred"
+          description: errorMessage
         })
         navigate('/signin', { replace: true })
+      } finally {
+        clearTimeout(timeoutId)
       }
     }
 
