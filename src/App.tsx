@@ -42,14 +42,19 @@ const App = () => {
               <Route path="/docs" element={<PublicRoute><Documentation /></PublicRoute>} />
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+              
+              {/* OTP Verification route with proper error handling */}
               <Route 
                 path="/verify-email" 
                 element={
                   <PublicRoute>
-                    <OTPVerification />
+                    <div className="min-h-screen">
+                      <OTPVerification />
+                    </div>
                   </PublicRoute>
                 } 
               />
+              
               <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
               {/* Protected routes */}
