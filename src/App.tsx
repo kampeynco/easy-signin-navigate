@@ -43,10 +43,14 @@ const App = () => {
               <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
               
-              {/* Standalone verification route */}
+              {/* Standalone verification route wrapped in PublicRoute */}
               <Route 
                 path="/verify-email" 
-                element={<OTPVerification />}
+                element={
+                  <PublicRoute>
+                    <OTPVerification />
+                  </PublicRoute>
+                }
               />
               
               <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />

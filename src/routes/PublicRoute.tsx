@@ -7,11 +7,11 @@ export const PublicRoute = ({ children }) => {
   }, [children])
 
   return (
-    <>
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      <main className="min-h-screen">
+      <main className="flex-1">
         {children}
       </main>
-    </>
+    </div>
   )
 }
