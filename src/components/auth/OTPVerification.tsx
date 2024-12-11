@@ -59,13 +59,13 @@ export const OTPVerification = () => {
   return (
     <div className="container flex items-center justify-center min-h-screen py-10">
       <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Email Verification</CardTitle>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">Email Verification</CardTitle>
           <CardDescription>
             Enter the 6-digit code sent to {email}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <OTPInput 
             value={otp}
             onChange={setOtp}

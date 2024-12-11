@@ -18,6 +18,7 @@ export const OTPActions = ({
   const [canResend, setCanResend] = useState(false)
 
   useEffect(() => {
+    console.log('OTPActions: Timer started, can resend:', canResend);
     if (resendTimer > 0) {
       const timer = setInterval(() => {
         setResendTimer(prev => prev - 1)
@@ -29,6 +30,7 @@ export const OTPActions = ({
   }, [resendTimer])
 
   const handleResend = () => {
+    console.log('OTPActions: Resending code');
     onResend()
     setResendTimer(60)
     setCanResend(false)
@@ -39,13 +41,15 @@ export const OTPActions = ({
       <Button 
         onClick={onVerify} 
         disabled={isVerifying || !isValid}
+        className="w-full"
       >
         {isVerifying ? "Verifying..." : "Verify Email"}
       </Button>
       <Button
-        variant="ghost"
+        variant="outline"
         onClick={handleResend}
         disabled={isVerifying || !canResend}
+        className="w-full"
       >
         {canResend 
           ? "Resend Code" 
