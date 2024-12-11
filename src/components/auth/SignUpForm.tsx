@@ -2,8 +2,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff } from "lucide-react"
+import { PasswordInput } from "./PasswordInput"
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator"
+import { PasswordRequirements } from "./PasswordRequirements"
 
 interface SignUpFormProps {
   onSubmit: (email: string, password: string) => void
@@ -14,8 +15,6 @@ export const SignUpForm = ({ onSubmit, isLoading }: SignUpFormProps) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const calculatePasswordStrength = (password: string): number => {
     let strength = 0
@@ -51,61 +50,29 @@ export const SignUpForm = ({ onSubmit, isLoading }: SignUpFormProps) => {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-500" />
-              )}
-            </button>
-          </div>
-        </div>
+        <PasswordInput
+          id="password"
+          label="Password"
+          value={password}
+          onChange={setPassword}
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="confirm-password">Confirm Password</Label>
-          <div className="relative">
-            <Input
-              id="confirm-password"
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-500" />
-              )}
-            </button>
-          </div>
-        </div>
+        <PasswordInput
+          id="confirm-password"
+          label="Confirm Password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          placeholder="Confirm your password"
+        />
 
         {password && (
-          <PasswordStrengthIndicator 
-            password={password} 
-            strength={strength} 
-          />
+          <div className="space-y-4">
+            <PasswordStrengthIndicator 
+              password={password} 
+              strength={strength} 
+            />
+            <PasswordRequirements password={password} />
+          </div>
         )}
 
         <Button 

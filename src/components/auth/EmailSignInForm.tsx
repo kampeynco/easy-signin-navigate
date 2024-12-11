@@ -1,22 +1,23 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { PasswordInput } from "./PasswordInput"
 
 interface EmailSignInFormProps {
-  onSubmit: (email: string, password: string) => void;
-  isLoading?: boolean;
+  onSubmit: (email: string, password: string) => void
+  isLoading?: boolean
 }
 
 export const EmailSignInForm = ({ onSubmit, isLoading }: EmailSignInFormProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(email, password);
-  };
+    e.preventDefault()
+    onSubmit(email, password)
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -29,20 +30,17 @@ export const EmailSignInForm = ({ onSubmit, isLoading }: EmailSignInFormProps) =
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           disabled={isLoading}
+          required
         />
       </div>
       
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
-          disabled={isLoading}
-        />
-      </div>
+      <PasswordInput
+        id="password"
+        label="Password"
+        value={password}
+        onChange={setPassword}
+        disabled={isLoading}
+      />
       
       <div className="text-right">
         <Link 
@@ -57,5 +55,5 @@ export const EmailSignInForm = ({ onSubmit, isLoading }: EmailSignInFormProps) =
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
     </form>
-  );
-};
+  )
+}
