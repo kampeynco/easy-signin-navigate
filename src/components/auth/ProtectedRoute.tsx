@@ -27,7 +27,6 @@ export const ProtectedRoute = ({ children }) => {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Show loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -38,12 +37,11 @@ export const ProtectedRoute = ({ children }) => {
     )
   }
 
-  // Redirect to signin if no session
   if (!session) {
     console.log('ProtectedRoute: No session, redirecting to signin')
     return <Navigate to="/signin" state={{ from: location }} replace />
   }
 
   console.log('ProtectedRoute: Session valid, rendering protected content')
-  return <>{children}</>
+  return children
 }

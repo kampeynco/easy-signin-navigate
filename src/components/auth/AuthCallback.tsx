@@ -37,24 +37,19 @@ export const AuthCallback = () => {
 
         console.log('AuthCallback: User authenticated:', session.user.email)
         
-        // Check for existing workspaces with proper error handling
+        // Check for existing workspaces
         const { data: workspaces, error: workspacesError } = await supabase
           .from('workspaces')
-          .select(`
-            id,
-            workspace_members!inner (
-              role
-            )
-          `)
-          .eq('workspace_members.user_id', session.user.id)
-          .limit(1)
-        
-        if (workspacesError) {
+          .select('id')
+          .single()
+
+        if (workspacesError && workspacesError.code !== 'PGRST116') {
           console.error('AuthCallback: Workspace query error:', workspacesError)
           throw workspacesError
         }
 
-        if (!workspaces || workspaces.length === 0) {
+        // If no workspace exists, redirect to onboarding
+        if (!workspaces) {
           console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
           toast({
             title: "Welcome!",
@@ -81,20 +76,7 @@ export const AuthCallback = () => {
       }
     }
 
-    // Set a timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      console.log('AuthCallback: Timeout reached, redirecting to signin')
-      toast({
-        variant: "destructive",
-        title: "Authentication Timeout",
-        description: "Please try signing in again"
-      })
-      navigate('/signin', { replace: true })
-    }, 10000) // 10 second timeout
-
     handleAuthCallback()
-
-    return () => clearTimeout(timeoutId)
   }, [navigate, toast])
 
   return (
