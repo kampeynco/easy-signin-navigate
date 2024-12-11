@@ -11,9 +11,11 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { SignUpForm } from "@/components/auth/SignUpForm";
+import { OTPVerification } from "@/components/auth/OTPVerification";
 
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleEmailSignUp = async (email: string, password: string) => {
@@ -30,9 +32,10 @@ const SignUp = () => {
 
       if (error) throw error;
 
+      setVerificationEmail(email);
       toast({
-        title: "Success",
-        description: "Account created successfully. Please check your email to verify your account."
+        title: "Verification Required",
+        description: "Please check your email for the verification code.",
       });
       
     } catch (error: any) {
@@ -46,6 +49,10 @@ const SignUp = () => {
       setIsLoading(false);
     }
   };
+
+  if (verificationEmail) {
+    return <OTPVerification email={verificationEmail} />;
+  }
 
   return (
     <div className="container flex items-center justify-center py-10">
