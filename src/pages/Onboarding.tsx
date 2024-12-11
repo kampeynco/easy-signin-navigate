@@ -25,9 +25,21 @@ const Onboarding = () => {
       return
     }
 
+    if (!session?.user?.id) {
+      console.error('No user session found')
+      toast({
+        title: "Error",
+        description: "Please sign in again",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsCreating(true)
     
     try {
+      console.log('Creating workspace:', workspaceName)
+      
       // Insert workspace
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
@@ -35,18 +47,28 @@ const Onboarding = () => {
         .select()
         .single()
 
-      if (workspaceError) throw workspaceError
+      if (workspaceError) {
+        console.error('Error creating workspace:', workspaceError)
+        throw workspaceError
+      }
+
+      console.log('Workspace created:', workspace)
 
       // Add creator as admin
       const { error: memberError } = await supabase
         .from('workspace_members')
         .insert({
           workspace_id: workspace.id,
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           role: 'admin'
         })
 
-      if (memberError) throw memberError
+      if (memberError) {
+        console.error('Error adding workspace member:', memberError)
+        throw memberError
+      }
+
+      console.log('Added user as workspace admin')
 
       toast({
         title: "Success",
@@ -55,10 +77,10 @@ const Onboarding = () => {
       
       navigate('/dashboard')
     } catch (error) {
-      console.error('Error creating workspace:', error)
+      console.error('Error in workspace creation:', error)
       toast({
         title: "Error",
-        description: "Failed to create workspace",
+        description: "Failed to create workspace. Please try again.",
         variant: "destructive",
       })
     } finally {
