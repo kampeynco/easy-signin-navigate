@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
@@ -8,7 +7,6 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
   const [isVerifying, setIsVerifying] = useState(false)
   const [isError, setIsError] = useState(false)
   const { toast } = useToast()
-  const navigate = useNavigate()
 
   const handleVerify = async () => {
     if (otp.length !== 6) {
@@ -24,6 +22,7 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
     setIsError(false)
     
     try {
+      console.log('useOTPVerification: Verifying OTP for email:', email)
       const { error } = await supabase.auth.verifyOtp({
         email,
         token: otp,
@@ -31,10 +30,12 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
       })
 
       if (error) {
+        console.error('useOTPVerification: Verification error:', error)
         setIsError(true)
         throw error
       }
 
+      console.log('useOTPVerification: Verification successful')
       toast({
         title: "Success",
         description: "Your email has been verified successfully.",
@@ -43,14 +44,13 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
       if (onVerificationComplete) {
         onVerificationComplete()
       }
-      
-      navigate('/onboarding')
     } catch (error: any) {
+      console.error('useOTPVerification: Error:', error)
       setIsError(true)
       toast({
         variant: "destructive",
         title: "Verification Failed",
-        description: "The verification code is invalid or has expired.",
+        description: error.message || "The verification code is invalid or has expired.",
       })
     } finally {
       setIsVerifying(false)
@@ -59,6 +59,7 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
 
   const handleResend = async () => {
     try {
+      console.log('useOTPVerification: Resending OTP to:', email)
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
@@ -73,10 +74,11 @@ export const useOTPVerification = (email: string, onVerificationComplete?: () =>
       setOtp("")
       setIsError(false)
     } catch (error: any) {
+      console.error('useOTPVerification: Resend error:', error)
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to resend verification code.",
       })
     }
   }

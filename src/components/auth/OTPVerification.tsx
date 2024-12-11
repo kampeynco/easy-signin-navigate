@@ -1,4 +1,5 @@
-import { useLocation, Navigate } from "react-router-dom"
+import { useEffect } from "react"
+import { useLocation, Navigate, useNavigate } from "react-router-dom"
 import {
   Card,
   CardContent,
@@ -9,13 +10,21 @@ import {
 import { OTPInput } from "./otp/OTPInput"
 import { OTPActions } from "./otp/OTPActions"
 import { useOTPVerification } from "./otp/useOTPVerification"
+import { useToast } from "@/hooks/use-toast"
 
 export const OTPVerification = () => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { toast } = useToast()
   const email = location.state?.email
+
+  useEffect(() => {
+    console.log('OTPVerification: Mounted with email:', email)
+  }, [email])
 
   // If no email in state, redirect to signup
   if (!email) {
+    console.log('OTPVerification: No email in state, redirecting to signup')
     return <Navigate to="/signup" replace />
   }
 
@@ -26,7 +35,14 @@ export const OTPVerification = () => {
     isError,
     handleVerify,
     handleResend
-  } = useOTPVerification(email)
+  } = useOTPVerification(email, () => {
+    console.log('OTPVerification: Verification complete, redirecting to onboarding')
+    navigate('/onboarding', { replace: true })
+    toast({
+      title: "Success",
+      description: "Your email has been verified. Let's set up your account.",
+    })
+  })
 
   return (
     <div className="container flex items-center justify-center py-10">

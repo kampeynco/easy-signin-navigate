@@ -19,7 +19,7 @@ const SignUp = () => {
 
   const handleEmailSignUp = async (email: string, password: string) => {
     setIsLoading(true)
-    console.log('Starting signup process...')
+    console.log('SignUp: Starting signup process...')
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -35,12 +35,13 @@ const SignUp = () => {
 
       if (error) throw error
 
-      // Only navigate if we have a user object returned
+      console.log('SignUp: Signup response:', data)
+
       if (data?.user) {
-        // Redirect to verification page with email in state
+        console.log('SignUp: User created, redirecting to verification...')
         navigate('/verify-email', { 
           state: { email },
-          replace: true // Use replace to prevent going back to signup
+          replace: true
         })
         
         toast({
@@ -52,7 +53,7 @@ const SignUp = () => {
       }
       
     } catch (error: any) {
-      console.error("Sign up error:", error)
+      console.error("SignUp error:", error)
       toast({
         variant: "destructive",
         title: "Error",

@@ -12,74 +12,53 @@ export const AuthCallback = () => {
       try {
         console.log('AuthCallback: Starting auth callback handling...')
         
-        // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
-          console.error('Session retrieval error:', sessionError)
-          toast({
-            variant: "destructive",
-            title: "Authentication Error",
-            description: "Failed to retrieve session"
-          })
-          navigate('/signin')
-          return
+          console.error('AuthCallback: Session error:', sessionError)
+          throw sessionError
         }
 
         if (session) {
-          console.log('Session found, checking if user exists...')
+          console.log('AuthCallback: Session found, checking workspaces...')
           
-          // Check if user has any workspaces (this determines if they're a new user)
           const { data: workspaces, error: workspacesError } = await supabase
             .from('workspaces')
             .select('id')
             .limit(1)
           
           if (workspacesError) {
-            console.error('Error checking workspaces:', workspacesError)
-            toast({
-              variant: "destructive",
-              title: "Error",
-              description: "Failed to check user status"
-            })
-            navigate('/signin')
-            return
+            console.error('AuthCallback: Workspaces error:', workspacesError)
+            throw workspacesError
           }
 
-          // If no workspaces found, treat as new user and redirect to onboarding
           if (!workspaces?.length) {
-            console.log('No workspaces found, redirecting to onboarding...')
+            console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
             toast({
               title: "Welcome!",
               description: "Let's set up your workspace."
             })
-            navigate('/onboarding')
+            navigate('/onboarding', { replace: true })
           } else {
-            // Existing user with workspaces, redirect to dashboard
-            console.log('Existing user, redirecting to dashboard...')
+            console.log('AuthCallback: Existing user, redirecting to dashboard...')
             toast({
               title: "Welcome back!",
               description: "You have been successfully signed in."
             })
-            navigate('/dashboard')
+            navigate('/dashboard', { replace: true })
           }
         } else {
-          console.log('No session found, redirecting to signin')
-          toast({
-            variant: "destructive",
-            title: "Authentication Error",
-            description: "No session found"
-          })
-          navigate('/signin')
+          console.log('AuthCallback: No session found, redirecting to signin')
+          throw new Error("No session found")
         }
-      } catch (error) {
-        console.error('Unexpected error:', error)
+      } catch (error: any) {
+        console.error('AuthCallback: Unexpected error:', error)
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "An unexpected error occurred"
+          title: "Authentication Error",
+          description: error.message || "An unexpected error occurred"
         })
-        navigate('/signin')
+        navigate('/signin', { replace: true })
       }
     }
 
