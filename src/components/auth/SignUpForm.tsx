@@ -2,16 +2,15 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator"
 
 interface SignUpFormProps {
-  onBack: () => void
   onSubmit: (email: string, password: string) => void
   isLoading: boolean
 }
 
-export const SignUpForm = ({ onBack, onSubmit, isLoading }: SignUpFormProps) => {
+export const SignUpForm = ({ onSubmit, isLoading }: SignUpFormProps) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -39,15 +38,6 @@ export const SignUpForm = ({ onBack, onSubmit, isLoading }: SignUpFormProps) => 
 
   return (
     <form onSubmit={handleSubmit}>
-      <button
-        type="button"
-        onClick={onBack}
-        className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
-      </button>
-      
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>

@@ -10,11 +10,9 @@ import {
 } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { AuthOptions } from "@/components/auth/AuthOptions";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 
 const SignUp = () => {
-  const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -57,15 +55,10 @@ const SignUp = () => {
           <CardDescription>Enter your details to get started</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!showEmailForm ? (
-            <AuthOptions onEmailClick={() => setShowEmailForm(true)} />
-          ) : (
-            <SignUpForm
-              onBack={() => setShowEmailForm(false)}
-              onSubmit={handleEmailSignUp}
-              isLoading={isLoading}
-            />
-          )}
+          <SignUpForm
+            onSubmit={handleEmailSignUp}
+            isLoading={isLoading}
+          />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm text-muted-foreground">

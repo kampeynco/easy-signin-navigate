@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -10,29 +10,13 @@ import {
 } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { AuthOptions } from "@/components/auth/AuthOptions";
 import { EmailSignInForm } from "@/components/auth/EmailSignInForm";
 
 const SignIn = () => {
-  const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate('/dashboard');
-      }
-    });
-
-    if (location.state?.showEmailForm !== undefined) {
-      setShowEmailForm(location.state.showEmailForm);
-    } else if (location.state?.fromReset) {
-      setShowEmailForm(true);
-    }
-  }, [location.state, navigate]);
 
   const handleEmailSignIn = async (email: string, password: string) => {
     setIsLoading(true);
@@ -70,15 +54,10 @@ const SignIn = () => {
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!showEmailForm ? (
-            <AuthOptions onEmailClick={() => setShowEmailForm(true)} />
-          ) : (
-            <EmailSignInForm
-              onBack={() => setShowEmailForm(false)}
-              onSubmit={handleEmailSignIn}
-              isLoading={isLoading}
-            />
-          )}
+          <EmailSignInForm
+            onSubmit={handleEmailSignIn}
+            isLoading={isLoading}
+          />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm text-muted-foreground">
