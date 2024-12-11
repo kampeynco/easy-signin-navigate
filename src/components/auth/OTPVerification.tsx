@@ -67,7 +67,7 @@ export const OTPVerification = () => {
         title: "Success",
         description: "Email verified successfully.",
       })
-      navigate('/dashboard', { replace: true })
+      navigate('/onboarding', { replace: true })
     } catch (error: any) {
       console.error('Verification error:', error)
       toast({
@@ -106,8 +106,8 @@ export const OTPVerification = () => {
   if (!email) return null
 
   return (
-    <div className="container max-w-md mx-auto py-8">
-      <Card>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Card className="w-full max-w-md mx-4">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">Verify your email</CardTitle>
           <CardDescription>
