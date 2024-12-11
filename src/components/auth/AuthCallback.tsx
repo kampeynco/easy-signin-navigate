@@ -12,6 +12,7 @@ export const AuthCallback = () => {
       try {
         console.log('AuthCallback: Starting auth callback handling...')
         
+        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
@@ -36,24 +37,19 @@ export const AuthCallback = () => {
 
         console.log('AuthCallback: User authenticated:', session.user.email)
         
-        // Check for existing workspaces with proper error handling
-        const { data: workspaces, error: workspacesError } = await supabase
-          .from('workspaces')
-          .select(`
-            id,
-            workspace_members!inner (
-              role
-            )
-          `)
-          .eq('workspace_members.user_id', session.user.id)
-          .limit(1)
+        // Check for existing workspaces
+        const { data: workspaceMembers, error: workspaceError } = await supabase
+          .from('workspace_members')
+          .select('workspace_id')
+          .eq('user_id', session.user.id)
         
-        if (workspacesError) {
-          console.error('AuthCallback: Workspace query error:', workspacesError)
-          throw workspacesError
+        if (workspaceError) {
+          console.error('AuthCallback: Workspace query error:', workspaceError)
+          throw workspaceError
         }
 
-        if (!workspaces || workspaces.length === 0) {
+        // If no workspace memberships exist, redirect to onboarding
+        if (!workspaceMembers || workspaceMembers.length === 0) {
           console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
           toast({
             title: "Welcome!",
