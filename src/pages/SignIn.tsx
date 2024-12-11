@@ -9,10 +9,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { AuthOptions } from "@/components/auth/AuthOptions";
 import { EmailSignInForm } from "@/components/auth/EmailSignInForm";
-import { handleGoogleAuth } from "@/utils/auth";
 
 const SignIn = () => {
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -34,19 +33,6 @@ const SignIn = () => {
       setShowEmailForm(true);
     }
   }, [location.state, navigate]);
-
-  const handleGoogleSignIn = async () => {
-    const { error } = await handleGoogleAuth(supabase);
-    
-    if (error) {
-      console.error("Google sign in error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message
-      });
-    }
-  };
 
   const handleEmailSignIn = async (email: string, password: string) => {
     setIsLoading(true);
@@ -85,10 +71,7 @@ const SignIn = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {!showEmailForm ? (
-            <AuthOptions 
-              onGoogleClick={handleGoogleSignIn}
-              onEmailClick={() => setShowEmailForm(true)}
-            />
+            <AuthOptions onEmailClick={() => setShowEmailForm(true)} />
           ) : (
             <EmailSignInForm
               onBack={() => setShowEmailForm(false)}

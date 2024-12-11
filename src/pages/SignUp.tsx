@@ -12,40 +12,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AuthOptions } from "@/components/auth/AuthOptions";
 import { SignUpForm } from "@/components/auth/SignUpForm";
-import { handleGoogleAuth, handleEmailSignUp } from "@/utils/auth";
 
 const SignUp = () => {
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleGoogleSignUp = async () => {
-    const { error } = await handleGoogleAuth(supabase);
-    
-    if (error) {
-      console.error("Google sign up error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message
-      });
-    }
-  };
-
-  const handleEmailSignUpSubmit = async (email: string, password: string) => {
+  const handleEmailSignUp = async (email: string, password: string) => {
     setIsLoading(true);
 
     try {
-      const { error } = await handleEmailSignUp(supabase, email, password);
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Account created successfully"
+        description: "Account created successfully. Please check your email to verify your account."
       });
       
-      // The redirect will be handled by the callback
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
@@ -67,14 +58,11 @@ const SignUp = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {!showEmailForm ? (
-            <AuthOptions 
-              onGoogleClick={handleGoogleSignUp}
-              onEmailClick={() => setShowEmailForm(true)}
-            />
+            <AuthOptions onEmailClick={() => setShowEmailForm(true)} />
           ) : (
             <SignUpForm
               onBack={() => setShowEmailForm(false)}
-              onSubmit={handleEmailSignUpSubmit}
+              onSubmit={handleEmailSignUp}
               isLoading={isLoading}
             />
           )}
