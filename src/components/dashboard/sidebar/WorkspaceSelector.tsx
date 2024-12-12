@@ -33,7 +33,7 @@ export function WorkspaceSelector() {
   const { data: workspaces, isLoading } = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
-      console.log('Fetching workspaces...')
+      console.log('WorkspaceSelector: Fetching workspaces for user:', session?.user?.id)
       const { data, error } = await supabase
         .from('workspaces')
         .select(`
@@ -46,11 +46,11 @@ export function WorkspaceSelector() {
         .eq('workspace_members.user_id', session?.user?.id)
       
       if (error) {
-        console.error('Error fetching workspaces:', error)
+        console.error('WorkspaceSelector: Error fetching workspaces:', error)
         throw error
       }
       
-      console.log('Fetched workspaces:', data)
+      console.log('WorkspaceSelector: Fetched workspaces:', data)
       return data || []
     },
     enabled: !!session?.user?.id
@@ -59,7 +59,7 @@ export function WorkspaceSelector() {
   // Create workspace mutation
   const createWorkspace = useMutation({
     mutationFn: async (name: string) => {
-      console.log('Creating workspace:', name)
+      console.log('WorkspaceSelector: Creating new workspace:', name)
       
       // Insert workspace
       const { data: workspace, error: workspaceError } = await supabase
@@ -68,7 +68,12 @@ export function WorkspaceSelector() {
         .select()
         .single()
 
-      if (workspaceError) throw workspaceError
+      if (workspaceError) {
+        console.error('WorkspaceSelector: Error creating workspace:', workspaceError)
+        throw workspaceError
+      }
+
+      console.log('WorkspaceSelector: Workspace created:', workspace)
 
       // Add creator as admin
       const { error: memberError } = await supabase
@@ -79,8 +84,12 @@ export function WorkspaceSelector() {
           role: 'admin'
         })
 
-      if (memberError) throw memberError
+      if (memberError) {
+        console.error('WorkspaceSelector: Error adding workspace member:', memberError)
+        throw memberError
+      }
 
+      console.log('WorkspaceSelector: Successfully added user as workspace admin')
       return workspace
     },
     onSuccess: () => {
@@ -92,8 +101,8 @@ export function WorkspaceSelector() {
       setIsDialogOpen(false)
       setNewWorkspaceName("")
     },
-    onError: (error) => {
-      console.error('Error creating workspace:', error)
+    onError: (error: any) => {
+      console.error('WorkspaceSelector: Error in workspace creation:', error)
       toast({
         title: "Error",
         description: "Failed to create workspace",

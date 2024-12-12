@@ -25,6 +25,8 @@ export const AuthCallback = () => {
           throw new Error("No valid session found")
         }
 
+        console.log('AuthCallback: Session found for user:', session.user.id)
+
         // Check if email is confirmed
         if (!session.user.email_confirmed_at) {
           console.log('AuthCallback: Email not confirmed, redirecting to verification')
@@ -35,21 +37,28 @@ export const AuthCallback = () => {
           return
         }
 
-        console.log('AuthCallback: User authenticated:', session.user.email)
-        
-        // Check for existing workspaces
+        // Check for existing workspaces with detailed logging
+        console.log('AuthCallback: Checking for existing workspaces...')
         const { data: workspaces, error: workspacesError } = await supabase
           .from('workspaces')
-          .select('id')
-          .single()
+          .select(`
+            id,
+            workspace_members!inner (
+              user_id,
+              role
+            )
+          `)
+          .eq('workspace_members.user_id', session.user.id)
 
-        if (workspacesError && workspacesError.code !== 'PGRST116') {
+        if (workspacesError) {
           console.error('AuthCallback: Workspace query error:', workspacesError)
           throw workspacesError
         }
 
+        console.log('AuthCallback: Workspaces query result:', workspaces)
+
         // If no workspace exists, redirect to onboarding
-        if (!workspaces) {
+        if (!workspaces || workspaces.length === 0) {
           console.log('AuthCallback: No workspaces found, redirecting to onboarding...')
           toast({
             title: "Welcome!",
@@ -66,7 +75,7 @@ export const AuthCallback = () => {
         }
         
       } catch (error: any) {
-        console.error('AuthCallback: Error:', error.message)
+        console.error('AuthCallback: Error:', error)
         toast({
           variant: "destructive",
           title: "Authentication Error",
