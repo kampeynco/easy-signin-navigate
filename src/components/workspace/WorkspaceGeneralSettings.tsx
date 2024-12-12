@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -5,6 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { supabase } from "@/integrations/supabase/client"
+import { useWorkspaces } from "@/hooks/useWorkspaces"
+import { useSession } from "@supabase/auth-helpers-react"
 
 interface WorkspaceFormData {
   name: string
@@ -13,6 +18,10 @@ interface WorkspaceFormData {
 
 export function WorkspaceGeneralSettings() {
   const { toast } = useToast()
+  const navigate = useNavigate()
+  const session = useSession()
+  const { data: workspaces, refetch } = useWorkspaces(session?.user?.id)
+  
   const form = useForm<WorkspaceFormData>({
     defaultValues: {
       name: "",
@@ -25,6 +34,42 @@ export function WorkspaceGeneralSettings() {
       title: "Settings updated",
       description: "Your workspace settings have been updated successfully.",
     })
+  }
+
+  const handleDeleteWorkspace = async () => {
+    try {
+      const currentWorkspace = workspaces?.[0]
+      if (!currentWorkspace?.id) {
+        throw new Error('No workspace selected')
+      }
+
+      const { data, error } = await supabase.functions.invoke('delete-workspace', {
+        body: { workspaceId: currentWorkspace.id }
+      })
+
+      if (error) throw error
+
+      if (data.remainingWorkspaces.length === 0) {
+        // If no workspaces left, redirect to onboarding
+        navigate('/onboarding')
+      } else {
+        // If workspaces remain, refresh the workspace list and navigate to dashboard
+        await refetch()
+        navigate('/dashboard')
+      }
+
+      toast({
+        title: "Workspace deleted",
+        description: "The workspace has been successfully deleted.",
+      })
+    } catch (error: any) {
+      console.error('Error deleting workspace:', error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete workspace",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
@@ -76,6 +121,40 @@ export function WorkspaceGeneralSettings() {
               <Button type="submit">Save Changes</Button>
             </form>
           </Form>
+        </CardContent>
+      </Card>
+
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardDescription>
+            Delete this workspace permanently. This action cannot be undone.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete Workspace</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete your
+                  workspace and remove all associated data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={handleDeleteWorkspace}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  Delete Workspace
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>

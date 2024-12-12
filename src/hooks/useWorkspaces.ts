@@ -20,12 +20,19 @@ export function useWorkspaces(userId?: string) {
         throw error
       }
       
-      console.log('useWorkspaces: Fetched workspaces:', data.workspaces)
-      return data.workspaces as Workspace[]
+      // Sort workspaces to prioritize admin workspaces
+      const sortedWorkspaces = data.workspaces.sort((a: Workspace, b: Workspace) => {
+        if (a.role === 'admin' && b.role !== 'admin') return -1
+        if (a.role !== 'admin' && b.role === 'admin') return 1
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      })
+      
+      console.log('useWorkspaces: Fetched and sorted workspaces:', sortedWorkspaces)
+      return sortedWorkspaces as Workspace[]
     },
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    retry: 1, // Only retry once to avoid unnecessary API calls
-    refetchOnWindowFocus: false // Prevent unnecessary refetches
+    retry: 1,
+    refetchOnWindowFocus: false
   })
 }
