@@ -22,22 +22,22 @@ export function WorkspaceSelector() {
     setSelectedWorkspaceId(workspaceId)
   }
 
-  // Handle error state
-  if (error) {
-    console.error('WorkspaceSelector: Render error:', error)
+  // Handle loading state
+  if (isLoading) {
     return (
-      <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500">
-        <span className="flex-1 text-left text-sm">Error loading workspaces</span>
+      <button disabled className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2">
+        <div className="h-6 w-6 animate-pulse rounded-full bg-white/10" />
+        <span className="flex-1 text-left text-sm">Loading workspaces...</span>
       </button>
     )
   }
 
-  // Handle loading state
-  if (isLoading) {
+  // Handle error state
+  if (error) {
+    console.error('WorkspaceSelector: Error:', error)
     return (
-      <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2">
-        <div className="h-6 w-6 animate-pulse rounded-full bg-white/10" />
-        <span className="flex-1 text-left text-sm">Loading workspaces...</span>
+      <button disabled className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500">
+        <span className="flex-1 text-left text-sm">Error loading workspaces</span>
       </button>
     )
   }
@@ -47,7 +47,7 @@ export function WorkspaceSelector() {
     setSelectedWorkspaceId(workspaces[0].id)
   }
 
-  const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId) || workspaces?.[0]
+  const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId)
 
   return (
     <DropdownMenu>
@@ -59,7 +59,7 @@ export function WorkspaceSelector() {
             </AvatarFallback>
           </Avatar>
           <span className="flex-1 text-left text-sm">
-            {selectedWorkspace?.name || 'No workspaces'}
+            {selectedWorkspace?.name || 'Select workspace'}
           </span>
           <ChevronDown className="h-4 w-4 opacity-70" />
         </button>

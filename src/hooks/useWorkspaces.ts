@@ -8,19 +8,16 @@ export function useWorkspaces(userId?: string) {
     queryFn: async () => {
       console.log('useWorkspaces: Fetching workspaces for user:', userId)
       
+      if (!userId) {
+        console.log('useWorkspaces: No user ID provided')
+        return []
+      }
+
       const { data, error } = await supabase
         .from('workspaces')
-        .select(`
-          id,
-          name,
-          created_at,
-          updated_at,
-          workspace_members!inner (
-            role,
-            user_id
-          )
-        `)
+        .select('id, name, created_at, updated_at')
         .eq('workspace_members.user_id', userId)
+        .order('created_at', { ascending: false })
       
       if (error) {
         console.error('useWorkspaces: Error fetching workspaces:', error)
@@ -32,6 +29,7 @@ export function useWorkspaces(userId?: string) {
     },
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    retry: 2
+    retry: 1, // Only retry once to avoid unnecessary API calls
+    refetchOnWindowFocus: false // Prevent unnecessary refetches
   })
 }
