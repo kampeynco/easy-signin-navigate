@@ -41,37 +41,19 @@ const Onboarding = () => {
     console.log('Onboarding: Starting workspace creation for user:', session.user.id)
     
     try {
-      // Insert workspace
-      console.log('Onboarding: Creating workspace:', workspaceName)
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
-        .insert([{ name: workspaceName.trim() }])
-        .select()
-        .single()
+      // Create workspace using the new database function
+      const { data: workspaceId, error } = await supabase
+        .rpc('create_workspace_with_owner', {
+          _workspace_name: workspaceName.trim(),
+          _user_id: session.user.id
+        })
 
-      if (workspaceError) {
-        console.error('Onboarding: Error creating workspace:', workspaceError)
-        throw workspaceError
+      if (error) {
+        console.error('Onboarding: Error creating workspace:', error)
+        throw error
       }
 
-      console.log('Onboarding: Workspace created successfully:', workspace)
-
-      // Add creator as admin
-      console.log('Onboarding: Adding user as workspace admin...')
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert([{
-          workspace_id: workspace.id,
-          user_id: session.user.id,
-          role: 'admin'
-        }])
-
-      if (memberError) {
-        console.error('Onboarding: Error adding workspace member:', memberError)
-        throw memberError
-      }
-
-      console.log('Onboarding: Successfully added user as workspace admin')
+      console.log('Onboarding: Workspace created successfully:', workspaceId)
 
       toast({
         title: "Success",

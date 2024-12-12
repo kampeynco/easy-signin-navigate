@@ -56,41 +56,28 @@ export function WorkspaceSelector() {
     enabled: !!session?.user?.id
   })
 
-  // Create workspace mutation
+  // Create workspace mutation using the new database function
   const createWorkspace = useMutation({
     mutationFn: async (name: string) => {
       console.log('WorkspaceSelector: Creating new workspace:', name)
       
-      // Insert workspace
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
-        .insert({ name })
-        .select()
-        .single()
-
-      if (workspaceError) {
-        console.error('WorkspaceSelector: Error creating workspace:', workspaceError)
-        throw workspaceError
+      if (!session?.user?.id) {
+        throw new Error('No authenticated user found')
       }
 
-      console.log('WorkspaceSelector: Workspace created:', workspace)
-
-      // Add creator as admin
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert({
-          workspace_id: workspace.id,
-          user_id: session?.user?.id,
-          role: 'admin'
+      const { data, error } = await supabase
+        .rpc('create_workspace_with_owner', {
+          _workspace_name: name,
+          _user_id: session.user.id
         })
 
-      if (memberError) {
-        console.error('WorkspaceSelector: Error adding workspace member:', memberError)
-        throw memberError
+      if (error) {
+        console.error('WorkspaceSelector: Error creating workspace:', error)
+        throw error
       }
 
-      console.log('WorkspaceSelector: Successfully added user as workspace admin')
-      return workspace
+      console.log('WorkspaceSelector: Workspace created successfully:', data)
+      return data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspaces'] })
@@ -105,7 +92,7 @@ export function WorkspaceSelector() {
       console.error('WorkspaceSelector: Error in workspace creation:', error)
       toast({
         title: "Error",
-        description: "Failed to create workspace",
+        description: error.message || "Failed to create workspace",
         variant: "destructive",
       })
     }
