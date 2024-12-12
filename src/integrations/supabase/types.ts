@@ -143,15 +143,7 @@ export type Database = {
           updated_at?: string | null
           workspace_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "workflows_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       workspace_members: {
         Row: {
@@ -218,7 +210,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_workspace_with_owner: {
+        Args: {
+          _workspace_name: string
+          _user_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
