@@ -56,32 +56,19 @@ export function WorkspaceSelector() {
     enabled: !!session?.user?.id
   })
 
-  // Create workspace mutation
+  // Create workspace mutation using the database function
   const createWorkspace = useMutation({
     mutationFn: async (name: string) => {
       console.log('Creating workspace:', name)
       
-      // Insert workspace
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
-        .insert({ name })
-        .select()
-        .single()
-
-      if (workspaceError) throw workspaceError
-
-      // Add creator as admin
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert({
-          workspace_id: workspace.id,
-          user_id: session?.user?.id,
-          role: 'admin'
+      const { data, error } = await supabase
+        .rpc('create_workspace_with_owner', {
+          _workspace_name: name,
+          _user_id: session?.user?.id
         })
 
-      if (memberError) throw memberError
-
-      return workspace
+      if (error) throw error
+      return data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspaces'] })
