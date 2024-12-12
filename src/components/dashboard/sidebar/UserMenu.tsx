@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client"
 
 const profileMenuItems = [
   { icon: Settings, label: "Profile Settings", to: "#" },
-  { icon: Users, label: "Manage Workspace", to: "#" },
+  { icon: Users, label: "Manage Workspace", to: "/workspace/settings" },
   { icon: HelpCircle, label: "Get Help", to: "#" },
 ]
 
@@ -79,10 +79,12 @@ export function UserMenu() {
   }
 
   const handleMenuItemClick = (label: string) => {
-    toast({
-      title: "Navigation",
-      description: `Navigating to ${label}...`,
-    })
+    if (label !== "Manage Workspace") {
+      toast({
+        title: "Navigation",
+        description: `Navigating to ${label}...`,
+      })
+    }
   }
 
   return (

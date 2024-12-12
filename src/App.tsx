@@ -20,6 +20,7 @@ import Onboarding from "./pages/Onboarding"
 import Features from "./pages/Features"
 import Pricing from "./pages/Pricing"
 import Documentation from "./pages/Documentation"
+import WorkspaceSettings from "./pages/WorkspaceSettings"
 
 const queryClient = new QueryClient()
 
@@ -62,6 +63,19 @@ const App = () => {
                       <div className="flex min-h-screen w-full">
                         <DashboardSidebar />
                         <Dashboard />
+                      </div>
+                    </SidebarProvider>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/workspace/settings"
+                element={
+                  <ProtectedRoute>
+                    <SidebarProvider>
+                      <div className="flex min-h-screen w-full">
+                        <DashboardSidebar />
+                        <WorkspaceSettings />
                       </div>
                     </SidebarProvider>
                   </ProtectedRoute>
