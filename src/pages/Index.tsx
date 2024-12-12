@@ -14,7 +14,7 @@ const Index = () => {
   const { data: workspaces, isLoading } = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
-      console.log('Checking for existing workspaces...')
+      console.log('Index: Checking for existing workspaces...')
       const { data, error } = await supabase
         .from('workspaces')
         .select(`
@@ -26,7 +26,7 @@ const Index = () => {
         .eq('workspace_members.user_id', session?.user?.id)
       
       if (error) {
-        console.error('Error fetching workspaces:', error)
+        console.error('Index: Error fetching workspaces:', error)
         throw error
       }
       
@@ -38,20 +38,20 @@ const Index = () => {
   useEffect(() => {
     if (isLoading) return
 
-    if (session) {
+    if (session?.user) {
       // If user is logged in and has no workspaces, redirect to onboarding
       if (workspaces && workspaces.length === 0) {
-        console.log('No workspaces found, redirecting to onboarding...')
+        console.log('Index: No workspaces found, redirecting to onboarding...')
         navigate('/onboarding')
       } else if (workspaces && workspaces.length > 0) {
         // If user has workspaces, redirect to dashboard
-        console.log('Workspaces found, redirecting to dashboard...')
+        console.log('Index: Workspaces found, redirecting to dashboard...')
         navigate('/dashboard')
       }
     }
   }, [session, workspaces, isLoading, navigate])
 
-  // Landing page content for non-authenticated users
+  // Show landing page content for non-authenticated users
   return (
     <div className="bg-background">
       <HeroSection />
