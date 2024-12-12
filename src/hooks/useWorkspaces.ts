@@ -13,19 +13,15 @@ export function useWorkspaces(userId?: string) {
         return []
       }
 
-      const { data, error } = await supabase
-        .from('workspaces')
-        .select('id, name, created_at, updated_at')
-        .eq('workspace_members.user_id', userId)
-        .order('created_at', { ascending: false })
+      const { data, error } = await supabase.functions.invoke('get-user-workspaces')
       
       if (error) {
         console.error('useWorkspaces: Error fetching workspaces:', error)
         throw error
       }
       
-      console.log('useWorkspaces: Fetched workspaces:', data)
-      return data as Workspace[]
+      console.log('useWorkspaces: Fetched workspaces:', data.workspaces)
+      return data.workspaces as Workspace[]
     },
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes

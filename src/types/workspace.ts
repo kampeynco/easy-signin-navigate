@@ -3,6 +3,7 @@ export interface Workspace {
   name: string;
   created_at: string;
   updated_at?: string;
+  role?: string;
 }
 
 export interface WorkspaceMember {
