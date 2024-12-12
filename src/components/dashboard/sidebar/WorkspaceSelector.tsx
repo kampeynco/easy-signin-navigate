@@ -28,19 +28,22 @@ export function WorkspaceSelector() {
   const queryClient = useQueryClient()
   const [newWorkspaceName, setNewWorkspaceName] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
 
   // Fetch workspaces
   const { data: workspaces, isLoading } = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
-      console.log('Fetching workspaces...')
+      console.log('Fetching workspaces for user:', session?.user?.id)
+      
       const { data, error } = await supabase
         .from('workspaces')
         .select(`
           id,
           name,
           workspace_members!inner (
-            role
+            role,
+            user_id
           )
         `)
         .eq('workspace_members.user_id', session?.user?.id)
@@ -56,16 +59,17 @@ export function WorkspaceSelector() {
     enabled: !!session?.user?.id
   })
 
-  // Create workspace mutation using the database function
+  // Create workspace mutation
   const createWorkspace = useMutation({
     mutationFn: async (name: string) => {
-      console.log('Creating workspace:', name)
+      console.log('Creating workspace via Edge Function:', name)
       
-      const { data, error } = await supabase
-        .rpc('create_workspace_with_owner', {
-          _workspace_name: name,
-          _user_id: session?.user?.id
-        })
+      const { data, error } = await supabase.functions.invoke('create-workspace', {
+        body: {
+          name: name.trim(),
+          userId: session?.user?.id
+        }
+      })
 
       if (error) throw error
       return data
@@ -102,6 +106,12 @@ export function WorkspaceSelector() {
     createWorkspace.mutate(newWorkspaceName)
   }
 
+  const handleWorkspaceSelect = (workspaceId: string) => {
+    setSelectedWorkspaceId(workspaceId)
+    // Here you could also store the selected workspace in localStorage
+    // or trigger other actions when a workspace is selected
+  }
+
   if (isLoading) {
     return (
       <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2">
@@ -111,6 +121,8 @@ export function WorkspaceSelector() {
     )
   }
 
+  const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId) || workspaces?.[0]
+
   return (
     <>
       <DropdownMenu>
@@ -118,11 +130,11 @@ export function WorkspaceSelector() {
           <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 hover:bg-white/10">
             <Avatar className="h-6 w-6">
               <AvatarFallback>
-                {workspaces?.[0]?.name?.charAt(0) || 'W'}
+                {selectedWorkspace?.name?.charAt(0) || 'W'}
               </AvatarFallback>
             </Avatar>
             <span className="flex-1 text-left text-sm">
-              {workspaces?.[0]?.name || 'Select Workspace'}
+              {selectedWorkspace?.name || 'Select Workspace'}
             </span>
             <ChevronDown className="h-4 w-4 opacity-70" />
           </button>
@@ -132,6 +144,7 @@ export function WorkspaceSelector() {
             <DropdownMenuItem 
               key={workspace.id}
               className="flex items-center gap-2"
+              onSelect={() => handleWorkspaceSelect(workspace.id)}
             >
               <Avatar className="h-6 w-6">
                 <AvatarFallback>{workspace.name.charAt(0)}</AvatarFallback>
