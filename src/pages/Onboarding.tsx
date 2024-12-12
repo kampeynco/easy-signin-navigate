@@ -39,37 +39,21 @@ const Onboarding = () => {
     setIsCreating(true)
     
     try {
-      console.log('Creating workspace:', workspaceName)
+      console.log('Creating workspace via Edge Function:', workspaceName)
       
-      // Insert workspace
-      const { data: workspace, error: workspaceError } = await supabase
-        .from('workspaces')
-        .insert([{ name: workspaceName.trim() }])
-        .select()
-        .single()
+      const { data, error } = await supabase.functions.invoke('create-workspace', {
+        body: {
+          name: workspaceName.trim(),
+          userId: session.user.id
+        }
+      })
 
-      if (workspaceError) {
-        console.error('Error creating workspace:', workspaceError)
-        throw workspaceError
+      if (error) {
+        console.error('Error from Edge Function:', error)
+        throw error
       }
 
-      console.log('Workspace created:', workspace)
-
-      // Add creator as admin
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert([{
-          workspace_id: workspace.id,
-          user_id: session.user.id,
-          role: 'admin'
-        }])
-
-      if (memberError) {
-        console.error('Error adding workspace member:', memberError)
-        throw memberError
-      }
-
-      console.log('Added user as workspace admin')
+      console.log('Workspace created successfully:', data)
 
       toast({
         title: "Success",
