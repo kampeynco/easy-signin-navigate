@@ -33,7 +33,7 @@ export function WorkspaceSelector() {
   const { data: workspaces, isLoading } = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
-      console.log('WorkspaceSelector: Fetching workspaces for user:', session?.user?.id)
+      console.log('Fetching workspaces...')
       const { data, error } = await supabase
         .from('workspaces')
         .select(`
@@ -46,38 +46,42 @@ export function WorkspaceSelector() {
         .eq('workspace_members.user_id', session?.user?.id)
       
       if (error) {
-        console.error('WorkspaceSelector: Error fetching workspaces:', error)
+        console.error('Error fetching workspaces:', error)
         throw error
       }
       
-      console.log('WorkspaceSelector: Fetched workspaces:', data)
+      console.log('Fetched workspaces:', data)
       return data || []
     },
     enabled: !!session?.user?.id
   })
 
-  // Create workspace mutation using the new database function
+  // Create workspace mutation
   const createWorkspace = useMutation({
     mutationFn: async (name: string) => {
-      console.log('WorkspaceSelector: Creating new workspace:', name)
+      console.log('Creating workspace:', name)
       
-      if (!session?.user?.id) {
-        throw new Error('No authenticated user found')
-      }
+      // Insert workspace
+      const { data: workspace, error: workspaceError } = await supabase
+        .from('workspaces')
+        .insert({ name })
+        .select()
+        .single()
 
-      const { data, error } = await supabase
-        .rpc('create_workspace_with_owner', {
-          _workspace_name: name,
-          _user_id: session.user.id
+      if (workspaceError) throw workspaceError
+
+      // Add creator as admin
+      const { error: memberError } = await supabase
+        .from('workspace_members')
+        .insert({
+          workspace_id: workspace.id,
+          user_id: session?.user?.id,
+          role: 'admin'
         })
 
-      if (error) {
-        console.error('WorkspaceSelector: Error creating workspace:', error)
-        throw error
-      }
+      if (memberError) throw memberError
 
-      console.log('WorkspaceSelector: Workspace created successfully:', data)
-      return data
+      return workspace
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspaces'] })
@@ -88,11 +92,11 @@ export function WorkspaceSelector() {
       setIsDialogOpen(false)
       setNewWorkspaceName("")
     },
-    onError: (error: any) => {
-      console.error('WorkspaceSelector: Error in workspace creation:', error)
+    onError: (error) => {
+      console.error('Error creating workspace:', error)
       toast({
         title: "Error",
-        description: error.message || "Failed to create workspace",
+        description: "Failed to create workspace",
         variant: "destructive",
       })
     }

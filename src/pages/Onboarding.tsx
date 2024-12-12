@@ -18,7 +18,6 @@ const Onboarding = () => {
     e.preventDefault()
     
     if (!workspaceName.trim()) {
-      console.log('Onboarding: Empty workspace name')
       toast({
         title: "Error",
         description: "Please enter a workspace name",
@@ -28,7 +27,7 @@ const Onboarding = () => {
     }
 
     if (!session?.user?.id) {
-      console.error('Onboarding: No user session found')
+      console.error('No user session found')
       toast({
         title: "Error",
         description: "Please sign in again",
@@ -38,22 +37,39 @@ const Onboarding = () => {
     }
 
     setIsCreating(true)
-    console.log('Onboarding: Starting workspace creation for user:', session.user.id)
     
     try {
-      // Create workspace using the new database function
-      const { data: workspaceId, error } = await supabase
-        .rpc('create_workspace_with_owner', {
-          _workspace_name: workspaceName.trim(),
-          _user_id: session.user.id
-        })
+      console.log('Creating workspace:', workspaceName)
+      
+      // Insert workspace
+      const { data: workspace, error: workspaceError } = await supabase
+        .from('workspaces')
+        .insert([{ name: workspaceName.trim() }])
+        .select()
+        .single()
 
-      if (error) {
-        console.error('Onboarding: Error creating workspace:', error)
-        throw error
+      if (workspaceError) {
+        console.error('Error creating workspace:', workspaceError)
+        throw workspaceError
       }
 
-      console.log('Onboarding: Workspace created successfully:', workspaceId)
+      console.log('Workspace created:', workspace)
+
+      // Add creator as admin
+      const { error: memberError } = await supabase
+        .from('workspace_members')
+        .insert([{
+          workspace_id: workspace.id,
+          user_id: session.user.id,
+          role: 'admin'
+        }])
+
+      if (memberError) {
+        console.error('Error adding workspace member:', memberError)
+        throw memberError
+      }
+
+      console.log('Added user as workspace admin')
 
       toast({
         title: "Success",
@@ -62,7 +78,7 @@ const Onboarding = () => {
       
       navigate('/dashboard')
     } catch (error: any) {
-      console.error('Onboarding: Error in workspace creation:', error)
+      console.error('Error in workspace creation:', error)
       toast({
         title: "Error",
         description: error.message || "Failed to create workspace. Please try again.",

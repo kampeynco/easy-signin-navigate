@@ -23,14 +23,6 @@ const SignUp = () => {
     console.log('SignUp: Starting signup process for email:', email)
 
     try {
-      // Test Supabase connection first
-      const { data: testData, error: testError } = await supabase.auth.getSession()
-      if (testError) {
-        console.error('SignUp: Supabase connection test failed:', testError)
-        throw new Error(`Connection error: ${testError.message}`)
-      }
-      console.log('SignUp: Supabase connection test successful:', testData)
-
       const redirectTo = getRedirectUrl()
       console.log('SignUp: Using redirect URL:', redirectTo)
 
