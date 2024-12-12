@@ -10,48 +10,67 @@ const Index = () => {
   const navigate = useNavigate()
   const session = useSession()
 
-  // Check if user has any workspaces
+  // Simplified workspace query
   const { data: workspaces, isLoading, error } = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
-      console.log('Index: Checking for existing workspaces for user:', session?.user?.id)
+      console.log('Index: Starting workspace query for user:', session?.user?.id)
+      
+      // First, check if user exists in profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session?.user?.id)
+        .single()
+
+      if (profileError) {
+        console.error('Index: Profile fetch error:', profileError)
+        throw profileError
+      }
+
+      console.log('Index: Profile found:', profile)
+
+      // Then get workspaces with a simpler query
       const { data, error } = await supabase
         .from('workspaces')
-        .select(`
-          id,
-          workspace_members!inner (
-            role
-          )
-        `)
+        .select('id')
         .eq('workspace_members.user_id', session?.user?.id)
-      
+
       if (error) {
-        console.error('Index: Error fetching workspaces:', error)
+        console.error('Index: Workspace fetch error:', error)
         throw error
       }
-      
-      console.log('Index: Fetched workspaces:', data)
+
+      console.log('Index: Workspaces fetched:', data)
       return data || []
     },
-    enabled: !!session?.user?.id
+    enabled: !!session?.user?.id,
+    retry: false // Disable retries to prevent potential loops
   })
 
   useEffect(() => {
-    console.log('Index: Session status:', session ? 'Authenticated' : 'Not authenticated')
-    console.log('Index: Loading status:', isLoading)
-    console.log('Index: Workspaces:', workspaces)
-    console.log('Index: Error:', error)
+    console.log('Index: Effect running with:', {
+      session: !!session,
+      isLoading,
+      workspacesCount: workspaces?.length,
+      error: error?.message
+    })
 
     if (isLoading) return
 
     if (session) {
-      // If user is logged in and has no workspaces, redirect to onboarding
-      if (workspaces && workspaces.length === 0) {
-        console.log('Index: No workspaces found, redirecting to onboarding...')
+      if (error) {
+        console.error('Index: Navigation error:', error)
+        // On error, default to onboarding
         navigate('/onboarding')
-      } else if (workspaces && workspaces.length > 0) {
-        // If user has workspaces, redirect to dashboard
-        console.log('Index: Workspaces found, redirecting to dashboard...')
+        return
+      }
+
+      if (!workspaces || workspaces.length === 0) {
+        console.log('Index: No workspaces, redirecting to onboarding')
+        navigate('/onboarding')
+      } else {
+        console.log('Index: Workspaces found, redirecting to dashboard')
         navigate('/dashboard')
       }
     }
