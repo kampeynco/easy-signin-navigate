@@ -40,6 +40,44 @@ export function UserMenu() {
     navigate('/signin')
   }
 
+  const handleDeleteAccount = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('No active session')
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to delete account')
+      }
+
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been successfully deleted.",
+      })
+      navigate('/signin')
+    } catch (error) {
+      console.error('Delete account error:', error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete account. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
   const handleMenuItemClick = (label: string) => {
     toast({
       title: "Navigation",
@@ -85,13 +123,18 @@ export function UserMenu() {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          asChild
           onClick={handleLogout}
+          className="flex items-center gap-2 text-destructive hover:text-white"
         >
-          <Link to="#" className="flex items-center gap-2 text-destructive hover:text-white">
-            <LogOut className="h-4 w-4" />
-            <span>Sign out</span>
-          </Link>
+          <LogOut className="h-4 w-4" />
+          <span>Sign out</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={handleDeleteAccount}
+          className="flex items-center gap-2 text-destructive hover:text-white"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Delete Account</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
