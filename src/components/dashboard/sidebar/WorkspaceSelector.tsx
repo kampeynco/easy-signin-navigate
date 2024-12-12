@@ -31,10 +31,10 @@ export function WorkspaceSelector() {
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
 
   // Fetch workspaces
-  const { data: workspaces, isLoading } = useQuery({
+  const { data: workspaces, isLoading, error } = useQuery({
     queryKey: ['workspaces'],
     queryFn: async () => {
-      console.log('Fetching workspaces for user:', session?.user?.id)
+      console.log('WorkspaceSelector: Fetching workspaces for user:', session?.user?.id)
       
       const { data, error } = await supabase
         .from('workspaces')
@@ -49,20 +49,22 @@ export function WorkspaceSelector() {
         .eq('workspace_members.user_id', session?.user?.id)
       
       if (error) {
-        console.error('Error fetching workspaces:', error)
+        console.error('WorkspaceSelector: Error fetching workspaces:', error)
         throw error
       }
       
-      console.log('Fetched workspaces:', data)
+      console.log('WorkspaceSelector: Fetched workspaces:', data)
       return data || []
     },
-    enabled: !!session?.user?.id
+    enabled: !!session?.user?.id,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    retry: 2
   })
 
   // Create workspace mutation
   const createWorkspace = useMutation({
     mutationFn: async (name: string) => {
-      console.log('Creating workspace via Edge Function:', name)
+      console.log('WorkspaceSelector: Creating workspace:', name)
       
       const { data, error } = await supabase.functions.invoke('create-workspace', {
         body: {
@@ -84,7 +86,7 @@ export function WorkspaceSelector() {
       setNewWorkspaceName("")
     },
     onError: (error) => {
-      console.error('Error creating workspace:', error)
+      console.error('WorkspaceSelector: Error creating workspace:', error)
       toast({
         title: "Error",
         description: "Failed to create workspace",
@@ -112,13 +114,28 @@ export function WorkspaceSelector() {
     // or trigger other actions when a workspace is selected
   }
 
+  // Handle error state
+  if (error) {
+    return (
+      <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500">
+        <span className="flex-1 text-left text-sm">Error loading workspaces</span>
+      </button>
+    )
+  }
+
+  // Handle loading state
   if (isLoading) {
     return (
       <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2">
         <div className="h-6 w-6 animate-pulse rounded-full bg-white/10" />
-        <span className="flex-1 text-left text-sm">Loading...</span>
+        <span className="flex-1 text-left text-sm">Loading workspaces...</span>
       </button>
     )
+  }
+
+  // Set initial selected workspace if none is selected
+  if (!selectedWorkspaceId && workspaces && workspaces.length > 0) {
+    setSelectedWorkspaceId(workspaces[0].id)
   }
 
   const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId) || workspaces?.[0]
@@ -134,24 +151,30 @@ export function WorkspaceSelector() {
               </AvatarFallback>
             </Avatar>
             <span className="flex-1 text-left text-sm">
-              {selectedWorkspace?.name || 'Select Workspace'}
+              {selectedWorkspace?.name || 'No workspaces'}
             </span>
             <ChevronDown className="h-4 w-4 opacity-70" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-[240px]">
-          {workspaces?.map((workspace) => (
-            <DropdownMenuItem 
-              key={workspace.id}
-              className="flex items-center gap-2"
-              onSelect={() => handleWorkspaceSelect(workspace.id)}
-            >
-              <Avatar className="h-6 w-6">
-                <AvatarFallback>{workspace.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <span>{workspace.name}</span>
+          {workspaces && workspaces.length > 0 ? (
+            workspaces.map((workspace) => (
+              <DropdownMenuItem 
+                key={workspace.id}
+                className="flex items-center gap-2"
+                onSelect={() => handleWorkspaceSelect(workspace.id)}
+              >
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback>{workspace.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <span>{workspace.name}</span>
+              </DropdownMenuItem>
+            ))
+          ) : (
+            <DropdownMenuItem disabled>
+              No workspaces available
             </DropdownMenuItem>
-          ))}
+          )}
           <Separator className="my-2" />
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
