@@ -26,10 +26,15 @@ export function CreateWorkspaceDialog() {
     mutationFn: async (name: string) => {
       console.log('CreateWorkspaceDialog: Creating workspace:', name)
       
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user?.id) {
+        throw new Error('No active session')
+      }
+
       const { data, error } = await supabase.functions.invoke('create-workspace', {
         body: {
           name: name.trim(),
-          userId: supabase.auth.getUser().then(({ data }) => data.user?.id)
+          userId: session.user.id
         }
       })
 

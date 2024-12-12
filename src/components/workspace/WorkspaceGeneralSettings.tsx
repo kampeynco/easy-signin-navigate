@@ -21,11 +21,12 @@ export function WorkspaceGeneralSettings() {
   const navigate = useNavigate()
   const session = useSession()
   const { data: workspaces, refetch } = useWorkspaces(session?.user?.id)
+  const currentWorkspace = workspaces?.[0]
   
   const form = useForm<WorkspaceFormData>({
     defaultValues: {
-      name: "",
-      description: "",
+      name: currentWorkspace?.name || "",
+      description: currentWorkspace?.description || "",
     },
   })
 
@@ -38,7 +39,6 @@ export function WorkspaceGeneralSettings() {
 
   const handleDeleteWorkspace = async () => {
     try {
-      const currentWorkspace = workspaces?.[0]
       if (!currentWorkspace?.id) {
         throw new Error('No workspace selected')
       }

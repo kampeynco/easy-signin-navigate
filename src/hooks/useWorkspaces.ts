@@ -31,8 +31,8 @@ export function useWorkspaces(userId?: string) {
       return sortedWorkspaces as Workspace[]
     },
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 0, // Disable cache to ensure fresh data
+    refetchOnWindowFocus: true, // Refetch when window regains focus
     retry: 1,
-    refetchOnWindowFocus: false
   })
 }
