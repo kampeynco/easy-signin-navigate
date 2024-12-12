@@ -10,6 +10,27 @@ const Index = () => {
   const navigate = useNavigate()
   const session = useSession()
 
+  // Test Supabase connection
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        console.log('Testing Supabase connection...')
+        const { data, error } = await supabase.from('profiles').select('count').single()
+        
+        if (error) {
+          console.error('Supabase connection error:', error)
+          throw error
+        }
+        
+        console.log('Supabase connection successful:', data)
+      } catch (error) {
+        console.error('Failed to connect to Supabase:', error)
+      }
+    }
+
+    testConnection()
+  }, [])
+
   // Simplified workspace query
   const { data: workspaces, isLoading, error } = useQuery({
     queryKey: ['workspaces'],
