@@ -143,15 +143,7 @@ export type Database = {
           updated_at?: string | null
           workspace_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "workflows_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       workspace_members: {
         Row: {
