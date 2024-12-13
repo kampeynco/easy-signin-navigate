@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 import {
   LayoutGrid,
-  FolderClosed,
   PlayCircle,
   History,
   AppWindow,
@@ -18,11 +17,10 @@ import { useToast } from "@/hooks/use-toast"
 const topMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
   { icon: PlayCircle, label: "Workflows", to: "/workflows" },
-  { icon: FolderClosed, label: "Folders", to: "#" },
+  { icon: History, label: "History", to: "#" },
 ]
 
 const bottomMenuItems = [
-  { icon: History, label: "History", to: "#" },
   { icon: AppWindow, label: "Apps", to: "#" },
   { icon: BookOpen, label: "Recipes", to: "#" },
 ]
