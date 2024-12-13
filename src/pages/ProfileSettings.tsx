@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardTopNav } from "@/components/dashboard/DashboardTopNav"
 import { ProfileForm } from "@/components/profile/ProfileForm"
 import { useToast } from "@/hooks/use-toast"
@@ -103,59 +102,53 @@ const ProfileSettings = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="general" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="general">General</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="general" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-                <CardDescription>
-                  Update your profile information
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profile && <ProfileForm initialData={profile} />}
-              </CardContent>
-            </Card>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Information</CardTitle>
+              <CardDescription>
+                Update your profile information
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile && <ProfileForm initialData={profile} />}
+            </CardContent>
+          </Card>
 
-            <Card className="border-destructive">
-              <CardHeader>
-                <CardTitle className="text-destructive">Danger Zone</CardTitle>
-                <CardDescription>
-                  Delete your account permanently. This action cannot be undone.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">Delete Account</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your
-                        account and remove your data from our servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction 
-                        onClick={handleDeleteAccount}
-                        className="bg-destructive hover:bg-destructive/90"
-                      >
-                        Delete Account
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          <Card className="border-destructive">
+            <CardHeader>
+              <CardTitle className="text-destructive">Danger Zone</CardTitle>
+              <CardDescription>
+                Delete your account permanently. This action cannot be undone.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">Delete Account</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your
+                      account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDeleteAccount}
+                      className="bg-destructive hover:bg-destructive/90"
+                    >
+                      Delete Account
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
