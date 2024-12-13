@@ -2,16 +2,6 @@ import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { useState } from "react"
 
 interface PendingDeletion {
@@ -71,14 +61,17 @@ export function useMemberActions() {
       let error;
 
       if (isPending) {
+        console.log('Deleting invitation:', { memberId, workspaceId: selectedWorkspace.id })
+        
         const { error: invitationError } = await supabase
           .from('workspace_invitations')
           .delete()
           .eq('id', memberId)
-          .eq('workspace_id', selectedWorkspace.id)
 
         error = invitationError
       } else {
+        console.log('Removing member:', { memberId, workspaceId: selectedWorkspace.id })
+        
         const { error: memberError } = await supabase
           .from('workspace_members')
           .delete()
@@ -88,7 +81,10 @@ export function useMemberActions() {
         error = memberError
       }
 
-      if (error) throw error
+      if (error) {
+        console.error('Error in confirmRemoveMember:', error)
+        throw error
+      }
 
       await queryClient.invalidateQueries({
         queryKey: ['workspace-members', selectedWorkspace.id]
