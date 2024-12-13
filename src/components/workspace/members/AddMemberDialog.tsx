@@ -20,77 +20,58 @@ import {
 } from "@/components/ui/select"
 import { UserPlus } from "lucide-react"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
-import { useSession } from "@supabase/auth-helpers-react"
 
 export function AddMemberDialog() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const { selectedWorkspace } = useWorkspace()
-  const session = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [role, setRole] = useState("member")
 
   const addMember = useMutation({
     mutationFn: async ({ email, role }: { email: string; role: string }) => {
-      console.log('AddMemberDialog: Creating invitation:', { email, role, workspaceId: selectedWorkspace?.id })
+      console.log('AddMemberDialog: Adding member:', { email, role, workspaceId: selectedWorkspace?.id })
       
-      if (!selectedWorkspace?.id || !session?.user?.id) {
-        throw new Error('No workspace selected or user not authenticated')
+      if (!selectedWorkspace?.id) {
+        throw new Error('No workspace selected')
       }
 
-      // Get inviter's profile for the email
-      const { data: inviterProfile } = await supabase
+      const { data: userProfile, error: userError } = await supabase
         .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', session.user.id)
+        .select('id')
+        .eq('email', email)
         .single()
 
-      // Create the invitation
-      const { data: invitation, error: invitationError } = await supabase
-        .from('workspace_invitations')
+      if (userError || !userProfile) {
+        throw new Error('User not found')
+      }
+
+      const { error } = await supabase
+        .from('workspace_members')
         .insert({
           workspace_id: selectedWorkspace.id,
-          email: email,
-          role: role,
-          invited_by: session.user.id
+          user_id: userProfile.id,
+          role: role
         })
-        .select()
-        .single()
 
-      if (invitationError) throw invitationError
-
-      // Send invitation email
-      const inviterName = `${inviterProfile?.first_name || ''} ${inviterProfile?.last_name || ''}`.trim() || 'A workspace admin'
-      
-      const { error: emailError } = await supabase.functions.invoke('send-invitation', {
-        body: {
-          invitationId: invitation.id,
-          workspaceName: selectedWorkspace.name,
-          toEmail: email,
-          inviterName
-        }
-      })
-
-      if (emailError) throw emailError
-
-      return invitation
+      if (error) throw error
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workspace-invitations', selectedWorkspace?.id] })
+      queryClient.invalidateQueries({ queryKey: ['workspace-members', selectedWorkspace?.id] })
       toast({
-        title: "Invitation sent",
-        description: "An invitation email has been sent to the user.",
+        title: "Success",
+        description: "Member added successfully",
       })
       setIsOpen(false)
       setEmail("")
       setRole("member")
     },
     onError: (error: any) => {
-      console.error('AddMemberDialog: Error creating invitation:', error)
+      console.error('AddMemberDialog: Error adding member:', error)
       toast({
         title: "Error",
-        description: error.message || "Failed to send invitation",
+        description: error.message || "Failed to add member",
         variant: "destructive",
       })
     }
@@ -119,7 +100,7 @@ export function AddMemberDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite Team Member</DialogTitle>
+          <DialogTitle>Add Team Member</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
@@ -155,7 +136,7 @@ export function AddMemberDialog() {
             disabled={addMember.isPending}
             className="w-full"
           >
-            {addMember.isPending ? "Sending Invitation..." : "Send Invitation"}
+            {addMember.isPending ? "Adding..." : "Add Member"}
           </Button>
         </div>
       </DialogContent>
