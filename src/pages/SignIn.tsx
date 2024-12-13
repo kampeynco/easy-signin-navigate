@@ -18,23 +18,44 @@ const SignIn = () => {
   const { toast } = useToast()
 
   const handleEmailSignIn = async (email: string, password: string) => {
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter both email and password"
+      })
+      return
+    }
+
     setIsLoading(true)
+    
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
       })
 
-      if (error?.message?.includes('Email not confirmed')) {
-        console.log('SignIn: Email not confirmed, redirecting to verification page')
-        navigate('/verify-email', { 
-          state: { email },
-          replace: true 
-        })
-        return
+      if (error) {
+        if (error.message.includes('Email not confirmed')) {
+          console.log('SignIn: Email not confirmed, redirecting to verification page')
+          navigate('/verify-email', { 
+            state: { email },
+            replace: true 
+          })
+          return
+        }
+
+        // Handle invalid credentials specifically
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password')
+        }
+
+        throw error
       }
 
-      if (error) throw error
+      if (!data.session) {
+        throw new Error('No session created')
+      }
 
       toast({
         title: "Success",
@@ -47,7 +68,7 @@ const SignIn = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: error.message || "Failed to sign in"
       })
     } finally {
       setIsLoading(false)
@@ -55,10 +76,10 @@ const SignIn = () => {
   }
 
   return (
-    <div className="container flex items-center justify-center py-10">
+    <div className="container flex items-center justify-center min-h-screen py-10">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -70,7 +91,7 @@ const SignIn = () => {
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600 hover:underline">
+            <Link to="/signup" className="text-primary hover:underline">
               Sign up
             </Link>
           </div>
