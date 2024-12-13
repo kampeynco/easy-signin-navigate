@@ -7,6 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableCell,
 } from "@/components/ui/table"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
