@@ -11,11 +11,18 @@ import { supabase } from "@/integrations/supabase/client"
 import { publicRoutes } from "./routes/publicRoutes"
 import { protectedRoutes } from "./routes/protectedRoutes"
 
-const queryClient = new QueryClient()
-
-const App = () => {
+function App() {
   console.log('App: Initializing...')
   
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  })
+
   return (
     <QueryClientProvider client={queryClient}>
       <SessionContextProvider supabaseClient={supabase}>
