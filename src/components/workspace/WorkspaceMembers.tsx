@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { UserPlus } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
@@ -10,7 +10,7 @@ import { MembersList } from "./members/MembersList"
 export function WorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
   const { toast } = useToast()
-  const queryClient = useQuery()
+  const queryClient = useQueryClient()
   
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['workspace-members', selectedWorkspace?.id],
