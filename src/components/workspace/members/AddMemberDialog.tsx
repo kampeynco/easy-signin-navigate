@@ -20,11 +20,13 @@ import {
 } from "@/components/ui/select"
 import { UserPlus } from "lucide-react"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
+import { useSession } from "@supabase/auth-helpers-react"
 
 export function AddMemberDialog() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const { selectedWorkspace } = useWorkspace()
+  const session = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [role, setRole] = useState("member")
@@ -33,35 +35,40 @@ export function AddMemberDialog() {
     mutationFn: async ({ email, role }: { email: string; role: string }) => {
       console.log('AddMemberDialog: Adding member:', { email, role, workspaceId: selectedWorkspace?.id })
       
-      if (!selectedWorkspace?.id) {
-        throw new Error('No workspace selected')
+      if (!selectedWorkspace?.id || !session?.user) {
+        throw new Error('No workspace selected or user not authenticated')
       }
 
-      const { data: userProfile, error: userError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single()
-
-      if (userError || !userProfile) {
-        throw new Error('User not found')
-      }
-
-      const { error } = await supabase
-        .from('workspace_members')
+      // Create invitation
+      const { data: invitation, error: invitationError } = await supabase
+        .from('workspace_invitations')
         .insert({
           workspace_id: selectedWorkspace.id,
-          user_id: userProfile.id,
-          role: role
+          email: email,
+          role: role,
+          invited_by: session.user.id,
         })
+        .select()
+        .single()
 
-      if (error) throw error
+      if (invitationError) throw invitationError
+
+      // Send invitation email
+      const { error: emailError } = await supabase.functions.invoke('send-invitation-email', {
+        body: {
+          invitationId: invitation.id,
+          workspaceName: selectedWorkspace.name,
+          invitedByEmail: session.user.email,
+        },
+      })
+
+      if (emailError) throw emailError
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspace-members', selectedWorkspace?.id] })
       toast({
         title: "Success",
-        description: "Member added successfully",
+        description: "Invitation sent successfully",
       })
       setIsOpen(false)
       setEmail("")
@@ -71,7 +78,7 @@ export function AddMemberDialog() {
       console.error('AddMemberDialog: Error adding member:', error)
       toast({
         title: "Error",
-        description: error.message || "Failed to add member",
+        description: error.message || "Failed to send invitation",
         variant: "destructive",
       })
     }
@@ -136,7 +143,7 @@ export function AddMemberDialog() {
             disabled={addMember.isPending}
             className="w-full"
           >
-            {addMember.isPending ? "Adding..." : "Add Member"}
+            {addMember.isPending ? "Sending Invitation..." : "Send Invitation"}
           </Button>
         </div>
       </DialogContent>
