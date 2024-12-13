@@ -6,17 +6,17 @@ import type { WorkspaceMember } from "@/types/workspace-member"
 import type { Database } from "@/integrations/supabase/types"
 
 // Define the shape of the profiles join data
-type ProfilesJoin = {
-  profiles: {
-    id: string;
-    first_name: string | null;
-    last_name: string | null;
-    email: string | null;
-  } | null;
+type ProfileData = {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
 }
 
-// Combine the base workspace member type with the profiles join
-type WorkspaceMemberRow = Database['public']['Tables']['workspace_members']['Row'] & ProfilesJoin
+// Define the shape of the workspace member with joined profile
+type WorkspaceMemberWithProfile = Database['public']['Tables']['workspace_members']['Row'] & {
+  profiles: ProfileData | null;
+}
 
 export function useWorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
@@ -55,13 +55,13 @@ export function useWorkspaceMembers() {
       if (!data) return []
 
       // Transform the data to match our WorkspaceMember type
-      return (data as WorkspaceMemberRow[]).map((member) => ({
+      return (data as WorkspaceMemberWithProfile[]).map((member): WorkspaceMember => ({
         id: member.user_id,
         first_name: member.profiles?.first_name || '',
         last_name: member.profiles?.last_name || '',
         email: member.profiles?.email || '',
         role: member.role
-      })) as WorkspaceMember[]
+      }))
     },
     enabled: !!selectedWorkspace?.id
   })
