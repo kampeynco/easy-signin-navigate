@@ -21,8 +21,8 @@ const Pricing = () => {
         {/* Pricing Grid */}
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-3">
           <PricingTier
-            name="Free"
-            price="0"
+            name="Starter"
+            price="249"
             description="Perfect for getting started with automation"
             features={[
               "Up to 100 tasks per month",
@@ -34,8 +34,8 @@ const Pricing = () => {
           />
           
           <PricingTier
-            name="Pro"
-            price="49"
+            name="Grow"
+            price="499"
             description="For growing businesses needing more power"
             features={[
               "Unlimited tasks",
@@ -50,11 +50,11 @@ const Pricing = () => {
           />
           
           <PricingTier
-            name="Enterprise"
-            price="Custom"
+            name="Scale"
+            price="995"
             description="For large organizations with custom needs"
             features={[
-              "Everything in Pro",
+              "Everything in Grow",
               "Custom integrations",
               "24/7 dedicated support",
               "Enterprise SLA",
@@ -62,7 +62,6 @@ const Pricing = () => {
               "Custom training",
               "Dedicated success manager"
             ]}
-            buttonText="Contact Sales"
           />
         </div>
 
