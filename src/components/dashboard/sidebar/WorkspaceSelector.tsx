@@ -87,8 +87,8 @@ export function WorkspaceSelector() {
           workspaces.map((workspace) => (
             <DropdownMenuItem 
               key={workspace.id}
-              className="flex items-center gap-2 hover:text-white"
               onSelect={() => handleWorkspaceSelect(workspace.id)}
+              className="flex items-center gap-2 cursor-pointer text-foreground hover:text-white focus:text-white"
             >
               <Avatar className="h-6 w-6">
                 <AvatarFallback className="bg-[#F1F0FB] text-[#403E43]">

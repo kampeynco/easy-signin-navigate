@@ -77,7 +77,7 @@ export function CreateWorkspaceDialog() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <DropdownMenuItem 
-          className="flex items-center gap-2 hover:text-white group"
+          className="flex items-center gap-2 cursor-pointer text-foreground group hover:text-white focus:text-white"
           onSelect={(e) => e.preventDefault()}
         >
           <Plus className="h-4 w-4 group-hover:text-white" />
