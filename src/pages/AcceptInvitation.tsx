@@ -15,6 +15,7 @@ const AcceptInvitation = () => {
   useEffect(() => {
     const acceptInvitation = async () => {
       if (!token) {
+        console.error('AcceptInvitation: No token provided')
         toast({
           variant: "destructive",
           title: "Invalid invitation",
@@ -27,13 +28,14 @@ const AcceptInvitation = () => {
       try {
         // First check if user is authenticated
         if (!session?.user) {
+          console.log('AcceptInvitation: User not authenticated, redirecting to signin')
           // Store token in localStorage to use it after authentication
           localStorage.setItem('pendingInvitationToken', token)
           navigate('/signin')
           return
         }
 
-        console.log('Accepting invitation with token:', token)
+        console.log('AcceptInvitation: Processing invitation with token:', token)
 
         // Get invitation details
         const { data: invitation, error: invitationError } = await supabase
@@ -43,13 +45,16 @@ const AcceptInvitation = () => {
           .single()
 
         if (invitationError || !invitation) {
-          console.error('Error fetching invitation:', invitationError)
+          console.error('AcceptInvitation: Error fetching invitation:', invitationError)
           throw new Error('Invalid or expired invitation')
         }
 
         if (invitation.status !== 'pending') {
+          console.error('AcceptInvitation: Invitation is not pending')
           throw new Error('This invitation has already been used or expired')
         }
+
+        console.log('AcceptInvitation: Found valid invitation:', invitation)
 
         // Add user to workspace
         const { error: memberError } = await supabase
@@ -61,7 +66,7 @@ const AcceptInvitation = () => {
           })
 
         if (memberError) {
-          console.error('Error adding member:', memberError)
+          console.error('AcceptInvitation: Error adding member:', memberError)
           throw memberError
         }
 
@@ -72,10 +77,12 @@ const AcceptInvitation = () => {
           .eq('id', invitation.id)
 
         if (updateError) {
-          console.error('Error updating invitation:', updateError)
+          console.error('AcceptInvitation: Error updating invitation:', updateError)
           throw updateError
         }
 
+        console.log('AcceptInvitation: Successfully processed invitation')
+        
         toast({
           title: "Welcome!",
           description: "You've successfully joined the workspace."
@@ -85,7 +92,7 @@ const AcceptInvitation = () => {
         navigate('/dashboard')
 
       } catch (error: any) {
-        console.error('Error accepting invitation:', error)
+        console.error('AcceptInvitation: Error accepting invitation:', error)
         toast({
           variant: "destructive",
           title: "Error accepting invitation",
