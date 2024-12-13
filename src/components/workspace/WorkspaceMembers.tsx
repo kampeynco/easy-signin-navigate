@@ -17,16 +17,18 @@ export function WorkspaceMembers() {
     queryFn: async () => {
       if (!selectedWorkspace?.id) return []
 
+      console.log('Fetching members for workspace:', selectedWorkspace.id)
+
       const { data: memberships, error: membershipsError } = await supabase
         .from('workspace_members')
         .select(`
           user_id,
           role,
-          profiles:user_id (
+          profiles (
             id,
             first_name,
             last_name,
-            email:id(email)
+            email
           )
         `)
         .eq('workspace_id', selectedWorkspace.id)
@@ -36,11 +38,13 @@ export function WorkspaceMembers() {
         throw membershipsError
       }
 
-      return memberships.map((membership: any) => ({
+      console.log('Fetched memberships:', memberships)
+
+      return memberships.map((membership) => ({
         id: membership.profiles.id,
         first_name: membership.profiles.first_name,
         last_name: membership.profiles.last_name,
-        email: membership.profiles.email?.email || '',
+        email: membership.profiles.email,
         role: membership.role
       }))
     },
@@ -61,7 +65,8 @@ export function WorkspaceMembers() {
           table: 'workspace_members',
           filter: `workspace_id=eq.${selectedWorkspace.id}`
         },
-        () => {
+        (payload) => {
+          console.log('Workspace members changed:', payload)
           // Invalidate and refetch members when changes occur
           queryClient.invalidateQueries({
             queryKey: ['workspace-members', selectedWorkspace.id]
