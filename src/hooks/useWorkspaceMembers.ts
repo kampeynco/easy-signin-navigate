@@ -2,65 +2,48 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
-import type { WorkspaceMember } from "@/types/workspace-member"
-import type { Database } from "@/integrations/supabase/types"
-
-// Define the shape of the profiles join data
-type ProfileData = {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-}
-
-// Define the shape of the workspace member with joined profile
-type WorkspaceMemberWithProfile = Database['public']['Tables']['workspace_members']['Row'] & {
-  profiles: ProfileData | null;
-}
+import { transformWorkspaceMember } from "@/utils/workspace-transforms"
+import type { WorkspaceMemberResponse } from "@/types/workspace-queries"
 
 export function useWorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
   const queryClient = useQueryClient()
   
+  const fetchWorkspaceMembers = async () => {
+    if (!selectedWorkspace?.id) {
+      console.log('No workspace selected')
+      return []
+    }
+
+    console.log('Fetching members for workspace:', selectedWorkspace.id)
+
+    const { data, error } = await supabase
+      .from('workspace_members')
+      .select(`
+        user_id,
+        workspace_id,
+        role,
+        profiles (
+          id,
+          first_name,
+          last_name,
+          email
+        )
+      `)
+      .eq('workspace_id', selectedWorkspace.id)
+
+    if (error) {
+      console.error('Error fetching workspace members:', error)
+      throw error
+    }
+
+    console.log('Raw workspace members data:', data)
+    return data?.map(transformWorkspaceMember) || []
+  }
+
   const { data: members = [], isLoading, error } = useQuery({
     queryKey: ['workspace-members', selectedWorkspace?.id],
-    queryFn: async () => {
-      if (!selectedWorkspace?.id) {
-        console.log('No workspace selected')
-        return []
-      }
-
-      console.log('Fetching members for workspace:', selectedWorkspace.id)
-
-      const { data, error } = await supabase
-        .from('workspace_members')
-        .select(`
-          *,
-          profiles (
-            id,
-            first_name,
-            last_name
-          )
-        `)
-        .eq('workspace_id', selectedWorkspace.id)
-
-      if (error) {
-        console.error('Error fetching workspace members:', error)
-        throw error
-      }
-
-      console.log('Raw workspace members data:', data)
-
-      if (!data) return []
-
-      // Transform the data to match our WorkspaceMember type
-      return (data as WorkspaceMemberWithProfile[]).map((member): WorkspaceMember => ({
-        id: member.user_id,
-        first_name: member.profiles?.first_name || '',
-        last_name: member.profiles?.last_name || '',
-        email: '', // Since email is not in profiles table, we'll leave it empty
-        role: member.role
-      }))
-    },
+    queryFn: fetchWorkspaceMembers,
     enabled: !!selectedWorkspace?.id
   })
 
