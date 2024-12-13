@@ -1,20 +1,22 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSession } from "@supabase/auth-helpers-react"
-import { AuthOptions } from "@/components/auth/AuthOptions"
 import { EmailSignInForm } from "@/components/auth/EmailSignInForm"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Link } from "react-router-dom"
 
 const SignIn = () => {
   const session = useSession()
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [showEmailForm, setShowEmailForm] = useState(false)
-
-  const handleEmailClick = () => {
-    setShowEmailForm(true)
-  }
 
   const handleSignIn = async (email: string, password: string) => {
     try {
@@ -49,23 +51,24 @@ const SignIn = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-1 flex items-center justify-center bg-background">
-        <div className="w-full max-w-md space-y-8 px-4 py-8">
-          <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-            <p className="text-sm text-muted-foreground">
-              Sign in to your account to continue
-            </p>
+    <div className="container flex items-center justify-center py-10">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Welcome back</CardTitle>
+          <CardDescription>Sign in to your account to continue</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <EmailSignInForm onSubmit={handleSignIn} />
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-blue-600 hover:underline">
+              Sign up
+            </Link>
           </div>
-          
-          {showEmailForm ? (
-            <EmailSignInForm onSubmit={handleSignIn} />
-          ) : (
-            <AuthOptions onEmailClick={handleEmailClick} />
-          )}
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   )
 }
