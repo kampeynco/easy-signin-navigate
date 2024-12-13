@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { ChevronDown } from "lucide-react"
 
 interface WorkspaceTriggerProps {
-  workspaceName: string;
+  workspaceName?: string | null;
   isLoading?: boolean;
 }
 

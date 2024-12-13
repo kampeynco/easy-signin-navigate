@@ -67,7 +67,8 @@ export function WorkspaceSelector() {
       <DropdownMenuContent align="start" className="w-[240px]">
         <WorkspaceList 
           workspaces={workspaces || []} 
-          onSelect={handleWorkspaceSelect} 
+          onSelect={handleWorkspaceSelect}
+          selectedWorkspaceId={selectedWorkspaceId} 
         />
         <Separator className="my-2" />
         <CreateWorkspaceDialog />
