@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardTopNav } from "@/components/dashboard/DashboardTopNav"
 import { ProfileForm } from "@/components/profile/ProfileForm"
@@ -108,7 +106,6 @@ const ProfileSettings = () => {
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList>
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
           
           <TabsContent value="general" className="space-y-6">
@@ -120,25 +117,10 @@ const ProfileSettings = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {profile && (
-                  <>
-                    <ProfileForm initialData={profile} />
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        value={profile.email}
-                        readOnly
-                        className="bg-muted"
-                      />
-                    </div>
-                  </>
-                )}
+                {profile && <ProfileForm initialData={profile} />}
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="security" className="space-y-6">
             <Card className="border-destructive">
               <CardHeader>
                 <CardTitle className="text-destructive">Danger Zone</CardTitle>
@@ -161,7 +143,10 @@ const ProfileSettings = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive">
+                      <AlertDialogAction 
+                        onClick={handleDeleteAccount}
+                        className="bg-destructive hover:bg-destructive/90"
+                      >
                         Delete Account
                       </AlertDialogAction>
                     </AlertDialogFooter>

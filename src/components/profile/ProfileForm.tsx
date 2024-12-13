@@ -9,6 +9,7 @@ interface ProfileFormProps {
   initialData?: {
     firstName: string
     lastName: string
+    email: string
   }
   onSubmit?: () => void
   submitLabel?: string
@@ -77,6 +78,16 @@ export function ProfileForm({ initialData, onSubmit, submitLabel = "Save Changes
           onChange={(e) => setLastName(e.target.value)}
           placeholder="Enter your last name"
           required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          value={initialData?.email || ""}
+          readOnly
+          className="bg-muted"
         />
       </div>
 
