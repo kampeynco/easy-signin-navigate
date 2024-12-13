@@ -1,15 +1,31 @@
-import { useEffect } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSession } from "@supabase/auth-helpers-react"
 import { AuthOptions } from "@/components/auth/AuthOptions"
+import { EmailSignInForm } from "@/components/auth/EmailSignInForm"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 import Navigation from "@/components/Navigation"
 
 const SignIn = () => {
   const session = useSession()
   const navigate = useNavigate()
+  const { toast } = useToast()
+  const [showEmailForm, setShowEmailForm] = useState(false)
 
-  useEffect(() => {
-    if (session?.user) {
+  const handleEmailClick = () => {
+    setShowEmailForm(true)
+  }
+
+  const handleSignIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) throw error
+
       // Check for pending invitation
       const pendingInvitationToken = localStorage.getItem('pendingInvitationToken')
       if (pendingInvitationToken) {
@@ -17,9 +33,21 @@ const SignIn = () => {
         navigate(`/accept-invitation?token=${pendingInvitationToken}`)
         return
       }
+      
       navigate('/dashboard')
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error signing in",
+        description: error.message,
+      })
     }
-  }, [session, navigate])
+  }
+
+  if (session?.user) {
+    navigate('/dashboard')
+    return null
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -32,7 +60,12 @@ const SignIn = () => {
               Sign in to your account to continue
             </p>
           </div>
-          <AuthOptions />
+          
+          {showEmailForm ? (
+            <EmailSignInForm onSubmit={handleSignIn} />
+          ) : (
+            <AuthOptions onEmailClick={handleEmailClick} />
+          )}
         </div>
       </div>
     </div>
