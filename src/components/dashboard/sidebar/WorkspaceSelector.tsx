@@ -13,9 +13,11 @@ import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog"
 import type { Workspace } from "@/types/workspace"
 import { useQueryClient } from "@tanstack/react-query"
+import { useToast } from "@/hooks/use-toast"
 
 export function WorkspaceSelector() {
   const session = useSession()
+  const { toast } = useToast()
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
   const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
   const queryClient = useQueryClient()
@@ -25,7 +27,7 @@ export function WorkspaceSelector() {
     if (workspaces && workspaces.length > 0) {
       // If no workspace is selected or the selected workspace no longer exists
       if (!selectedWorkspaceId || !workspaces.find(w => w.id === selectedWorkspaceId)) {
-        setSelectedWorkspaceId(workspaces[0].id)
+        handleWorkspaceSelect(workspaces[0].id)
       }
     } else {
       setSelectedWorkspaceId(null)
@@ -33,10 +35,25 @@ export function WorkspaceSelector() {
   }, [workspaces, selectedWorkspaceId])
 
   const handleWorkspaceSelect = async (workspaceId: string) => {
-    setSelectedWorkspaceId(workspaceId)
-    // Invalidate queries that depend on the current workspace
-    await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
-    await queryClient.invalidateQueries({ queryKey: ['workflows'] })
+    try {
+      setSelectedWorkspaceId(workspaceId)
+      
+      // Invalidate all queries that depend on the current workspace
+      await queryClient.invalidateQueries()
+      
+      // Show a toast to indicate the workspace switch
+      toast({
+        title: "Workspace switched",
+        description: "Dashboard updated with selected workspace data",
+      })
+    } catch (error) {
+      console.error('Error switching workspace:', error)
+      toast({
+        title: "Error",
+        description: "Failed to switch workspace",
+        variant: "destructive",
+      })
+    }
   }
 
   // Handle loading state
