@@ -10,7 +10,6 @@ type ProfileData = {
   id: string;
   first_name: string | null;
   last_name: string | null;
-  email: string | null;
 }
 
 // Define the shape of the workspace member with joined profile
@@ -39,8 +38,7 @@ export function useWorkspaceMembers() {
           profiles (
             id,
             first_name,
-            last_name,
-            email
+            last_name
           )
         `)
         .eq('workspace_id', selectedWorkspace.id)
@@ -59,7 +57,7 @@ export function useWorkspaceMembers() {
         id: member.user_id,
         first_name: member.profiles?.first_name || '',
         last_name: member.profiles?.last_name || '',
-        email: member.profiles?.email || '',
+        email: '', // Since email is not in profiles table, we'll leave it empty
         role: member.role
       }))
     },
