@@ -29,17 +29,23 @@ export function AddMemberDialog() {
   const session = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [role, setRole] = useState("member")
 
   const addMember = useMutation({
-    mutationFn: async ({ email, role }: { email: string; role: string }) => {
-      console.log('AddMemberDialog: Adding member:', { email, role, workspaceId: selectedWorkspace?.id })
+    mutationFn: async ({ email, firstName, lastName, role }: { 
+      email: string
+      firstName: string
+      lastName: string
+      role: string 
+    }) => {
+      console.log('AddMemberDialog: Adding member:', { email, firstName, lastName, role, workspaceId: selectedWorkspace?.id })
       
       if (!selectedWorkspace?.id || !session?.user) {
         throw new Error('No workspace selected or user not authenticated')
       }
 
-      // Create invitation
       const { data: invitation, error: invitationError } = await supabase
         .from('workspace_invitations')
         .insert({
@@ -47,6 +53,8 @@ export function AddMemberDialog() {
           email: email.trim(),
           role: role,
           invited_by: session.user.id,
+          first_name: firstName.trim(),
+          last_name: lastName.trim()
         })
         .select()
         .single()
@@ -58,7 +66,6 @@ export function AddMemberDialog() {
 
       console.log('Created invitation:', invitation)
 
-      // Send invitation email
       const { data: emailData, error: emailError } = await supabase.functions.invoke('send-invitation-email', {
         body: {
           invitationId: invitation.id,
@@ -83,6 +90,8 @@ export function AddMemberDialog() {
       })
       setIsOpen(false)
       setEmail("")
+      setFirstName("")
+      setLastName("")
       setRole("member")
     },
     onError: (error: any) => {
@@ -105,7 +114,7 @@ export function AddMemberDialog() {
       return
     }
 
-    addMember.mutate({ email, role })
+    addMember.mutate({ email, firstName, lastName, role })
   }
 
   return (
@@ -122,6 +131,30 @@ export function AddMemberDialog() {
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
+            <label htmlFor="firstName" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              First Name
+            </label>
+            <Input
+              id="firstName"
+              placeholder="Enter first name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="lastName" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Last Name
+            </label>
+            <Input
+              id="lastName"
+              placeholder="Enter last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               Email
             </label>
@@ -131,6 +164,7 @@ export function AddMemberDialog() {
               placeholder="member@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           

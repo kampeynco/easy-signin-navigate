@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { MoreVertical } from "lucide-react"
+import { MoreVertical, Edit } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,31 +42,35 @@ export function MemberListItem({
       </div>
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">
-            {member.role}
-          </span>
+          {member.status !== 'pending' && (
+            <span className="text-sm text-muted-foreground">
+              {member.role}
+            </span>
+          )}
           {member.status === 'pending' && (
             <Badge variant="secondary">Pending</Badge>
           )}
         </div>
-        {!isOnlyAdmin && member.status !== 'pending' && (
+        {!isOnlyAdmin && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
-                <MoreVertical className="h-4 w-4" />
+                <Edit className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem 
-                onClick={() => onRoleChange(member.id, member.role)}
-              >
-                Change Role
-              </DropdownMenuItem>
+              {member.status !== 'pending' && (
+                <DropdownMenuItem 
+                  onClick={() => onRoleChange(member.id, member.role)}
+                >
+                  Change Role
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem 
                 onClick={() => onRemove(member.id)}
                 className="text-destructive"
               >
-                Remove Member
+                {member.status === 'pending' ? 'Cancel Invitation' : 'Remove Member'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
