@@ -114,7 +114,7 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          className="cursor-pointer text-red-600 hover:text-red-500 focus:text-red-500" 
+          className="cursor-pointer text-foreground hover:text-white focus:text-white" 
           onClick={handleSignOut}
         >
           Sign out
