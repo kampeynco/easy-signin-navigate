@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { format } from "date-fns"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal, ToggleLeft, ToggleRight } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,6 +79,27 @@ export function WorkflowsTable() {
     setWorkflowToDelete(null)
   }
 
+  const handleToggleStatus = async (workflowId: string, currentStatus: boolean) => {
+    const { error } = await supabase
+      .from('workflows')
+      .update({ is_active: !currentStatus })
+      .eq('id', workflowId)
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update workflow status",
+        variant: "destructive",
+      })
+    } else {
+      toast({
+        title: "Success",
+        description: `Workflow ${currentStatus ? 'deactivated' : 'activated'} successfully`,
+      })
+      queryClient.invalidateQueries({ queryKey: ['workflows'] })
+    }
+  }
+
   if (isLoading) {
     return <div>Loading workflows...</div>
   }
@@ -91,7 +112,7 @@ export function WorkflowsTable() {
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="w-[100px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -100,7 +121,19 @@ export function WorkflowsTable() {
               <TableCell className="font-medium">{workflow.name}</TableCell>
               <TableCell>{workflow.is_active ? 'Active' : 'Inactive'}</TableCell>
               <TableCell>{format(new Date(workflow.created_at), 'MMM d, yyyy')}</TableCell>
-              <TableCell>
+              <TableCell className="flex items-center justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => handleToggleStatus(workflow.id, workflow.is_active)}
+                >
+                  {workflow.is_active ? (
+                    <ToggleRight className="h-4 w-4" />
+                  ) : (
+                    <ToggleLeft className="h-4 w-4" />
+                  )}
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
