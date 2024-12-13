@@ -1,6 +1,7 @@
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader"
 import { DashboardTopNav } from "@/components/dashboard/DashboardTopNav"
 import { StatCard } from "@/components/dashboard/StatCard"
+import { TaskHistoryCard } from "@/components/dashboard/TaskHistoryCard"
 import { useSession } from "@supabase/auth-helpers-react"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useQuery } from "@tanstack/react-query"
@@ -74,6 +75,8 @@ const Dashboard = () => {
             max={5} 
           />
         </div>
+
+        <TaskHistoryCard />
       </div>
     </div>
   )
