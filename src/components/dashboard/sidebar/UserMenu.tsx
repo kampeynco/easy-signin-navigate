@@ -93,7 +93,7 @@ export function UserMenu() {
         <button className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback className="bg-[#9b87f5] text-white">
+            <AvatarFallback className="bg-[#F1F0FB] text-[#403E43]">
               {getInitials(userProfile.firstName, userProfile.lastName)}
             </AvatarFallback>
           </Avatar>

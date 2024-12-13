@@ -72,7 +72,7 @@ export function WorkspaceSelector() {
       <DropdownMenuTrigger asChild>
         <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 hover:bg-white/10">
           <Avatar className="h-6 w-6">
-            <AvatarFallback>
+            <AvatarFallback className="bg-[#F1F0FB] text-[#403E43]">
               {selectedWorkspace?.name?.charAt(0) || 'W'}
             </AvatarFallback>
           </Avatar>
@@ -91,7 +91,9 @@ export function WorkspaceSelector() {
               onSelect={() => handleWorkspaceSelect(workspace.id)}
             >
               <Avatar className="h-6 w-6">
-                <AvatarFallback>{workspace.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="bg-[#F1F0FB] text-[#403E43]">
+                  {workspace.name.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               <span>{workspace.name}</span>
             </DropdownMenuItem>
