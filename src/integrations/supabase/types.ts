@@ -130,6 +130,7 @@ export type Database = {
       workflows: {
         Row: {
           created_at: string
+          created_by: string
           description: string | null
           id: string
           is_active: boolean | null
@@ -139,6 +140,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -148,6 +150,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -155,7 +158,15 @@ export type Database = {
           updated_at?: string | null
           workspace_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "workflows_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workspace_invitations: {
         Row: {

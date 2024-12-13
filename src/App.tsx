@@ -17,6 +17,7 @@ import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import ResetPassword from "./pages/ResetPassword"
 import Dashboard from "./pages/Dashboard"
+import Workflows from "./pages/Workflows"
 import Onboarding from "./pages/Onboarding"
 import Features from "./pages/Features"
 import Pricing from "./pages/Pricing"
@@ -68,6 +69,19 @@ const App = () => {
                         <div className="flex min-h-screen w-full">
                           <DashboardSidebar />
                           <Dashboard />
+                        </div>
+                      </SidebarProvider>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workflows"
+                  element={
+                    <ProtectedRoute>
+                      <SidebarProvider>
+                        <div className="flex min-h-screen w-full">
+                          <DashboardSidebar />
+                          <Workflows />
                         </div>
                       </SidebarProvider>
                     </ProtectedRoute>

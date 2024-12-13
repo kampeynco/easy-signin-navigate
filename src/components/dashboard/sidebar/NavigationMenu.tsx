@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast"
 
 const topMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
-  { icon: PlayCircle, label: "Workflows", to: "#" },
+  { icon: PlayCircle, label: "Workflows", to: "/workflows" },
   { icon: FolderClosed, label: "Folders", to: "#" },
 ]
 

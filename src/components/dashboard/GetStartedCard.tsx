@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
+import { CreateWorkflowDialog } from "@/components/workflow/CreateWorkflowDialog"
+import { PlusCircle } from "lucide-react"
 
 export const GetStartedCard = () => {
   return (
@@ -14,9 +15,12 @@ export const GetStartedCard = () => {
           favorite apps and tools into one place, so you can finish more work in
           less time.
         </p>
-        <Button asChild className="bg-[#2B4079] hover:bg-[#1e2d54] text-white text-sm h-9">
-          <Link to="/create-workflow">Create Workflow</Link>
-        </Button>
+        <CreateWorkflowDialog>
+          <Button className="bg-[#2B4079] hover:bg-[#1e2d54] text-white text-sm h-9">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create Workflow
+          </Button>
+        </CreateWorkflowDialog>
       </CardContent>
     </Card>
   )
