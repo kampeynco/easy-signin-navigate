@@ -23,6 +23,7 @@ import Pricing from "./pages/Pricing"
 import Documentation from "./pages/Documentation"
 import WorkspaceSettings from "./pages/WorkspaceSettings"
 import ProfileSettings from "./pages/ProfileSettings"
+import AcceptInvitation from "./pages/AcceptInvitation"
 
 const queryClient = new QueryClient()
 
@@ -48,6 +49,7 @@ const App = () => {
                 <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
                 <Route path="/verify-email" element={<OTPVerification />} />
                 <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+                <Route path="/accept-invitation" element={<AcceptInvitation />} />
 
                 {/* Protected routes */}
                 <Route 
