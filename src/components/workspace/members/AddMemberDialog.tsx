@@ -44,17 +44,22 @@ export function AddMemberDialog() {
         .from('workspace_invitations')
         .insert({
           workspace_id: selectedWorkspace.id,
-          email: email,
+          email: email.trim(),
           role: role,
           invited_by: session.user.id,
         })
         .select()
         .single()
 
-      if (invitationError) throw invitationError
+      if (invitationError) {
+        console.error('Error creating invitation:', invitationError)
+        throw invitationError
+      }
+
+      console.log('Created invitation:', invitation)
 
       // Send invitation email
-      const { error: emailError } = await supabase.functions.invoke('send-invitation-email', {
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-invitation-email', {
         body: {
           invitationId: invitation.id,
           workspaceName: selectedWorkspace.name,
@@ -62,7 +67,13 @@ export function AddMemberDialog() {
         },
       })
 
-      if (emailError) throw emailError
+      if (emailError) {
+        console.error('Error sending invitation email:', emailError)
+        throw emailError
+      }
+
+      console.log('Email sent successfully:', emailData)
+      return { invitation, emailData }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workspace-members', selectedWorkspace?.id] })

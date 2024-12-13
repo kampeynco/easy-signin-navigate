@@ -28,12 +28,24 @@ const handler = async (req: Request): Promise<Response> => {
     // Validate environment variables
     if (!RESEND_API_KEY) {
       console.error('RESEND_API_KEY is not set')
-      throw new Error('Missing RESEND_API_KEY configuration')
+      return new Response(
+        JSON.stringify({ error: 'Missing RESEND_API_KEY configuration' }), 
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       console.error('Missing Supabase configuration')
-      throw new Error('Missing Supabase configuration')
+      return new Response(
+        JSON.stringify({ error: 'Missing Supabase configuration' }), 
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
     // Parse and validate request body
@@ -43,12 +55,27 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('Received request body:', requestBody)
 
       if (!requestBody.invitationId || !requestBody.workspaceName || !requestBody.invitedByEmail) {
-        throw new Error('Missing required fields in request body')
+        const missingFields = []
+        if (!requestBody.invitationId) missingFields.push('invitationId')
+        if (!requestBody.workspaceName) missingFields.push('workspaceName')
+        if (!requestBody.invitedByEmail) missingFields.push('invitedByEmail')
+        
+        console.error('Missing required fields:', missingFields)
+        return new Response(
+          JSON.stringify({ 
+            error: 'Missing required fields', 
+            details: `Missing fields: ${missingFields.join(', ')}` 
+          }), 
+          { 
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        )
       }
     } catch (error) {
       console.error('Error parsing request body:', error)
       return new Response(
-        JSON.stringify({ error: 'Invalid request body' }), 
+        JSON.stringify({ error: 'Invalid request body', details: error.message }), 
         { 
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
