@@ -5,7 +5,7 @@ import { useWorkspaceMembers } from "@/hooks/useWorkspaceMembers"
 import { useMemberActions } from "./members/MemberActions"
 
 export function WorkspaceMembers() {
-  const { members, isLoading, error } = useWorkspaceMembers()
+  const { data: members, isLoading, error } = useWorkspaceMembers()
   const { handleRoleChange, handleRemoveMember } = useMemberActions()
 
   console.log('WorkspaceMembers component state:', { members, isLoading, error })
@@ -55,7 +55,7 @@ export function WorkspaceMembers() {
       </div>
 
       <MembersList 
-        members={members}
+        members={members || []}
         onRoleChange={handleRoleChange}
         onRemove={handleRemoveMember}
       />
