@@ -64,7 +64,10 @@ export function WorkspaceSelector() {
           isLoading={isLoading} 
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[240px]">
+      <DropdownMenuContent 
+        align="start" 
+        className="w-[240px] bg-popover"
+      >
         <WorkspaceList 
           workspaces={workspaces || []} 
           onSelect={handleWorkspaceSelect}

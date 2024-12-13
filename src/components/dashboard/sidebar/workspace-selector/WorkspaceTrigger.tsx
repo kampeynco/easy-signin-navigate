@@ -17,7 +17,10 @@ export function WorkspaceTrigger({ workspaceName, isLoading }: WorkspaceTriggerP
   }
 
   return (
-    <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 hover:bg-white/10">
+    <button 
+      className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 hover:bg-white/10"
+      type="button"
+    >
       <Avatar className="h-6 w-6">
         <AvatarFallback>
           {workspaceName?.charAt(0) || 'W'}
