@@ -20,13 +20,13 @@ export function WorkflowActions({ workflow, onDelete, onToggleStatus }: Workflow
       <Button
         variant="ghost"
         size="icon"
-        className={`h-16 w-16 ${workflow.is_active ? 'text-green-500' : ''}`}
+        className={`h-10 w-10 ${workflow.is_active ? 'bg-green-500 hover:bg-green-600' : ''}`}
         onClick={() => onToggleStatus(workflow.id, workflow.is_active)}
       >
         {workflow.is_active ? (
-          <ToggleRight className="h-16 w-16" />
+          <ToggleRight className="h-10 w-10" />
         ) : (
-          <ToggleLeft className="h-16 w-16" />
+          <ToggleLeft className="h-10 w-10" />
         )}
       </Button>
       <DropdownMenu>
