@@ -1,6 +1,6 @@
-import { Settings, Users, HelpCircle, LogOut, ChevronDown } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Link } from "react-router-dom"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useNavigate } from "react-router-dom"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,133 +9,111 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
-import { useEffect, useState } from "react"
-
-const profileMenuItems = [
-  { icon: Settings, label: "Profile Settings", to: "/profile/settings" },
-  { icon: Users, label: "Manage Workspace", to: "/workspace/settings" },
-  { icon: HelpCircle, label: "Get Help", to: "#" },
-]
+import { useQuery } from "@tanstack/react-query"
 
 export function UserMenu() {
-  const { toast } = useToast()
+  const session = useSession()
+  const supabase = useSupabaseClient()
   const navigate = useNavigate()
-  const [userProfile, setUserProfile] = useState<{
-    firstName: string;
-    lastName: string;
-    email: string;
-  } | null>(null)
+  const { toast } = useToast()
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
+  const { data: userProfile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', user.id)
+        .select('*')
+        .eq('id', session?.user?.id)
         .single()
 
       if (error) {
-        console.error('Error fetching profile:', error)
-        return
+        console.error('Error fetching user profile:', error)
+        throw error
       }
 
-      setUserProfile({
-        firstName: data.first_name || "",
-        lastName: data.last_name || "",
-        email: user.email || ""
-      })
-    }
+      return data
+    },
+    enabled: !!session?.user?.id,
+  })
 
-    fetchUserProfile()
-  }, [])
-
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-  }
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      })
-      return
+  const getInitials = (firstName?: string | null, lastName?: string | null) => {
+    if (!firstName && !lastName) {
+      return session?.user?.email?.charAt(0).toUpperCase() || 'U'
     }
     
-    toast({
-      title: "Signed out",
-      description: "You have been successfully signed out.",
-    })
-    navigate('/signin')
+    const firstInitial = firstName ? firstName.charAt(0) : ''
+    const lastInitial = lastName ? lastName.charAt(0) : ''
+    
+    return (firstInitial + lastInitial).toUpperCase() || 'U'
   }
 
-  const handleMenuItemClick = (label: string) => {
-    if (label !== "Manage Workspace" && label !== "Profile Settings") {
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      
+      navigate('/')
+      
       toast({
-        title: "Navigation",
-        description: `Navigating to ${label}...`,
+        title: "Signed out successfully",
+        description: "You have been signed out of your account",
+      })
+    } catch (error) {
+      console.error('Error signing out:', error)
+      toast({
+        title: "Error signing out",
+        description: "There was a problem signing out. Please try again.",
+        variant: "destructive",
       })
     }
   }
 
-  if (!userProfile) return null
+  if (!session) {
+    return null
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg" />
+            {userProfile?.avatar_url && (
+              <AvatarImage src={userProfile.avatar_url} alt="Profile" />
+            )}
             <AvatarFallback className="bg-[#F1F0FB] text-[#403E43]">
-              {getInitials(userProfile.firstName, userProfile.lastName)}
+              {getInitials(userProfile?.first_name, userProfile?.last_name)}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 text-left">
-            <div className="text-sm font-medium">
-              {userProfile.firstName} {userProfile.lastName}
-            </div>
-          </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent align="end" className="w-[200px]">
+        <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {userProfile.firstName} {userProfile.lastName}
+              {userProfile?.first_name 
+                ? `${userProfile.first_name} ${userProfile.last_name || ''}`
+                : session.user.email}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {userProfile.email}
+              {session.user.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {profileMenuItems.map((item) => (
-          <DropdownMenuItem 
-            key={item.label} 
-            asChild
-            onClick={() => handleMenuItemClick(item.label)}
-          >
-            <Link to={item.to} className="flex items-center gap-2">
-              <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </Link>
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuItem asChild>
+          <Link to="/profile/settings">Profile Settings</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/workspace/settings">Workspace Settings</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-destructive hover:text-white"
+          className="text-red-600 focus:text-red-600" 
+          onClick={handleSignOut}
         >
-          <LogOut className="h-4 w-4" />
-          <span>Sign out</span>
+          Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
