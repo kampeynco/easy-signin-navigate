@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +14,14 @@ import { useToast } from "@/hooks/use-toast"
 import { WorkspaceList } from "./workspace-selector/WorkspaceList"
 import { WorkspaceTrigger } from "./workspace-selector/WorkspaceTrigger"
 
-export function WorkspaceSelector() {
+export const WorkspaceSelector = memo(() => {
   const session = useSession()
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
   const { selectedWorkspaceId, setSelectedWorkspaceId, selectedWorkspace } = useWorkspace()
 
-  const handleWorkspaceSelect = async (workspaceId: string) => {
+  const handleWorkspaceSelect = useCallback(async (workspaceId: string) => {
     try {
       console.log('WorkspaceSelector: Switching to workspace:', workspaceId)
       setSelectedWorkspaceId(workspaceId)
@@ -38,7 +39,7 @@ export function WorkspaceSelector() {
         variant: "destructive",
       })
     }
-  }
+  }, [setSelectedWorkspaceId, queryClient, toast])
 
   // Auto-select first workspace if none is selected and workspaces are available
   if (workspaces?.length && !selectedWorkspaceId) {
@@ -49,7 +50,11 @@ export function WorkspaceSelector() {
   if (error) {
     console.error('WorkspaceSelector: Error:', error)
     return (
-      <button disabled className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500">
+      <button 
+        disabled 
+        className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500"
+        type="button"
+      >
         <span className="flex-1 text-left text-sm">Error loading workspaces</span>
       </button>
     )
@@ -65,7 +70,7 @@ export function WorkspaceSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="start" 
-        className="w-[240px] bg-popover"
+        className="w-[240px] bg-popover shadow-lg border border-border/50"
         sideOffset={4}
       >
         <WorkspaceList 
@@ -78,4 +83,6 @@ export function WorkspaceSelector() {
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
+})
+
+WorkspaceSelector.displayName = 'WorkspaceSelector'
