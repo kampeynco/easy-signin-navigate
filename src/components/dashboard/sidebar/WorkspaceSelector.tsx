@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -61,6 +60,11 @@ export function WorkspaceSelector() {
         <span className="flex-1 text-left text-sm">Error loading workspaces</span>
       </button>
     )
+  }
+
+  // If there are workspaces but none is selected, select the first one
+  if (workspaces?.length > 0 && !selectedWorkspaceId) {
+    handleWorkspaceSelect(workspaces[0].id)
   }
 
   return (
