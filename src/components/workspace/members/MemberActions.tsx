@@ -40,15 +40,31 @@ export function useMemberActions() {
     }
   }
 
-  const handleRemoveMember = async (memberId: string) => {
+  const handleRemoveMember = async (memberId: string, isPending: boolean = false) => {
     if (!selectedWorkspace?.id) return
 
     try {
-      const { error } = await supabase
-        .from('workspace_members')
-        .delete()
-        .eq('workspace_id', selectedWorkspace.id)
-        .eq('user_id', memberId)
+      let error;
+
+      if (isPending) {
+        // Delete from workspace_invitations table if it's a pending invitation
+        const { error: invitationError } = await supabase
+          .from('workspace_invitations')
+          .delete()
+          .eq('id', memberId)
+          .eq('workspace_id', selectedWorkspace.id)
+
+        error = invitationError
+      } else {
+        // Delete from workspace_members table if it's an active member
+        const { error: memberError } = await supabase
+          .from('workspace_members')
+          .delete()
+          .eq('workspace_id', selectedWorkspace.id)
+          .eq('user_id', memberId)
+
+        error = memberError
+      }
 
       if (error) throw error
 
@@ -57,14 +73,18 @@ export function useMemberActions() {
       })
 
       toast({
-        title: "Member removed",
-        description: "Team member has been removed successfully.",
+        title: isPending ? "Invitation cancelled" : "Member removed",
+        description: isPending 
+          ? "The invitation has been cancelled successfully."
+          : "Team member has been removed successfully.",
       })
     } catch (error: any) {
       console.error('Error removing member:', error)
       toast({
         title: "Error",
-        description: "Failed to remove team member",
+        description: isPending 
+          ? "Failed to cancel invitation"
+          : "Failed to remove team member",
         variant: "destructive",
       })
     }
