@@ -3,6 +3,18 @@ import { useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import type { WorkspaceMember } from "@/types/workspace-member"
+import type { Database } from "@/integrations/supabase/types"
+
+type ProfilesJoin = {
+  profiles: {
+    id: string;
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
+  } | null;
+}
+
+type WorkspaceMemberRow = Database['public']['Tables']['workspace_members']['Row'] & ProfilesJoin
 
 export function useWorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
@@ -24,7 +36,7 @@ export function useWorkspaceMembers() {
           id,
           user_id,
           role,
-          profiles:user_id (
+          profiles (
             id,
             first_name,
             last_name,
@@ -42,7 +54,7 @@ export function useWorkspaceMembers() {
 
       if (!data) return []
 
-      return data.map((member) => ({
+      return (data as WorkspaceMemberRow[]).map((member) => ({
         id: member.user_id,
         first_name: member.profiles?.first_name || '',
         last_name: member.profiles?.last_name || '',
