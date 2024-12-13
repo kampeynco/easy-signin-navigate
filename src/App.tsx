@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { SessionContextProvider } from '@supabase/auth-helpers-react'
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext"
 import { AuthCallback } from "./components/auth/AuthCallback"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import { PublicRoute } from "./routes/PublicRoute"
@@ -30,65 +31,67 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <SessionContextProvider supabaseClient={supabase}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Auth callback route - must be before other routes */}
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              
-              {/* Public routes */}
-              <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
-              <Route path="/features" element={<PublicRoute><Features /></PublicRoute>} />
-              <Route path="/pricing" element={<PublicRoute><Pricing /></PublicRoute>} />
-              <Route path="/docs" element={<PublicRoute><Documentation /></PublicRoute>} />
-              <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
-              <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-              <Route path="/verify-email" element={<OTPVerification />} />
-              <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+        <WorkspaceProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <Routes>
+                {/* Auth callback route - must be before other routes */}
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                
+                {/* Public routes */}
+                <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
+                <Route path="/features" element={<PublicRoute><Features /></PublicRoute>} />
+                <Route path="/pricing" element={<PublicRoute><Pricing /></PublicRoute>} />
+                <Route path="/docs" element={<PublicRoute><Documentation /></PublicRoute>} />
+                <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
+                <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+                <Route path="/verify-email" element={<OTPVerification />} />
+                <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-              {/* Protected routes */}
-              <Route 
-                path="/onboarding" 
-                element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route
-                path="/dashboard/*"
-                element={
-                  <ProtectedRoute>
-                    <SidebarProvider>
-                      <div className="flex min-h-screen w-full">
-                        <DashboardSidebar />
-                        <Dashboard />
-                      </div>
-                    </SidebarProvider>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/settings"
-                element={
-                  <ProtectedRoute>
-                    <SidebarProvider>
-                      <div className="flex min-h-screen w-full">
-                        <DashboardSidebar />
-                        <WorkspaceSettings />
-                      </div>
-                    </SidebarProvider>
-                  </ProtectedRoute>
-                }
-              />
+                {/* Protected routes */}
+                <Route 
+                  path="/onboarding" 
+                  element={
+                    <ProtectedRoute>
+                      <Onboarding />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route
+                  path="/dashboard/*"
+                  element={
+                    <ProtectedRoute>
+                      <SidebarProvider>
+                        <div className="flex min-h-screen w-full">
+                          <DashboardSidebar />
+                          <Dashboard />
+                        </div>
+                      </SidebarProvider>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/settings"
+                  element={
+                    <ProtectedRoute>
+                      <SidebarProvider>
+                        <div className="flex min-h-screen w-full">
+                          <DashboardSidebar />
+                          <WorkspaceSettings />
+                        </div>
+                      </SidebarProvider>
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Catch all route */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <Toaster />
-            <Sonner />
-          </BrowserRouter>
-        </TooltipProvider>
+                {/* Catch all route */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+              <Toaster />
+              <Sonner />
+            </BrowserRouter>
+          </TooltipProvider>
+        </WorkspaceProvider>
       </SessionContextProvider>
     </QueryClientProvider>
   )

@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { supabase } from "@/integrations/supabase/client"
-import { useWorkspaces } from "@/hooks/useWorkspaces"
-import { useSession } from "@supabase/auth-helpers-react"
+import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 
@@ -21,10 +20,8 @@ interface WorkspaceFormData {
 export function WorkspaceGeneralSettings() {
   const { toast } = useToast()
   const navigate = useNavigate()
-  const session = useSession()
   const queryClient = useQueryClient()
-  const { data: workspaces, refetch } = useWorkspaces(session?.user?.id)
-  const currentWorkspace = workspaces?.[0]
+  const { selectedWorkspace, setSelectedWorkspaceId } = useWorkspace()
   
   const form = useForm<WorkspaceFormData>({
     defaultValues: {
@@ -33,18 +30,18 @@ export function WorkspaceGeneralSettings() {
     },
   })
 
-  // Update form values when currentWorkspace changes
+  // Update form values when selectedWorkspace changes
   useEffect(() => {
-    if (currentWorkspace) {
+    if (selectedWorkspace) {
       form.reset({
-        name: currentWorkspace.name,
-        description: currentWorkspace.description || "",
+        name: selectedWorkspace.name,
+        description: selectedWorkspace.description || "",
       })
     }
-  }, [currentWorkspace, form])
+  }, [selectedWorkspace, form])
 
   const onSubmit = async (data: WorkspaceFormData) => {
-    if (!currentWorkspace?.id) return
+    if (!selectedWorkspace?.id) return
 
     try {
       const { error } = await supabase
@@ -54,13 +51,11 @@ export function WorkspaceGeneralSettings() {
           description: data.description,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', currentWorkspace.id)
+        .eq('id', selectedWorkspace.id)
 
       if (error) throw error
 
-      // Invalidate and refetch relevant queries
-      await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
-      await refetch()
+      await queryClient.invalidateQueries()
 
       toast({
         title: "Settings updated",
@@ -78,25 +73,22 @@ export function WorkspaceGeneralSettings() {
 
   const handleDeleteWorkspace = async () => {
     try {
-      if (!currentWorkspace?.id) {
+      if (!selectedWorkspace?.id) {
         throw new Error('No workspace selected')
       }
 
       const { data, error } = await supabase.functions.invoke('delete-workspace', {
-        body: { workspaceId: currentWorkspace.id }
+        body: { workspaceId: selectedWorkspace.id }
       })
 
       if (error) throw error
 
-      // Invalidate workspace queries
-      await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
+      setSelectedWorkspaceId(null)
+      await queryClient.invalidateQueries()
 
       if (data.remainingWorkspaces.length === 0) {
-        // If no workspaces left, redirect to onboarding
         navigate('/onboarding')
       } else {
-        // If workspaces remain, refresh the workspace list and navigate to dashboard
-        await refetch()
         navigate('/dashboard')
       }
 
@@ -112,6 +104,10 @@ export function WorkspaceGeneralSettings() {
         variant: "destructive",
       })
     }
+  }
+
+  if (!selectedWorkspace) {
+    return null
   }
 
   return (

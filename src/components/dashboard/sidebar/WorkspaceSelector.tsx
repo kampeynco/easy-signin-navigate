@@ -11,37 +11,24 @@ import { Separator } from "@/components/ui/separator"
 import { useSession } from "@supabase/auth-helpers-react"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog"
-import type { Workspace } from "@/types/workspace"
+import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
 
 export function WorkspaceSelector() {
   const session = useSession()
   const { toast } = useToast()
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
-  const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
   const queryClient = useQueryClient()
-
-  // Automatically select the first workspace if none is selected or current selection doesn't exist
-  useEffect(() => {
-    if (workspaces && workspaces.length > 0) {
-      // If no workspace is selected or the selected workspace no longer exists
-      if (!selectedWorkspaceId || !workspaces.find(w => w.id === selectedWorkspaceId)) {
-        handleWorkspaceSelect(workspaces[0].id)
-      }
-    } else {
-      setSelectedWorkspaceId(null)
-    }
-  }, [workspaces, selectedWorkspaceId])
+  const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
+  const { selectedWorkspaceId, setSelectedWorkspaceId, selectedWorkspace } = useWorkspace()
 
   const handleWorkspaceSelect = async (workspaceId: string) => {
     try {
       setSelectedWorkspaceId(workspaceId)
       
-      // Invalidate all queries that depend on the current workspace
+      // Invalidate all queries to refresh data
       await queryClient.invalidateQueries()
       
-      // Show a toast to indicate the workspace switch
       toast({
         title: "Workspace switched",
         description: "Dashboard updated with selected workspace data",
@@ -76,8 +63,6 @@ export function WorkspaceSelector() {
     )
   }
 
-  const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId)
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -95,7 +80,7 @@ export function WorkspaceSelector() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[240px]">
         {workspaces && workspaces.length > 0 ? (
-          workspaces.map((workspace: Workspace) => (
+          workspaces.map((workspace) => (
             <DropdownMenuItem 
               key={workspace.id}
               className="flex items-center gap-2"
