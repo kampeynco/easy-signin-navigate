@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +40,7 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2">
+        <button className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
           <UserAvatar 
             firstName={userProfile.firstName} 
             lastName={userProfile.lastName} 
