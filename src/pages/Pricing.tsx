@@ -1,9 +1,6 @@
-import Navigation from "@/components/Navigation"
-
 const Pricing = () => {
   return (
     <div className="bg-background min-h-screen">
-      <Navigation />
       <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-primary">
