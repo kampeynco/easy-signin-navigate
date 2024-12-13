@@ -29,20 +29,23 @@ export function useWorkspaceMemberDeletion() {
       let error;
 
       if (isPending) {
-        console.log('Deleting invitation:', { memberId })
+        console.log('Attempting to delete invitation:', { invitationId: memberId })
         const { error: invitationError } = await supabase
           .from('workspace_invitations')
           .delete()
-          .eq('id', memberId)
+          .match({ id: memberId })
 
         error = invitationError
+        console.log('Deletion response:', { error: invitationError })
       } else {
         console.log('Removing member:', { memberId, workspaceId: selectedWorkspace.id })
         const { error: memberError } = await supabase
           .from('workspace_members')
           .delete()
-          .eq('workspace_id', selectedWorkspace.id)
-          .eq('user_id', memberId)
+          .match({ 
+            workspace_id: selectedWorkspace.id,
+            user_id: memberId 
+          })
 
         error = memberError
       }
