@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { MoreVertical, Edit } from "lucide-react"
+import { MoreVertical } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,20 +42,19 @@ export function MemberListItem({
       </div>
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
-          {member.status !== 'pending' && (
+          {member.status === 'pending' ? (
+            <Badge variant="secondary">Pending</Badge>
+          ) : (
             <span className="text-sm text-muted-foreground">
               {member.role}
             </span>
-          )}
-          {member.status === 'pending' && (
-            <Badge variant="secondary">Pending</Badge>
           )}
         </div>
         {!isOnlyAdmin && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
-                <Edit className="h-4 w-4" />
+                <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

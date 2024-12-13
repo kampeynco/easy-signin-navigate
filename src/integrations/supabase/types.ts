@@ -162,8 +162,10 @@ export type Database = {
           created_at: string
           email: string
           expires_at: string
+          first_name: string | null
           id: string
           invited_by: string
+          last_name: string | null
           role: string
           status: string
           token: string
@@ -174,8 +176,10 @@ export type Database = {
           created_at?: string
           email: string
           expires_at?: string
+          first_name?: string | null
           id?: string
           invited_by: string
+          last_name?: string | null
           role?: string
           status?: string
           token?: string
@@ -186,8 +190,10 @@ export type Database = {
           created_at?: string
           email?: string
           expires_at?: string
+          first_name?: string | null
           id?: string
           invited_by?: string
+          last_name?: string | null
           role?: string
           status?: string
           token?: string
