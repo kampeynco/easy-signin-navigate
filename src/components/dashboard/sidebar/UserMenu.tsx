@@ -103,14 +103,14 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profile/settings" className="hover:text-white">Profile Settings</Link>
+          <Link to="/profile/settings" className="w-full hover:text-white">Profile Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/workspace/settings" className="hover:text-white">Workspace Settings</Link>
+          <Link to="/workspace/settings" className="w-full hover:text-white">Workspace Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          className="text-red-600 focus:text-red-600" 
+          className="text-red-600 focus:text-red-600 hover:text-red-500" 
           onClick={handleSignOut}
         >
           Sign out

@@ -77,10 +77,10 @@ export function CreateWorkspaceDialog() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <DropdownMenuItem 
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:text-white group"
           onSelect={(e) => e.preventDefault()}
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-4 w-4 group-hover:text-white" />
           <span>Create New Workspace</span>
         </DropdownMenuItem>
       </DialogTrigger>
