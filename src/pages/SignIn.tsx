@@ -1,31 +1,20 @@
-import { useState } from "react"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSession } from "@supabase/auth-helpers-react"
 import { AuthOptions } from "@/components/auth/AuthOptions"
-import { EmailSignInForm } from "@/components/auth/EmailSignInForm"
-import { supabase } from "@/integrations/supabase/client"
-import { useToast } from "@/hooks/use-toast"
 import Navigation from "@/components/Navigation"
 
 const SignIn = () => {
   const session = useSession()
   const navigate = useNavigate()
-  const { toast } = useToast()
-  const [showEmailForm, setShowEmailForm] = useState(false)
 
   const handleEmailClick = () => {
-    setShowEmailForm(true)
+    // We'll implement email sign-in in a future update
+    console.log("Email sign-in clicked")
   }
 
-  const handleSignIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) throw error
-
+  useEffect(() => {
+    if (session?.user) {
       // Check for pending invitation
       const pendingInvitationToken = localStorage.getItem('pendingInvitationToken')
       if (pendingInvitationToken) {
@@ -33,21 +22,9 @@ const SignIn = () => {
         navigate(`/accept-invitation?token=${pendingInvitationToken}`)
         return
       }
-      
       navigate('/dashboard')
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error signing in",
-        description: error.message,
-      })
     }
-  }
-
-  if (session?.user) {
-    navigate('/dashboard')
-    return null
-  }
+  }, [session, navigate])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -60,12 +37,7 @@ const SignIn = () => {
               Sign in to your account to continue
             </p>
           </div>
-          
-          {showEmailForm ? (
-            <EmailSignInForm onSubmit={handleSignIn} />
-          ) : (
-            <AuthOptions onEmailClick={handleEmailClick} />
-          )}
+          <AuthOptions onEmailClick={handleEmailClick} />
         </div>
       </div>
     </div>
