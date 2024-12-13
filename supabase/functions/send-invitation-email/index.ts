@@ -56,8 +56,10 @@ const handler = async (req: Request): Promise<Response> => {
       )
     }
 
+    console.log('Creating Supabase client...')
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
     
+    console.log('Fetching invitation details...')
     // Get invitation details
     const { data: invitation, error: invitationError } = await supabase
       .from('workspace_invitations')
@@ -65,8 +67,19 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('id', requestBody.invitationId)
       .single()
 
-    if (invitationError || !invitation) {
+    if (invitationError) {
       console.error('Error fetching invitation:', invitationError)
+      return new Response(
+        JSON.stringify({ error: 'Invitation not found', details: invitationError }), 
+        { 
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    if (!invitation) {
+      console.error('No invitation found')
       return new Response(
         JSON.stringify({ error: 'Invitation not found' }), 
         { 
@@ -82,6 +95,7 @@ const handler = async (req: Request): Promise<Response> => {
     const acceptUrl = `${req.headers.get('origin')}/accept-invitation?token=${invitation.token}`
     console.log('Accept URL:', acceptUrl)
 
+    console.log('Sending email via Resend...')
     // Send email using Resend
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
