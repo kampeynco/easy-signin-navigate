@@ -34,12 +34,7 @@ export function UserMenuItems({ onLogout }: UserMenuItemsProps) {
         <DropdownMenuItem 
           key={item.label} 
           asChild
-          onClick={(e) => {
-            if (item.to === "#") {
-              e.preventDefault()
-              handleMenuItemClick(item.label)
-            }
-          }}
+          onClick={() => handleMenuItemClick(item.label)}
         >
           <Link to={item.to} className="flex items-center gap-2">
             <item.icon className="h-4 w-4" />

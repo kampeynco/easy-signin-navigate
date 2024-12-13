@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import { useUserProfile } from "./user-menu/useUserProfile"
 
 export function UserMenu() {
   const { toast } = useToast()
+  const navigate = useNavigate()
   const userProfile = useUserProfile()
 
   const handleLogout = async () => {
@@ -31,7 +32,7 @@ export function UserMenu() {
       title: "Signed out",
       description: "You have been successfully signed out.",
     })
-    window.location.href = '/signin'
+    navigate('/signin')
   }
 
   if (!userProfile) return null
@@ -39,7 +40,7 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
+        <button className="flex items-center gap-2">
           <UserAvatar 
             firstName={userProfile.firstName} 
             lastName={userProfile.lastName} 

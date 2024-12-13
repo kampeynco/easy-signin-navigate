@@ -13,8 +13,8 @@ export function UserAvatar({ firstName, lastName }: UserAvatarProps) {
   return (
     <Avatar className="h-8 w-8">
       <AvatarImage src="/placeholder.svg" />
-      <AvatarFallback className="bg-primary text-primary-foreground font-medium">
-        {getInitials(firstName || '', lastName || '')}
+      <AvatarFallback className="bg-primary text-white">
+        {getInitials(firstName, lastName)}
       </AvatarFallback>
     </Avatar>
   )
