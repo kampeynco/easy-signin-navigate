@@ -5,7 +5,7 @@ import type { WorkspaceMember } from "@/types/workspace-member"
 interface MembersListProps {
   members: WorkspaceMember[]
   onRoleChange: (memberId: string, currentRole: string) => void
-  onRemove: (memberId: string) => void
+  onRemove: (memberId: string, isPending: boolean, email: string) => void
 }
 
 export function MembersList({ members, onRoleChange, onRemove }: MembersListProps) {
