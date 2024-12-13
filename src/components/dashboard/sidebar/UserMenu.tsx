@@ -1,4 +1,4 @@
-import { Settings, Users, HelpCircle, LogOut } from "lucide-react"
+import { Settings, Users, HelpCircle, LogOut, ChevronDown } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
