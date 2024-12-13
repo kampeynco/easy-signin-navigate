@@ -4,6 +4,7 @@ import { MembersList } from "./members/MembersList"
 import { useWorkspaceMembers } from "@/hooks/useWorkspaceMembers"
 import { useMemberActions } from "./members/MemberActions"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
+import { AddMemberDialog } from "./members/AddMemberDialog"
 
 export function WorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
@@ -65,10 +66,7 @@ export function WorkspaceMembers() {
             Manage your team members and their roles.
           </p>
         </div>
-        <Button>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Member
-        </Button>
+        <AddMemberDialog />
       </div>
 
       <MembersList 
