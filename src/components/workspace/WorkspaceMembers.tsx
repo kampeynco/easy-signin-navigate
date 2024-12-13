@@ -8,6 +8,8 @@ export function WorkspaceMembers() {
   const { members, isLoading, error } = useWorkspaceMembers()
   const { handleRoleChange, handleRemoveMember } = useMemberActions()
 
+  console.log('WorkspaceMembers component state:', { members, isLoading, error })
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -22,12 +24,15 @@ export function WorkspaceMembers() {
   }
 
   if (error) {
+    console.error('Error in WorkspaceMembers:', error)
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-lg font-medium">Team Members</h2>
-            <p className="text-sm text-destructive">Error loading members</p>
+            <p className="text-sm text-destructive">
+              Error loading members: {error.message}
+            </p>
           </div>
         </div>
       </div>

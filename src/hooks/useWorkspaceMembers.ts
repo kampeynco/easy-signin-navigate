@@ -11,13 +11,17 @@ export function useWorkspaceMembers() {
   const { data: members = [], isLoading, error } = useQuery({
     queryKey: ['workspace-members', selectedWorkspace?.id],
     queryFn: async () => {
-      if (!selectedWorkspace?.id) return []
+      if (!selectedWorkspace?.id) {
+        console.log('No workspace selected')
+        return []
+      }
 
       console.log('Fetching members for workspace:', selectedWorkspace.id)
 
       const { data, error } = await supabase
         .from('workspace_members')
         .select(`
+          id,
           user_id,
           role,
           profiles:user_id (
@@ -36,11 +40,13 @@ export function useWorkspaceMembers() {
 
       console.log('Raw workspace members data:', data)
 
-      return data.map((member: any) => ({
+      if (!data) return []
+
+      return data.map((member) => ({
         id: member.user_id,
-        first_name: member.profiles?.first_name,
-        last_name: member.profiles?.last_name,
-        email: member.profiles?.email,
+        first_name: member.profiles?.first_name || '',
+        last_name: member.profiles?.last_name || '',
+        email: member.profiles?.email || '',
         role: member.role
       })) as WorkspaceMember[]
     },
@@ -50,6 +56,8 @@ export function useWorkspaceMembers() {
   // Set up real-time subscription
   useEffect(() => {
     if (!selectedWorkspace?.id) return
+
+    console.log('Setting up real-time subscription for workspace:', selectedWorkspace.id)
 
     const channel = supabase
       .channel(`workspace-members-${selectedWorkspace.id}`)
@@ -71,6 +79,7 @@ export function useWorkspaceMembers() {
       .subscribe()
 
     return () => {
+      console.log('Cleaning up real-time subscription')
       supabase.removeChannel(channel)
     }
   }, [selectedWorkspace?.id, queryClient])

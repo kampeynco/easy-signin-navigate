@@ -1,7 +1,7 @@
 export interface WorkspaceMember {
   id: string;
-  email: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  email: string;
+  first_name: string;
+  last_name: string;
   role: string;
 }
