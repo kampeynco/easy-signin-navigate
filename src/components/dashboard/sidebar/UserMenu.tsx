@@ -1,4 +1,4 @@
-import { Settings, Users, HelpCircle, LogOut, ChevronDown } from "lucide-react"
+import { Settings, Users, HelpCircle, LogOut } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 
 const profileMenuItems = [
-  { icon: Settings, label: "Profile Settings", to: "#" },
+  { icon: Settings, label: "Profile Settings", to: "/profile/settings" },
   { icon: Users, label: "Manage Workspace", to: "/workspace/settings" },
   { icon: HelpCircle, label: "Get Help", to: "#" },
 ]
@@ -40,46 +40,8 @@ export function UserMenu() {
     navigate('/signin')
   }
 
-  const handleDeleteAccount = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        throw new Error('No active session')
-      }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Failed to delete account')
-      }
-
-      toast({
-        title: "Account Deleted",
-        description: "Your account has been successfully deleted.",
-      })
-      navigate('/signin')
-    } catch (error) {
-      console.error('Delete account error:', error)
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete account. Please try again.",
-        variant: "destructive",
-      })
-    }
-  }
-
   const handleMenuItemClick = (label: string) => {
-    if (label !== "Manage Workspace") {
+    if (label !== "Manage Workspace" && label !== "Profile Settings") {
       toast({
         title: "Navigation",
         description: `Navigating to ${label}...`,
@@ -130,13 +92,6 @@ export function UserMenu() {
         >
           <LogOut className="h-4 w-4" />
           <span>Sign out</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={handleDeleteAccount}
-          className="flex items-center gap-2 text-destructive hover:text-white"
-        >
-          <LogOut className="h-4 w-4" />
-          <span>Delete Account</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useSession } from "@supabase/auth-helpers-react"
-import { Building } from "lucide-react"
+import { Building, User } from "lucide-react"
+import { ProfileForm } from "@/components/profile/ProfileForm"
 
 const Onboarding = () => {
+  const [step, setStep] = useState(1)
   const [workspaceName, setWorkspaceName] = useState("")
   const [isCreating, setIsCreating] = useState(false)
   const navigate = useNavigate()
@@ -73,36 +75,58 @@ const Onboarding = () => {
     }
   }
 
+  const handleProfileSubmit = () => {
+    setStep(2)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md space-y-8 p-8">
-        <div className="text-center space-y-2">
-          <div className="flex justify-center">
-            <div className="bg-primary/10 p-3 rounded-full">
-              <Building className="h-6 w-6 text-primary" />
+        {step === 1 ? (
+          <>
+            <div className="text-center space-y-2">
+              <div className="flex justify-center">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <User className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight">Complete Your Profile</h1>
+              <p className="text-muted-foreground">Let's get to know you better</p>
             </div>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight">Welcome to Kampeyn</h1>
-          <p className="text-muted-foreground">Let's create your first workspace</p>
-        </div>
 
-        <form onSubmit={handleCreateWorkspace} className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              placeholder="Enter workspace name"
-              value={workspaceName}
-              onChange={(e) => setWorkspaceName(e.target.value)}
-              disabled={isCreating}
-            />
-          </div>
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={isCreating}
-          >
-            {isCreating ? "Creating..." : "Create Workspace"}
-          </Button>
-        </form>
+            <ProfileForm onSubmit={handleProfileSubmit} submitLabel="Continue" />
+          </>
+        ) : (
+          <>
+            <div className="text-center space-y-2">
+              <div className="flex justify-center">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Building className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight">Create Your Workspace</h1>
+              <p className="text-muted-foreground">Let's create your first workspace</p>
+            </div>
+
+            <form onSubmit={handleCreateWorkspace} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  placeholder="Enter workspace name"
+                  value={workspaceName}
+                  onChange={(e) => setWorkspaceName(e.target.value)}
+                  disabled={isCreating}
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isCreating}
+              >
+                {isCreating ? "Creating..." : "Create Workspace"}
+              </Button>
+            </form>
+          </>
+        )}
       </div>
     </div>
   )
