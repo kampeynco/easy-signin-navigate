@@ -14,7 +14,7 @@ interface WorkspaceMember {
     id: string
     first_name: string | null
     last_name: string | null
-    email: string
+    email: string | null  // Updated to allow null since email might be nullable
   }
 }
 
@@ -51,7 +51,10 @@ export function WorkspaceMembers() {
 
       console.log('Fetched memberships:', memberships)
 
-      return (memberships as WorkspaceMember[]).map((membership) => ({
+      // Type assertion after validating the data structure
+      const typedMemberships = memberships as unknown as WorkspaceMember[]
+      
+      return typedMemberships.map((membership) => ({
         id: membership.profiles.id,
         first_name: membership.profiles.first_name,
         last_name: membership.profiles.last_name,
