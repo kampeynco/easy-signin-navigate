@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { Check } from "lucide-react"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Separator } from "@/components/ui/separator"
 
 const PricingTier = ({ 
   name, 
@@ -42,6 +51,61 @@ const PricingTier = ({
   </div>
 )
 
+const Testimonial = ({ 
+  author, 
+  role, 
+  content, 
+  avatarUrl 
+}: { 
+  author: string
+  role: string
+  content: string
+  avatarUrl?: string 
+}) => (
+  <div className="space-y-4">
+    <p className="text-muted-foreground italic">{content}</p>
+    <div className="flex items-center gap-3">
+      <Avatar>
+        <AvatarImage src={avatarUrl} />
+        <AvatarFallback>{author[0]}</AvatarFallback>
+      </Avatar>
+      <div>
+        <p className="font-semibold">{author}</p>
+        <p className="text-sm text-muted-foreground">{role}</p>
+      </div>
+    </div>
+  </div>
+)
+
+const FAQ = () => (
+  <Accordion type="single" collapsible className="w-full">
+    <AccordionItem value="item-1">
+      <AccordionTrigger>What is Kampeyn?</AccordionTrigger>
+      <AccordionContent>
+        Kampeyn is a powerful automation platform that helps businesses streamline their workflows and increase productivity.
+      </AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-2">
+      <AccordionTrigger>How does the pricing work?</AccordionTrigger>
+      <AccordionContent>
+        We offer flexible pricing plans starting from a free tier. You can choose the plan that best fits your needs and scale as your business grows.
+      </AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-3">
+      <AccordionTrigger>Do you offer a money-back guarantee?</AccordionTrigger>
+      <AccordionContent>
+        Yes, we offer a 14-day money-back guarantee. If you're not satisfied with our service, we'll provide a full refund.
+      </AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-4">
+      <AccordionTrigger>What kind of support do you provide?</AccordionTrigger>
+      <AccordionContent>
+        We provide email support for all plans, with priority support for Pro users and dedicated support for Enterprise customers.
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
+)
+
 const Pricing = () => {
   return (
     <div className="bg-background min-h-screen">
@@ -50,7 +114,7 @@ const Pricing = () => {
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight">Smart Automation, Smarter Pricing</h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            A solution that scales with your business needs
+            Choose the perfect plan for your business needs
           </p>
         </div>
 
@@ -121,41 +185,64 @@ const Pricing = () => {
         <div className="mt-24">
           <h2 className="text-center text-2xl font-bold mb-12">Not sure which plan to choose?</h2>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-4 px-6 text-left">Features</th>
-                  <th className="py-4 px-6 text-center">Free</th>
-                  <th className="py-4 px-6 text-center">Pro</th>
-                  <th className="py-4 px-6 text-center">Enterprise</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[300px]">Features</TableHead>
+                  <TableHead className="text-center">Free</TableHead>
+                  <TableHead className="text-center">Pro</TableHead>
+                  <TableHead className="text-center">Enterprise</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {[
-                  "Monthly tasks",
-                  "Team members",
-                  "Custom workflows",
-                  "API access",
-                  "Priority support",
-                  "Custom integrations",
-                  "Advanced analytics",
-                  "Enterprise SLA"
-                ].map((feature, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="py-4 px-6">{feature}</td>
-                    <td className="py-4 px-6 text-center">
-                      {index < 2 ? "100" : <Check className="mx-auto h-5 w-5 text-muted-foreground/50" />}
-                    </td>
-                    <td className="py-4 px-6 text-center">
-                      {index < 2 ? "Unlimited" : <Check className="mx-auto h-5 w-5 text-primary" />}
-                    </td>
-                    <td className="py-4 px-6 text-center">
-                      {index < 2 ? "Unlimited" : <Check className="mx-auto h-5 w-5 text-primary" />}
-                    </td>
-                  </tr>
+                  { feature: "Monthly tasks", free: "100", pro: "Unlimited", enterprise: "Unlimited" },
+                  { feature: "Team members", free: "1", pro: "Up to 10", enterprise: "Unlimited" },
+                  { feature: "Integrations", free: "5", pro: "50+", enterprise: "Custom" },
+                  { feature: "API access", free: "No", pro: "Yes", enterprise: "Yes" },
+                  { feature: "Custom workflows", free: "No", pro: "Yes", enterprise: "Yes" },
+                  { feature: "Analytics", free: "Basic", pro: "Advanced", enterprise: "Custom" },
+                  { feature: "Support", free: "Email", pro: "Priority", enterprise: "24/7 Dedicated" },
+                ].map((row, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium">{row.feature}</TableCell>
+                    <TableCell className="text-center">{row.free}</TableCell>
+                    <TableCell className="text-center">{row.pro}</TableCell>
+                    <TableCell className="text-center">{row.enterprise}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        {/* Testimonials */}
+        <div className="mt-24">
+          <h2 className="text-center text-2xl font-bold mb-12">What Our Customers Say</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Testimonial
+              author="Sarah Johnson"
+              role="Marketing Director"
+              content="Kampeyn has transformed how we handle our marketing automation. The workflow builder is intuitive and powerful."
+            />
+            <Testimonial
+              author="Michael Chen"
+              role="Tech Lead"
+              content="The API integration capabilities are fantastic. We've been able to connect all our tools seamlessly."
+            />
+            <Testimonial
+              author="Emma Davis"
+              role="Operations Manager"
+              content="The customer support is exceptional. They've helped us optimize our automation processes significantly."
+            />
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-24">
+          <h2 className="text-center text-2xl font-bold mb-12">Frequently Asked Questions</h2>
+          <div className="max-w-3xl mx-auto">
+            <FAQ />
           </div>
         </div>
 
@@ -163,13 +250,31 @@ const Pricing = () => {
         <div className="mt-24 text-center">
           <p className="text-sm text-muted-foreground">Trusted by Over 4,000,000+ Websites Worldwide</p>
           <div className="mt-8 flex justify-center gap-8 grayscale opacity-50">
-            {/* Add partner logos here if needed */}
+            {/* Add partner logos here */}
           </div>
         </div>
 
-        {/* CTA */}
+        {/* Final CTA */}
         <div className="mt-24 text-center">
-          <Button size="lg" className="px-8">Get Started with Kampeyn</Button>
+          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <p className="text-lg text-muted-foreground mb-8">Join thousands of satisfied customers using Kampeyn</p>
+          <Button size="lg" className="px-8">Start Your Free Trial</Button>
+        </div>
+
+        {/* Additional Resources */}
+        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center">
+            <h3 className="font-semibold mb-2">Documentation</h3>
+            <p className="text-sm text-muted-foreground">Comprehensive guides and API documentation</p>
+          </div>
+          <div className="text-center">
+            <h3 className="font-semibold mb-2">Community</h3>
+            <p className="text-sm text-muted-foreground">Join our active community of users</p>
+          </div>
+          <div className="text-center">
+            <h3 className="font-semibold mb-2">Support</h3>
+            <p className="text-sm text-muted-foreground">Get help when you need it</p>
+          </div>
         </div>
       </div>
     </div>
