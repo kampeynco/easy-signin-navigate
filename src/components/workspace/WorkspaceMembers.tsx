@@ -7,6 +7,17 @@ import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useToast } from "@/hooks/use-toast"
 import { MembersList } from "./members/MembersList"
 
+interface WorkspaceMember {
+  user_id: string
+  role: string
+  profiles: {
+    id: string
+    first_name: string | null
+    last_name: string | null
+    email: string
+  }
+}
+
 export function WorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
   const { toast } = useToast()
@@ -24,7 +35,7 @@ export function WorkspaceMembers() {
         .select(`
           user_id,
           role,
-          profiles (
+          profiles!inner (
             id,
             first_name,
             last_name,
@@ -40,7 +51,7 @@ export function WorkspaceMembers() {
 
       console.log('Fetched memberships:', memberships)
 
-      return memberships.map((membership) => ({
+      return (memberships as WorkspaceMember[]).map((membership) => ({
         id: membership.profiles.id,
         first_name: membership.profiles.first_name,
         last_name: membership.profiles.last_name,
