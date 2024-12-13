@@ -13,7 +13,6 @@ export function WorkflowTableRow({ workflow, onDelete, onToggleStatus }: Workflo
   return (
     <TableRow key={workflow.id}>
       <TableCell className="font-medium">{workflow.name}</TableCell>
-      <TableCell>{workflow.is_active ? 'Active' : 'Inactive'}</TableCell>
       <TableCell>{format(new Date(workflow.created_at), 'MMM d, yyyy')}</TableCell>
       <TableCell className="flex items-center justify-end gap-2">
         <WorkflowActions

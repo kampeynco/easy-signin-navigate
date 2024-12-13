@@ -94,7 +94,6 @@ export function WorkflowsTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="w-[100px]"></TableHead>
           </TableRow>
@@ -110,7 +109,7 @@ export function WorkflowsTable() {
           ))}
           {workflows?.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-muted-foreground">
+              <TableCell colSpan={3} className="text-center text-muted-foreground">
                 No workflows found
               </TableCell>
             </TableRow>
