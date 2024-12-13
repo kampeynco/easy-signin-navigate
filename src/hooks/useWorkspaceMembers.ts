@@ -38,7 +38,7 @@ export function useWorkspaceMembers() {
     }
 
     console.log('Raw workspace members data:', data)
-    return data?.map(transformWorkspaceMember) || []
+    return (data as WorkspaceMemberResponse[])?.map(transformWorkspaceMember) || []
   }
 
   const { data: members = [], isLoading, error } = useQuery({
