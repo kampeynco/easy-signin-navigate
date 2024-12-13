@@ -34,6 +34,7 @@ export function UserMenuItems({ onLogout }: UserMenuItemsProps) {
         <DropdownMenuItem 
           key={item.label} 
           asChild
+          className="hover:text-white"
           onClick={(e) => {
             if (item.to === "#") {
               e.preventDefault()

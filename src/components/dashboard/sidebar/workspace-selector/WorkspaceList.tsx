@@ -23,7 +23,7 @@ export function WorkspaceList({ workspaces, onSelect, selectedWorkspaceId }: Wor
       {workspaces.map((workspace) => (
         <DropdownMenuItem 
           key={workspace.id}
-          className="flex items-center gap-2 justify-between cursor-pointer"
+          className="flex items-center gap-2 justify-between cursor-pointer hover:text-white"
           onSelect={(e) => {
             e.preventDefault()
             onSelect(workspace.id)
