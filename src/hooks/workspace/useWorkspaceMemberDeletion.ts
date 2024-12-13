@@ -29,14 +29,18 @@ export function useWorkspaceMemberDeletion() {
       let error;
 
       if (isPending) {
-        console.log('Attempting to delete invitation:', { invitationId: memberId })
-        const { error: invitationError } = await supabase
+        // Log the attempt to delete the invitation
+        console.log('Attempting to delete invitation:', { invitationId: memberId, workspaceId: selectedWorkspace.id })
+        
+        const { data, error: invitationError } = await supabase
           .from('workspace_invitations')
           .delete()
-          .match({ id: memberId })
+          .eq('id', memberId)
+          .eq('workspace_id', selectedWorkspace.id)
+          .select()
 
         error = invitationError
-        console.log('Deletion response:', { error: invitationError })
+        console.log('Deletion response:', { data, error: invitationError })
       } else {
         console.log('Removing member:', { memberId, workspaceId: selectedWorkspace.id })
         const { error: memberError } = await supabase
