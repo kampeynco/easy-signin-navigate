@@ -5,6 +5,7 @@ import { useWorkspace } from "@/contexts/WorkspaceContext"
 import type { WorkspaceMember } from "@/types/workspace-member"
 import type { Database } from "@/integrations/supabase/types"
 
+// Define the shape of the profiles join data
 type ProfilesJoin = {
   profiles: {
     id: string;
@@ -14,6 +15,7 @@ type ProfilesJoin = {
   } | null;
 }
 
+// Combine the base workspace member type with the profiles join
 type WorkspaceMemberRow = Database['public']['Tables']['workspace_members']['Row'] & ProfilesJoin
 
 export function useWorkspaceMembers() {
@@ -33,9 +35,7 @@ export function useWorkspaceMembers() {
       const { data, error } = await supabase
         .from('workspace_members')
         .select(`
-          id,
-          user_id,
-          role,
+          *,
           profiles (
             id,
             first_name,
@@ -54,6 +54,7 @@ export function useWorkspaceMembers() {
 
       if (!data) return []
 
+      // Transform the data to match our WorkspaceMember type
       return (data as WorkspaceMemberRow[]).map((member) => ({
         id: member.user_id,
         first_name: member.profiles?.first_name || '',
