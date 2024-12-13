@@ -1,11 +1,12 @@
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, ToggleLeft, ToggleRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { MoreHorizontal } from "lucide-react"
 import { Workflow } from "@/types/workflow"
 
 interface WorkflowActionsProps {
@@ -17,18 +18,11 @@ interface WorkflowActionsProps {
 export function WorkflowActions({ workflow, onDelete, onToggleStatus }: WorkflowActionsProps) {
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className={`h-10 w-10 ${workflow.is_active ? 'bg-green-500 hover:bg-green-600' : ''}`}
-        onClick={() => onToggleStatus(workflow.id, workflow.is_active)}
-      >
-        {workflow.is_active ? (
-          <ToggleRight className="h-10 w-10" />
-        ) : (
-          <ToggleLeft className="h-10 w-10" />
-        )}
-      </Button>
+      <Switch
+        className="w-[44px] h-[24px] data-[state=checked]:bg-green-500"
+        checked={workflow.is_active}
+        onCheckedChange={() => onToggleStatus(workflow.id, workflow.is_active)}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
