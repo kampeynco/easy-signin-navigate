@@ -18,6 +18,8 @@ const SignIn = () => {
   const { toast } = useToast()
 
   const handleEmailSignIn = async (email: string, password: string) => {
+    console.log('SignIn: Starting signin process for email:', email)
+    
     if (!email || !password) {
       toast({
         variant: "destructive",
@@ -35,6 +37,8 @@ const SignIn = () => {
         password: password.trim(),
       })
 
+      console.log('SignIn: Auth response:', { data, error })
+
       if (error) {
         if (error.message.includes('Email not confirmed')) {
           console.log('SignIn: Email not confirmed, redirecting to verification page')
@@ -47,16 +51,19 @@ const SignIn = () => {
 
         // Handle invalid credentials specifically
         if (error.message.includes('Invalid login credentials')) {
-          throw new Error('Invalid email or password')
+          throw new Error('Please check your email and password')
         }
 
         throw error
       }
 
       if (!data.session) {
-        throw new Error('No session created')
+        console.error('SignIn: No session in response')
+        throw new Error('Failed to create session')
       }
 
+      console.log('SignIn: Successfully signed in user:', data.session.user.email)
+      
       toast({
         title: "Success",
         description: "Signed in successfully"

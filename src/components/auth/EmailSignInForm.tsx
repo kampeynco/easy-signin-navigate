@@ -16,7 +16,7 @@ export const EmailSignInForm = ({ onSubmit, isLoading }: EmailSignInFormProps) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(email, password)
+    onSubmit(email.trim(), password.trim())
   }
 
   return (
@@ -31,6 +31,7 @@ export const EmailSignInForm = ({ onSubmit, isLoading }: EmailSignInFormProps) =
           placeholder="Enter your email"
           disabled={isLoading}
           required
+          className="w-full"
         />
       </div>
       
