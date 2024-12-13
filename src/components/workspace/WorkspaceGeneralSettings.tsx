@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from "@/integrations/supabase/client"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { useSession } from "@supabase/auth-helpers-react"
+import { useEffect } from "react"
 
 interface WorkspaceFormData {
   name: string
@@ -25,16 +26,50 @@ export function WorkspaceGeneralSettings() {
   
   const form = useForm<WorkspaceFormData>({
     defaultValues: {
-      name: currentWorkspace?.name || "",
-      description: currentWorkspace?.description || "",
+      name: "",
+      description: "",
     },
   })
 
+  // Update form values when currentWorkspace changes
+  useEffect(() => {
+    if (currentWorkspace) {
+      form.reset({
+        name: currentWorkspace.name,
+        description: currentWorkspace.description || "",
+      })
+    }
+  }, [currentWorkspace, form])
+
   const onSubmit = async (data: WorkspaceFormData) => {
-    toast({
-      title: "Settings updated",
-      description: "Your workspace settings have been updated successfully.",
-    })
+    if (!currentWorkspace?.id) return
+
+    try {
+      const { error } = await supabase
+        .from('workspaces')
+        .update({
+          name: data.name,
+          description: data.description,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', currentWorkspace.id)
+
+      if (error) throw error
+
+      await refetch()
+
+      toast({
+        title: "Settings updated",
+        description: "Your workspace settings have been updated successfully.",
+      })
+    } catch (error) {
+      console.error('Error updating workspace:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update workspace settings",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleDeleteWorkspace = async () => {

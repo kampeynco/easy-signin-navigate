@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -17,6 +17,13 @@ export function WorkspaceSelector() {
   const session = useSession()
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
   const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
+
+  // Automatically select the first workspace if none is selected
+  useEffect(() => {
+    if (!selectedWorkspaceId && workspaces && workspaces.length > 0) {
+      setSelectedWorkspaceId(workspaces[0].id)
+    }
+  }, [workspaces, selectedWorkspaceId])
 
   const handleWorkspaceSelect = (workspaceId: string) => {
     setSelectedWorkspaceId(workspaceId)
@@ -40,11 +47,6 @@ export function WorkspaceSelector() {
         <span className="flex-1 text-left text-sm">Error loading workspaces</span>
       </button>
     )
-  }
-
-  // Set initial selected workspace if none is selected
-  if (!selectedWorkspaceId && workspaces && workspaces.length > 0) {
-    setSelectedWorkspaceId(workspaces[0].id)
   }
 
   const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId)
