@@ -1,124 +1,21 @@
-import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/integrations/supabase/client"
-import { useWorkspace } from "@/contexts/WorkspaceContext"
-import { useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-
-interface PendingDeletion {
-  memberId: string
-  email: string
-  isPending: boolean
-}
+import { useWorkspaceMemberDeletion } from "@/hooks/workspace/useWorkspaceMemberDeletion"
+import { useWorkspaceRoleManagement } from "@/hooks/workspace/useWorkspaceRoleManagement"
 
 export function useMemberActions() {
-  const { selectedWorkspace } = useWorkspace()
-  const { toast } = useToast()
-  const queryClient = useQueryClient()
-  const [pendingDeletion, setPendingDeletion] = useState<PendingDeletion | null>(null)
+  const { 
+    pendingDeletion,
+    handleRemoveMember,
+    confirmRemoveMember,
+    cancelRemoveMember
+  } = useWorkspaceMemberDeletion()
 
-  const handleRoleChange = async (memberId: string, currentRole: string) => {
-    if (!selectedWorkspace?.id) return
+  const { handleRoleChange } = useWorkspaceRoleManagement()
 
-    try {
-      const newRole = currentRole === 'admin' ? 'member' : 'admin'
-      
-      const { error } = await supabase
-        .from('workspace_members')
-        .update({ role: newRole })
-        .eq('workspace_id', selectedWorkspace.id)
-        .eq('user_id', memberId)
-
-      if (error) throw error
-
-      await queryClient.invalidateQueries({
-        queryKey: ['workspace-members', selectedWorkspace.id]
-      })
-
-      toast({
-        title: "Role updated",
-        description: "Member role has been updated successfully.",
-      })
-    } catch (error: any) {
-      console.error('Error updating role:', error)
-      toast({
-        title: "Error",
-        description: "Failed to update member role",
-        variant: "destructive",
-      })
-    }
-  }
-
-  const handleRemoveMember = async (memberId: string, isPending: boolean = false, email: string) => {
-    setPendingDeletion({ memberId, email, isPending })
-  }
-
-  const confirmRemoveMember = async () => {
-    if (!pendingDeletion || !selectedWorkspace?.id) return
-
-    const { memberId, isPending } = pendingDeletion
-
-    try {
-      let error;
-
-      if (isPending) {
-        console.log('Deleting invitation:', { memberId, workspaceId: selectedWorkspace.id })
-        
-        const { error: invitationError } = await supabase
-          .from('workspace_invitations')
-          .delete()
-          .eq('id', memberId)
-
-        error = invitationError
-      } else {
-        console.log('Removing member:', { memberId, workspaceId: selectedWorkspace.id })
-        
-        const { error: memberError } = await supabase
-          .from('workspace_members')
-          .delete()
-          .eq('workspace_id', selectedWorkspace.id)
-          .eq('user_id', memberId)
-
-        error = memberError
-      }
-
-      if (error) {
-        console.error('Error in confirmRemoveMember:', error)
-        throw error
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: ['workspace-members', selectedWorkspace.id]
-      })
-
-      toast({
-        title: isPending ? "Invitation cancelled" : "Member removed",
-        description: isPending 
-          ? "The invitation has been cancelled successfully."
-          : "Team member has been removed successfully.",
-      })
-    } catch (error: any) {
-      console.error('Error removing member:', error)
-      toast({
-        title: "Error",
-        description: isPending 
-          ? "Failed to cancel invitation"
-          : "Failed to remove team member",
-        variant: "destructive",
-      })
-    } finally {
-      setPendingDeletion(null)
-    }
-  }
-
-  const cancelRemoveMember = () => {
-    setPendingDeletion(null)
-  }
-
-  return { 
-    handleRoleChange, 
+  return {
+    handleRoleChange,
     handleRemoveMember,
     confirmRemoveMember,
     cancelRemoveMember,
-    pendingDeletion 
+    pendingDeletion
   }
 }
