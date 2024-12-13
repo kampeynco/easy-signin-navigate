@@ -22,6 +22,7 @@ export function WorkspaceSelector() {
 
   const handleWorkspaceSelect = async (workspaceId: string) => {
     try {
+      console.log('WorkspaceSelector: Switching to workspace:', workspaceId)
       setSelectedWorkspaceId(workspaceId)
       await queryClient.invalidateQueries()
       
@@ -41,6 +42,7 @@ export function WorkspaceSelector() {
 
   // If there are workspaces but none is selected, select the first one
   if (workspaces?.length > 0 && !selectedWorkspaceId) {
+    console.log('WorkspaceSelector: Auto-selecting first workspace')
     handleWorkspaceSelect(workspaces[0].id)
   }
 

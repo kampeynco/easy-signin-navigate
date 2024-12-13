@@ -22,6 +22,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   // Auto-select the first workspace if none is selected
   useEffect(() => {
     if (workspaces?.length && !selectedWorkspaceId) {
+      console.log('WorkspaceContext: Auto-selecting first workspace')
       setSelectedWorkspaceId(workspaces[0].id)
     }
   }, [workspaces, selectedWorkspaceId])
