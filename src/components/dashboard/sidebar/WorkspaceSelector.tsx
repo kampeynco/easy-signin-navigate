@@ -40,13 +40,12 @@ export function WorkspaceSelector() {
     }
   }
 
-  // If there are workspaces but none is selected, select the first one
-  if (workspaces?.length > 0 && !selectedWorkspaceId) {
+  // Auto-select first workspace if none is selected and workspaces are available
+  if (workspaces?.length && !selectedWorkspaceId) {
     console.log('WorkspaceSelector: Auto-selecting first workspace')
     handleWorkspaceSelect(workspaces[0].id)
   }
 
-  // Handle error state
   if (error) {
     console.error('WorkspaceSelector: Error:', error)
     return (
@@ -67,6 +66,7 @@ export function WorkspaceSelector() {
       <DropdownMenuContent 
         align="start" 
         className="w-[240px] bg-popover"
+        sideOffset={4}
       >
         <WorkspaceList 
           workspaces={workspaces || []} 

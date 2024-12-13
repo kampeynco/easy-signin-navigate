@@ -1,11 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Check } from "lucide-react"
-
-interface Workspace {
-  id: string;
-  name: string;
-}
+import type { Workspace } from "@/types/workspace"
 
 interface WorkspaceListProps {
   workspaces: Workspace[];
@@ -35,12 +31,14 @@ export function WorkspaceList({ workspaces, onSelect, selectedWorkspaceId }: Wor
         >
           <div className="flex items-center gap-2">
             <Avatar className="h-6 w-6">
-              <AvatarFallback>{workspace.name.charAt(0)}</AvatarFallback>
+              <AvatarFallback>
+                {workspace.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
-            <span>{workspace.name}</span>
+            <span className="truncate">{workspace.name}</span>
           </div>
           {selectedWorkspaceId === workspace.id && (
-            <Check className="h-4 w-4" />
+            <Check className="h-4 w-4 shrink-0" />
           )}
         </DropdownMenuItem>
       ))}
