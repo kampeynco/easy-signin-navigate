@@ -8,7 +8,9 @@ export interface Workspace {
 }
 
 export interface WorkspaceMember {
-  workspace_id: string;
-  user_id: string;
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
   role: string;
 }
