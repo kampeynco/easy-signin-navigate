@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { UserPlus, MoreVertical } from "lucide-react"
 import {
@@ -45,8 +45,12 @@ export function WorkspaceMembers() {
         `)
         .eq('workspace_id', selectedWorkspace.id)
 
-      if (membershipsError) throw membershipsError
+      if (membershipsError) {
+        console.error('Error fetching members:', membershipsError)
+        throw membershipsError
+      }
 
+      // Transform the data to match our Member interface
       return memberships.map((membership: any) => ({
         id: membership.profiles.id,
         first_name: membership.profiles.first_name,
@@ -106,6 +110,19 @@ export function WorkspaceMembers() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-medium">Team Members</h2>
+            <p className="text-sm text-muted-foreground">Loading members...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const isOnlyAdmin = members.length === 1 && members[0]?.role === 'admin'
 
   return (
@@ -139,7 +156,6 @@ export function WorkspaceMembers() {
               >
                 <div className="flex items-center space-x-4">
                   <Avatar>
-                    <AvatarImage src={undefined} />
                     <AvatarFallback>
                       {`${member.first_name?.[0] || ''}${member.last_name?.[0] || ''}`}
                     </AvatarFallback>
