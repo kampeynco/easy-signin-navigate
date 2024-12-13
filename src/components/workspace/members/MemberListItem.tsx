@@ -14,7 +14,7 @@ interface MemberListItemProps {
   member: WorkspaceMember
   isOnlyAdmin: boolean
   onRoleChange: (memberId: string, currentRole: string) => void
-  onRemove: (memberId: string, isPending?: boolean) => void
+  onRemove: (memberId: string, isPending: boolean, email: string) => void
 }
 
 export function MemberListItem({ 
@@ -66,7 +66,7 @@ export function MemberListItem({
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem 
-                onClick={() => onRemove(member.id, member.status === 'pending')}
+                onClick={() => onRemove(member.id, member.status === 'pending', member.email)}
                 className="text-destructive"
               >
                 {member.status === 'pending' ? 'Cancel Invitation' : 'Remove Member'}

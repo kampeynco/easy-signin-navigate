@@ -2,11 +2,29 @@ import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useQueryClient } from "@tanstack/react-query"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { useState } from "react"
+
+interface PendingDeletion {
+  memberId: string
+  email: string
+  isPending: boolean
+}
 
 export function useMemberActions() {
   const { selectedWorkspace } = useWorkspace()
   const { toast } = useToast()
   const queryClient = useQueryClient()
+  const [pendingDeletion, setPendingDeletion] = useState<PendingDeletion | null>(null)
 
   const handleRoleChange = async (memberId: string, currentRole: string) => {
     if (!selectedWorkspace?.id) return
@@ -40,14 +58,19 @@ export function useMemberActions() {
     }
   }
 
-  const handleRemoveMember = async (memberId: string, isPending: boolean = false) => {
-    if (!selectedWorkspace?.id) return
+  const handleRemoveMember = async (memberId: string, isPending: boolean = false, email: string) => {
+    setPendingDeletion({ memberId, email, isPending })
+  }
+
+  const confirmRemoveMember = async () => {
+    if (!pendingDeletion || !selectedWorkspace?.id) return
+
+    const { memberId, isPending } = pendingDeletion
 
     try {
       let error;
 
       if (isPending) {
-        // Delete from workspace_invitations table if it's a pending invitation
         const { error: invitationError } = await supabase
           .from('workspace_invitations')
           .delete()
@@ -56,7 +79,6 @@ export function useMemberActions() {
 
         error = invitationError
       } else {
-        // Delete from workspace_members table if it's an active member
         const { error: memberError } = await supabase
           .from('workspace_members')
           .delete()
@@ -87,8 +109,20 @@ export function useMemberActions() {
           : "Failed to remove team member",
         variant: "destructive",
       })
+    } finally {
+      setPendingDeletion(null)
     }
   }
 
-  return { handleRoleChange, handleRemoveMember }
+  const cancelRemoveMember = () => {
+    setPendingDeletion(null)
+  }
+
+  return { 
+    handleRoleChange, 
+    handleRemoveMember,
+    confirmRemoveMember,
+    cancelRemoveMember,
+    pendingDeletion 
+  }
 }

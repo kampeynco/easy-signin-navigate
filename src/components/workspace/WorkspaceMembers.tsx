@@ -5,11 +5,27 @@ import { useWorkspaceMembers } from "@/hooks/useWorkspaceMembers"
 import { useMemberActions } from "./members/MemberActions"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { AddMemberDialog } from "./members/AddMemberDialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export function WorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
   const { data: members, isLoading, error } = useWorkspaceMembers()
-  const { handleRoleChange, handleRemoveMember } = useMemberActions()
+  const { 
+    handleRoleChange, 
+    handleRemoveMember, 
+    confirmRemoveMember,
+    cancelRemoveMember,
+    pendingDeletion 
+  } = useMemberActions()
 
   console.log('WorkspaceMembers component state:', { members, isLoading, error, selectedWorkspace })
 
@@ -74,6 +90,31 @@ export function WorkspaceMembers() {
         onRoleChange={handleRoleChange}
         onRemove={handleRemoveMember}
       />
+
+      <AlertDialog 
+        open={!!pendingDeletion} 
+        onOpenChange={(open) => !open && cancelRemoveMember()}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pendingDeletion?.isPending ? 'Cancel Invitation' : 'Remove Member'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDeletion?.isPending 
+                ? `Are you sure you want to cancel the invitation for ${pendingDeletion.email}?`
+                : `Are you sure you want to remove ${pendingDeletion?.email} from the workspace?`
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelRemoveMember}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveMember}>
+              {pendingDeletion?.isPending ? 'Cancel Invitation' : 'Remove Member'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
