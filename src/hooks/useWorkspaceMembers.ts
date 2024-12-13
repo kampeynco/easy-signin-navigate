@@ -19,6 +19,7 @@ export function useWorkspaceMembers() {
       const { data, error } = await supabase
         .from('workspace_members')
         .select(`
+          id,
           user_id,
           workspace_id,
           role,

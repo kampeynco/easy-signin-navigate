@@ -3,12 +3,29 @@ import { UserPlus } from "lucide-react"
 import { MembersList } from "./members/MembersList"
 import { useWorkspaceMembers } from "@/hooks/useWorkspaceMembers"
 import { useMemberActions } from "./members/MemberActions"
+import { useWorkspace } from "@/contexts/WorkspaceContext"
 
 export function WorkspaceMembers() {
+  const { selectedWorkspace } = useWorkspace()
   const { data: members, isLoading, error } = useWorkspaceMembers()
   const { handleRoleChange, handleRemoveMember } = useMemberActions()
 
-  console.log('WorkspaceMembers component state:', { members, isLoading, error })
+  console.log('WorkspaceMembers component state:', { members, isLoading, error, selectedWorkspace })
+
+  if (!selectedWorkspace) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-medium">Team Members</h2>
+            <p className="text-sm text-muted-foreground">
+              Please select a workspace to manage members.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (

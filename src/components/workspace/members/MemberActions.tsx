@@ -1,10 +1,12 @@
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function useMemberActions() {
   const { selectedWorkspace } = useWorkspace()
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const handleRoleChange = async (memberId: string, currentRole: string) => {
     if (!selectedWorkspace?.id) return
@@ -19,6 +21,10 @@ export function useMemberActions() {
         .eq('user_id', memberId)
 
       if (error) throw error
+
+      await queryClient.invalidateQueries({
+        queryKey: ['workspace-members', selectedWorkspace.id]
+      })
 
       toast({
         title: "Role updated",
@@ -45,6 +51,10 @@ export function useMemberActions() {
         .eq('user_id', memberId)
 
       if (error) throw error
+
+      await queryClient.invalidateQueries({
+        queryKey: ['workspace-members', selectedWorkspace.id]
+      })
 
       toast({
         title: "Member removed",
