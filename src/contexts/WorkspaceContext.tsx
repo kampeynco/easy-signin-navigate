@@ -16,23 +16,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
   const { data: workspaces } = useWorkspaces(session?.user?.id)
   
+  // Find the currently selected workspace object
   const selectedWorkspace = workspaces?.find(w => w.id === selectedWorkspaceId) || null
 
-  // Auto-select the first workspace if none is selected and workspaces are available
+  // Auto-select the first workspace if none is selected
   useEffect(() => {
     if (workspaces?.length && !selectedWorkspaceId) {
-      console.log('WorkspaceContext: Auto-selecting first workspace')
       setSelectedWorkspaceId(workspaces[0].id)
     }
   }, [workspaces, selectedWorkspaceId])
-
-  // Reset selection if the selected workspace is no longer available
-  useEffect(() => {
-    if (selectedWorkspaceId && workspaces?.length && !selectedWorkspace) {
-      console.log('WorkspaceContext: Selected workspace no longer available, resetting selection')
-      setSelectedWorkspaceId(workspaces[0].id)
-    }
-  }, [workspaces, selectedWorkspaceId, selectedWorkspace])
 
   return (
     <WorkspaceContext.Provider 

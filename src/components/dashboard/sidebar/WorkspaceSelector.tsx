@@ -1,7 +1,9 @@
-import { memo, useCallback } from "react"
+import { ChevronDown } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
@@ -11,20 +13,19 @@ import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
-import { WorkspaceList } from "./workspace-selector/WorkspaceList"
-import { WorkspaceTrigger } from "./workspace-selector/WorkspaceTrigger"
 
-export const WorkspaceSelector = memo(() => {
+export function WorkspaceSelector() {
   const session = useSession()
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
   const { selectedWorkspaceId, setSelectedWorkspaceId, selectedWorkspace } = useWorkspace()
 
-  const handleWorkspaceSelect = useCallback(async (workspaceId: string) => {
+  const handleWorkspaceSelect = async (workspaceId: string) => {
     try {
-      console.log('WorkspaceSelector: Switching to workspace:', workspaceId)
       setSelectedWorkspaceId(workspaceId)
+      
+      // Invalidate all queries to refresh data
       await queryClient.invalidateQueries()
       
       toast({
@@ -39,50 +40,70 @@ export const WorkspaceSelector = memo(() => {
         variant: "destructive",
       })
     }
-  }, [setSelectedWorkspaceId, queryClient, toast])
-
-  // Auto-select first workspace if none is selected and workspaces are available
-  if (workspaces?.length && !selectedWorkspaceId) {
-    console.log('WorkspaceSelector: Auto-selecting first workspace')
-    handleWorkspaceSelect(workspaces[0].id)
   }
 
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <button disabled className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2">
+        <div className="h-6 w-6 animate-pulse rounded-full bg-white/10" />
+        <span className="flex-1 text-left text-sm">Loading workspaces...</span>
+      </button>
+    )
+  }
+
+  // Handle error state
   if (error) {
     console.error('WorkspaceSelector: Error:', error)
     return (
-      <button 
-        disabled 
-        className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500"
-        type="button"
-      >
+      <button disabled className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 text-red-500">
         <span className="flex-1 text-left text-sm">Error loading workspaces</span>
       </button>
     )
   }
 
+  // If there are workspaces but none is selected, select the first one
+  if (workspaces?.length > 0 && !selectedWorkspaceId) {
+    handleWorkspaceSelect(workspaces[0].id)
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <WorkspaceTrigger 
-          workspaceName={selectedWorkspace?.name} 
-          isLoading={isLoading} 
-        />
+        <button className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2 hover:bg-white/10">
+          <Avatar className="h-6 w-6">
+            <AvatarFallback>
+              {selectedWorkspace?.name?.charAt(0) || 'W'}
+            </AvatarFallback>
+          </Avatar>
+          <span className="flex-1 text-left text-sm">
+            {selectedWorkspace?.name || 'Select workspace'}
+          </span>
+          <ChevronDown className="h-4 w-4 opacity-70" />
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        align="start" 
-        className="w-[240px] bg-popover shadow-lg border border-border/50"
-        sideOffset={4}
-      >
-        <WorkspaceList 
-          workspaces={workspaces || []} 
-          onSelect={handleWorkspaceSelect}
-          selectedWorkspaceId={selectedWorkspaceId} 
-        />
+      <DropdownMenuContent align="start" className="w-[240px]">
+        {workspaces && workspaces.length > 0 ? (
+          workspaces.map((workspace) => (
+            <DropdownMenuItem 
+              key={workspace.id}
+              className="flex items-center gap-2"
+              onSelect={() => handleWorkspaceSelect(workspace.id)}
+            >
+              <Avatar className="h-6 w-6">
+                <AvatarFallback>{workspace.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <span>{workspace.name}</span>
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <DropdownMenuItem disabled>
+            No workspaces available
+          </DropdownMenuItem>
+        )}
         <Separator className="my-2" />
         <CreateWorkspaceDialog />
       </DropdownMenuContent>
     </DropdownMenu>
   )
-})
-
-WorkspaceSelector.displayName = 'WorkspaceSelector'
+}
