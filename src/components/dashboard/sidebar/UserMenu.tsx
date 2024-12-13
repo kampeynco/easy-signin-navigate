@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import { useEffect, useState } from "react"
 
 const profileMenuItems = [
   { icon: Settings, label: "Profile Settings", to: "/profile/settings" },
@@ -21,6 +22,41 @@ const profileMenuItems = [
 export function UserMenu() {
   const { toast } = useToast()
   const navigate = useNavigate()
+  const [userProfile, setUserProfile] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null>(null)
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return
+      }
+
+      setUserProfile({
+        firstName: data.first_name || "",
+        lastName: data.last_name || "",
+        email: user.email || ""
+      })
+    }
+
+    fetchUserProfile()
+  }, [])
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
+  }
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut()
@@ -49,16 +85,22 @@ export function UserMenu() {
     }
   }
 
+  if (!userProfile) return null
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback>BR</AvatarFallback>
+            <AvatarFallback className="bg-[#9b87f5] text-white">
+              {getInitials(userProfile.firstName, userProfile.lastName)}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 text-left">
-            <div className="text-sm font-medium">Brooklyn</div>
+            <div className="text-sm font-medium">
+              {userProfile.firstName} {userProfile.lastName}
+            </div>
           </div>
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </button>
@@ -66,9 +108,11 @@ export function UserMenu() {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Brooklyn Simmons</p>
+            <p className="text-sm font-medium leading-none">
+              {userProfile.firstName} {userProfile.lastName}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              brooklyn@example.com
+              {userProfile.email}
             </p>
           </div>
         </DropdownMenuLabel>

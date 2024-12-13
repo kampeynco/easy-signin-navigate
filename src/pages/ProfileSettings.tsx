@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { DashboardTopNav } from "@/components/dashboard/DashboardTopNav"
 import { ProfileForm } from "@/components/profile/ProfileForm"
@@ -20,7 +22,11 @@ import { supabase } from "@/integrations/supabase/client"
 import { useNavigate } from "react-router-dom"
 
 const ProfileSettings = () => {
-  const [profile, setProfile] = useState<{ firstName: string; lastName: string } | null>(null)
+  const [profile, setProfile] = useState<{ 
+    firstName: string; 
+    lastName: string;
+    email: string;
+  } | null>(null)
   const { toast } = useToast()
   const navigate = useNavigate()
 
@@ -42,7 +48,8 @@ const ProfileSettings = () => {
 
       setProfile({
         firstName: data.first_name || "",
-        lastName: data.last_name || ""
+        lastName: data.last_name || "",
+        email: user.email || ""
       })
     }
 
@@ -100,8 +107,21 @@ const ProfileSettings = () => {
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
           </CardHeader>
-          <CardContent>
-            {profile && <ProfileForm initialData={profile} />}
+          <CardContent className="space-y-4">
+            {profile && (
+              <>
+                <ProfileForm initialData={profile} />
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={profile.email}
+                    readOnly
+                    className="bg-muted"
+                  />
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
