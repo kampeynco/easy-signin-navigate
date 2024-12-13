@@ -4,4 +4,5 @@ export interface WorkspaceMember {
   first_name: string;
   last_name: string;
   role: string;
+  status?: 'active' | 'pending';
 }

@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 import type { WorkspaceMember } from "@/types/workspace-member"
 
 interface MemberListItemProps {
@@ -27,21 +28,28 @@ export function MemberListItem({
       <div className="flex items-center space-x-4">
         <Avatar>
           <AvatarFallback>
-            {`${member.first_name?.[0] || ''}${member.last_name?.[0] || ''}`}
+            {member.status === 'pending' ? '?' : `${member.first_name?.[0] || ''}${member.last_name?.[0] || ''}`}
           </AvatarFallback>
         </Avatar>
         <div>
           <p className="text-sm font-medium leading-none">
-            {member.first_name} {member.last_name}
+            {member.status === 'pending' ? member.email : `${member.first_name} ${member.last_name}`}
           </p>
-          <p className="text-sm text-muted-foreground">{member.email}</p>
+          <p className="text-sm text-muted-foreground">
+            {member.status === 'pending' ? 'Invitation sent' : member.email}
+          </p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <span className="text-sm text-muted-foreground">
-          {member.role}
-        </span>
-        {!isOnlyAdmin && (
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">
+            {member.role}
+          </span>
+          {member.status === 'pending' && (
+            <Badge variant="secondary">Pending</Badge>
+          )}
+        </div>
+        {!isOnlyAdmin && member.status !== 'pending' && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">

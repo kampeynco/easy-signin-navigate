@@ -14,9 +14,10 @@ export function useWorkspaceMembers() {
         return []
       }
 
-      console.log('Fetching members for workspace:', selectedWorkspace.id)
+      console.log('Fetching members and invitations for workspace:', selectedWorkspace.id)
 
-      const { data, error } = await supabase
+      // Fetch active members
+      const { data: members, error: membersError } = await supabase
         .from('workspace_members')
         .select(`
           id,
@@ -32,20 +33,45 @@ export function useWorkspaceMembers() {
         `)
         .eq('workspace_id', selectedWorkspace.id)
 
-      if (error) {
-        console.error('Error fetching workspace members:', error)
-        throw error
+      if (membersError) {
+        console.error('Error fetching workspace members:', membersError)
+        throw membersError
       }
 
-      console.log('Raw workspace members data:', data)
+      // Fetch pending invitations
+      const { data: invitations, error: invitationsError } = await supabase
+        .from('workspace_invitations')
+        .select('*')
+        .eq('workspace_id', selectedWorkspace.id)
+        .eq('status', 'pending')
 
-      return data.map((member: any): WorkspaceMember => ({
+      if (invitationsError) {
+        console.error('Error fetching workspace invitations:', invitationsError)
+        throw invitationsError
+      }
+
+      // Transform members data
+      const activeMembers = members.map((member: any): WorkspaceMember => ({
         id: member.user_id,
         email: member.profiles.email || '',
         first_name: member.profiles.first_name || '',
         last_name: member.profiles.last_name || '',
-        role: member.role
+        role: member.role,
+        status: 'active'
       }))
+
+      // Transform invitations to member format
+      const pendingMembers = invitations.map((invitation): WorkspaceMember => ({
+        id: invitation.id,
+        email: invitation.email,
+        first_name: '',
+        last_name: '',
+        role: invitation.role,
+        status: 'pending'
+      }))
+
+      // Combine both arrays
+      return [...activeMembers, ...pendingMembers]
     },
     enabled: !!selectedWorkspace?.id
   })
