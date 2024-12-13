@@ -25,21 +25,44 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Validate environment variables
     if (!RESEND_API_KEY) {
       console.error('RESEND_API_KEY is not set')
       throw new Error('Missing RESEND_API_KEY configuration')
     }
 
-    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
-    const { invitationId, workspaceName, invitedByEmail }: InvitationEmailRequest = await req.json()
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase configuration')
+      throw new Error('Missing Supabase configuration')
+    }
 
-    console.log('Fetching invitation details:', { invitationId, workspaceName, invitedByEmail })
+    // Parse and validate request body
+    let requestBody: InvitationEmailRequest
+    try {
+      requestBody = await req.json()
+      console.log('Received request body:', requestBody)
 
+      if (!requestBody.invitationId || !requestBody.workspaceName || !requestBody.invitedByEmail) {
+        throw new Error('Missing required fields in request body')
+      }
+    } catch (error) {
+      console.error('Error parsing request body:', error)
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }), 
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    
     // Get invitation details
     const { data: invitation, error: invitationError } = await supabase
       .from('workspace_invitations')
       .select('email, token')
-      .eq('id', invitationId)
+      .eq('id', requestBody.invitationId)
       .single()
 
     if (invitationError || !invitation) {
@@ -57,9 +80,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Construct the accept invitation URL
     const acceptUrl = `${req.headers.get('origin')}/accept-invitation?token=${invitation.token}`
+    console.log('Accept URL:', acceptUrl)
 
     // Send email using Resend
-    const res = await fetch('https://api.resend.com/emails', {
+    const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,10 +92,10 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: 'Workspace <onboarding@resend.dev>',
         to: [invitation.email],
-        subject: `You've been invited to join ${workspaceName}`,
+        subject: `You've been invited to join ${requestBody.workspaceName}`,
         html: `
           <h2>Workspace Invitation</h2>
-          <p>You've been invited by ${invitedByEmail} to join ${workspaceName}.</p>
+          <p>You've been invited by ${requestBody.invitedByEmail} to join ${requestBody.workspaceName}.</p>
           <p>Click the link below to accept the invitation:</p>
           <a href="${acceptUrl}">Accept Invitation</a>
           <p>This invitation link will expire in 7 days.</p>
@@ -79,15 +103,15 @@ const handler = async (req: Request): Promise<Response> => {
       }),
     })
 
-    const responseData = await res.json()
+    const responseData = await emailResponse.json()
     console.log('Resend API response:', responseData)
 
-    if (!res.ok) {
+    if (!emailResponse.ok) {
       console.error('Error sending email:', responseData)
       return new Response(
         JSON.stringify({ error: 'Failed to send invitation email', details: responseData }), 
         { 
-          status: res.status,
+          status: emailResponse.status,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
