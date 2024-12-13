@@ -12,21 +12,31 @@ import { useSession } from "@supabase/auth-helpers-react"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog"
 import type { Workspace } from "@/types/workspace"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function WorkspaceSelector() {
   const session = useSession()
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string | null>(null)
   const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
+  const queryClient = useQueryClient()
 
-  // Automatically select the first workspace if none is selected
+  // Automatically select the first workspace if none is selected or current selection doesn't exist
   useEffect(() => {
-    if (!selectedWorkspaceId && workspaces && workspaces.length > 0) {
-      setSelectedWorkspaceId(workspaces[0].id)
+    if (workspaces && workspaces.length > 0) {
+      // If no workspace is selected or the selected workspace no longer exists
+      if (!selectedWorkspaceId || !workspaces.find(w => w.id === selectedWorkspaceId)) {
+        setSelectedWorkspaceId(workspaces[0].id)
+      }
+    } else {
+      setSelectedWorkspaceId(null)
     }
   }, [workspaces, selectedWorkspaceId])
 
-  const handleWorkspaceSelect = (workspaceId: string) => {
+  const handleWorkspaceSelect = async (workspaceId: string) => {
     setSelectedWorkspaceId(workspaceId)
+    // Invalidate queries that depend on the current workspace
+    await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
+    await queryClient.invalidateQueries({ queryKey: ['workflows'] })
   }
 
   // Handle loading state

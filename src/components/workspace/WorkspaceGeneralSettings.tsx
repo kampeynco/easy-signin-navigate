@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { useWorkspaces } from "@/hooks/useWorkspaces"
 import { useSession } from "@supabase/auth-helpers-react"
 import { useEffect } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface WorkspaceFormData {
   name: string
@@ -21,6 +22,7 @@ export function WorkspaceGeneralSettings() {
   const { toast } = useToast()
   const navigate = useNavigate()
   const session = useSession()
+  const queryClient = useQueryClient()
   const { data: workspaces, refetch } = useWorkspaces(session?.user?.id)
   const currentWorkspace = workspaces?.[0]
   
@@ -56,6 +58,8 @@ export function WorkspaceGeneralSettings() {
 
       if (error) throw error
 
+      // Invalidate and refetch relevant queries
+      await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
       await refetch()
 
       toast({
@@ -83,6 +87,9 @@ export function WorkspaceGeneralSettings() {
       })
 
       if (error) throw error
+
+      // Invalidate workspace queries
+      await queryClient.invalidateQueries({ queryKey: ['workspaces'] })
 
       if (data.remainingWorkspaces.length === 0) {
         // If no workspaces left, redirect to onboarding
