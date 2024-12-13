@@ -7,13 +7,15 @@ export function useMemberActions() {
   const { toast } = useToast()
 
   const handleRoleChange = async (memberId: string, currentRole: string) => {
+    if (!selectedWorkspace?.id) return
+
     try {
       const newRole = currentRole === 'admin' ? 'member' : 'admin'
       
       const { error } = await supabase
         .from('workspace_members')
         .update({ role: newRole })
-        .eq('workspace_id', selectedWorkspace?.id)
+        .eq('workspace_id', selectedWorkspace.id)
         .eq('user_id', memberId)
 
       if (error) throw error
@@ -33,11 +35,13 @@ export function useMemberActions() {
   }
 
   const handleRemoveMember = async (memberId: string) => {
+    if (!selectedWorkspace?.id) return
+
     try {
       const { error } = await supabase
         .from('workspace_members')
         .delete()
-        .eq('workspace_id', selectedWorkspace?.id)
+        .eq('workspace_id', selectedWorkspace.id)
         .eq('user_id', memberId)
 
       if (error) throw error

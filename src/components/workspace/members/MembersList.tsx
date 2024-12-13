@@ -1,16 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MemberListItem } from "./MemberListItem"
-
-interface Member {
-  id: string
-  first_name: string | null
-  last_name: string | null
-  email: string
-  role: string
-}
+import type { WorkspaceMember } from "@/types/workspace-member"
 
 interface MembersListProps {
-  members: Member[]
+  members: WorkspaceMember[]
   onRoleChange: (memberId: string, currentRole: string) => void
   onRemove: (memberId: string) => void
 }

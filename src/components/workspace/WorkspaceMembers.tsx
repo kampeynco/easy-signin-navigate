@@ -5,7 +5,7 @@ import { useWorkspaceMembers } from "@/hooks/useWorkspaceMembers"
 import { useMemberActions } from "./members/MemberActions"
 
 export function WorkspaceMembers() {
-  const { members, isLoading } = useWorkspaceMembers()
+  const { members, isLoading, error } = useWorkspaceMembers()
   const { handleRoleChange, handleRemoveMember } = useMemberActions()
 
   if (isLoading) {
@@ -15,6 +15,19 @@ export function WorkspaceMembers() {
           <div>
             <h2 className="text-lg font-medium">Team Members</h2>
             <p className="text-sm text-muted-foreground">Loading members...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-medium">Team Members</h2>
+            <p className="text-sm text-destructive">Error loading members</p>
           </div>
         </div>
       </div>

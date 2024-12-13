@@ -7,15 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type { WorkspaceMember } from "@/types/workspace-member"
 
 interface MemberListItemProps {
-  member: {
-    id: string
-    first_name: string | null
-    last_name: string | null
-    email: string
-    role: string
-  }
+  member: WorkspaceMember
   isOnlyAdmin: boolean
   onRoleChange: (memberId: string, currentRole: string) => void
   onRemove: (memberId: string) => void
