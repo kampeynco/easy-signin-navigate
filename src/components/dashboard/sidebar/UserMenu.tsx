@@ -103,10 +103,10 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profile/settings">Profile Settings</Link>
+          <Link to="/profile/settings" className="hover:text-white">Profile Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/workspace/settings">Workspace Settings</Link>
+          <Link to="/workspace/settings" className="hover:text-white">Workspace Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
