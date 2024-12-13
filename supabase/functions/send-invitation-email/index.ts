@@ -25,8 +25,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    if (!RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not set')
+      throw new Error('Missing RESEND_API_KEY configuration')
+    }
+
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
     const { invitationId, workspaceName, invitedByEmail }: InvitationEmailRequest = await req.json()
+
+    console.log('Fetching invitation details:', { invitationId, workspaceName, invitedByEmail })
 
     // Get invitation details
     const { data: invitation, error: invitationError } = await supabase
@@ -37,8 +44,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (invitationError || !invitation) {
       console.error('Error fetching invitation:', invitationError)
-      throw new Error('Invitation not found')
+      return new Response(
+        JSON.stringify({ error: 'Invitation not found' }), 
+        { 
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
+
+    console.log('Found invitation:', invitation)
 
     // Construct the accept invitation URL
     const acceptUrl = `${req.headers.get('origin')}/accept-invitation?token=${invitation.token}`
@@ -64,25 +79,36 @@ const handler = async (req: Request): Promise<Response> => {
       }),
     })
 
+    const responseData = await res.json()
+    console.log('Resend API response:', responseData)
+
     if (!res.ok) {
-      const error = await res.text()
-      console.error('Error sending email:', error)
-      throw new Error('Failed to send invitation email')
+      console.error('Error sending email:', responseData)
+      return new Response(
+        JSON.stringify({ error: 'Failed to send invitation email', details: responseData }), 
+        { 
+          status: res.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
-    const data = await res.json()
-    console.log('Email sent successfully:', data)
-
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    })
+    return new Response(
+      JSON.stringify({ success: true, data: responseData }), 
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    )
   } catch (error: any) {
     console.error('Error in send-invitation-email function:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500,
-    })
+    return new Response(
+      JSON.stringify({ error: error.message }), 
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      }
+    )
   }
 }
 
