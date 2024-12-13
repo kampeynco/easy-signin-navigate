@@ -9,14 +9,15 @@ interface MembersListProps {
 }
 
 export function MembersList({ members, onRoleChange, onRemove }: MembersListProps) {
-  const isOnlyAdmin = members.length === 1 && members[0]?.role === 'admin'
+  const adminCount = members.filter(member => member.role === 'admin').length
+  const isOnlyAdmin = adminCount === 1
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Members</CardTitle>
         <CardDescription>
-          Invite and manage your team members
+          Manage your team members and their roles
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -25,7 +26,7 @@ export function MembersList({ members, onRoleChange, onRemove }: MembersListProp
             <MemberListItem
               key={member.id}
               member={member}
-              isOnlyAdmin={isOnlyAdmin}
+              isOnlyAdmin={isOnlyAdmin && member.role === 'admin'}
               onRoleChange={onRoleChange}
               onRemove={onRemove}
             />

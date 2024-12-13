@@ -30,7 +30,6 @@ export function WorkspaceGeneralSettings() {
     },
   })
 
-  // Update form values when selectedWorkspace changes
   useEffect(() => {
     if (selectedWorkspace) {
       form.reset({
@@ -72,25 +71,19 @@ export function WorkspaceGeneralSettings() {
   }
 
   const handleDeleteWorkspace = async () => {
-    try {
-      if (!selectedWorkspace?.id) {
-        throw new Error('No workspace selected')
-      }
+    if (!selectedWorkspace?.id) return
 
-      const { data, error } = await supabase.functions.invoke('delete-workspace', {
-        body: { workspaceId: selectedWorkspace.id }
-      })
+    try {
+      const { error } = await supabase
+        .from('workspaces')
+        .delete()
+        .eq('id', selectedWorkspace.id)
 
       if (error) throw error
 
       setSelectedWorkspaceId(null)
       await queryClient.invalidateQueries()
-
-      if (data.remainingWorkspaces.length === 0) {
-        navigate('/onboarding')
-      } else {
-        navigate('/dashboard')
-      }
+      navigate('/dashboard')
 
       toast({
         title: "Workspace deleted",
