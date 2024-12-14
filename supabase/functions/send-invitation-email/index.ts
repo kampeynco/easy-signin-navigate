@@ -118,12 +118,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Found invitation:', invitation)
 
-    // Get the origin from the request headers
-    const origin = req.headers.get('origin') || 'https://lovable.dev'
-    console.log('Using origin:', origin)
-
-    // Construct the accept invitation URL
-    const acceptUrl = `${origin}/accept-invitation?token=${invitation.token}`
+    // Use the custom domain for the accept invitation URL
+    const acceptUrl = `https://dev.kampeyn.com/accept-invitation?token=${invitation.token}`
     console.log('Accept URL:', acceptUrl)
 
     // Using the verified domain kampeyn.com
