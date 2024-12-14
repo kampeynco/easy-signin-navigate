@@ -22,11 +22,13 @@ const Onboarding = () => {
       if (!session?.user?.id) return
 
       const { data: workspaces, error } = await supabase
-        .from('workspaces')
-        .select('id')
+        .from('workspace_members')
+        .select('workspace_id')
+        .eq('user_id', session.user.id)
         .single()
 
       if (!error && workspaces) {
+        console.log('User already has a workspace:', workspaces)
         setHasWorkspace(true)
       }
     }
@@ -59,7 +61,7 @@ const Onboarding = () => {
     setIsCreating(true)
     
     try {
-      console.log('Creating workspace via Edge Function:', workspaceName)
+      console.log('Creating workspace:', workspaceName)
       
       const { data, error } = await supabase.functions.invoke('create-workspace', {
         body: {
@@ -69,7 +71,7 @@ const Onboarding = () => {
       })
 
       if (error) {
-        console.error('Error from Edge Function:', error)
+        console.error('Error creating workspace:', error)
         throw error
       }
 

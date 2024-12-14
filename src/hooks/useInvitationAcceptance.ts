@@ -53,35 +53,44 @@ export const useInvitationAcceptance = (token: string | null) => {
     }
   }
 
+  const addWorkspaceMember = async (workspaceId: string, userId: string, role: string) => {
+    console.log('Adding workspace member:', { workspaceId, userId, role })
+    const { error } = await supabase
+      .from('workspace_members')
+      .insert({
+        workspace_id: workspaceId,
+        user_id: userId,
+        role: role
+      })
+
+    if (error) {
+      console.error('Error adding workspace member:', error)
+      throw error
+    }
+  }
+
   const handleExistingUser = async (invitation: any) => {
     try {
+      if (!session?.user?.id) {
+        throw new Error('No authenticated user found')
+      }
+
       // Update user profile with invitation data
       const { error: profileError } = await supabase.rpc(
         'update_profile_from_invitation',
         { 
-          _user_id: session?.user.id,
+          _user_id: session.user.id,
           _invitation_id: invitation.id
         }
       )
 
       if (profileError) {
-        console.error('useInvitationAcceptance: Error updating profile:', profileError)
+        console.error('Error updating profile:', profileError)
         throw profileError
       }
 
-      // Add user to workspace
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert({
-          workspace_id: invitation.workspace_id,
-          user_id: session?.user.id,
-          role: invitation.role
-        })
-
-      if (memberError) {
-        console.error('useInvitationAcceptance: Error adding member:', memberError)
-        throw memberError
-      }
+      // Add user to workspace with invited role
+      await addWorkspaceMember(invitation.workspace_id, session.user.id, invitation.role)
 
       // Update invitation status
       const { error: updateError } = await supabase
@@ -90,11 +99,11 @@ export const useInvitationAcceptance = (token: string | null) => {
         .eq('id', invitation.id)
 
       if (updateError) {
-        console.error('useInvitationAcceptance: Error updating invitation:', updateError)
+        console.error('Error updating invitation:', updateError)
         throw updateError
       }
 
-      console.log('useInvitationAcceptance: Successfully processed invitation')
+      console.log('Successfully processed invitation')
       
       toast({
         title: "Welcome!",
@@ -103,7 +112,7 @@ export const useInvitationAcceptance = (token: string | null) => {
 
       navigate('/dashboard')
     } catch (error: any) {
-      console.error('useInvitationAcceptance: Error processing invitation:', error)
+      console.error('Error processing invitation:', error)
       toast({
         variant: "destructive",
         title: "Error accepting invitation",

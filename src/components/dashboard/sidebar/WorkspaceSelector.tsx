@@ -52,7 +52,6 @@ export function WorkspaceSelector() {
     }
   }
 
-  // Handle loading state
   if (isLoading) {
     return (
       <button disabled className="flex w-full items-center gap-2 rounded-md bg-white/5 p-2">
@@ -62,7 +61,6 @@ export function WorkspaceSelector() {
     )
   }
 
-  // Handle error state
   if (error) {
     console.error('WorkspaceSelector: Error:', error)
     return (
