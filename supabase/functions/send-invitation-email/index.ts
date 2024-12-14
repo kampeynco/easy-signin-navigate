@@ -118,10 +118,17 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Found invitation:', invitation)
 
+    // Get the origin from the request headers
+    const origin = req.headers.get('origin') || 'https://your-app-domain.com' // Replace with your actual domain
+    console.log('Using origin:', origin)
+
     // Construct the accept invitation URL
-    const acceptUrl = `${req.headers.get('origin')}/accept-invitation?token=${invitation.token}`
+    const acceptUrl = `${origin}/accept-invitation?token=${invitation.token}`
     console.log('Accept URL:', acceptUrl)
 
+    // IMPORTANT: Replace 'your-domain.com' with your verified domain in Resend
+    const fromEmail = 'workspace@your-domain.com' // Update this with your verified domain
+    
     console.log('Sending email via Resend...')
     // Send email using Resend
     const emailResponse = await fetch('https://api.resend.com/emails', {
@@ -131,15 +138,18 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Workspace <onboarding@resend.dev>',
+        from: `${requestBody.workspaceName} <${fromEmail}>`,
         to: [invitation.email],
         subject: `You've been invited to join ${requestBody.workspaceName}`,
         html: `
           <h2>Workspace Invitation</h2>
           <p>You've been invited by ${requestBody.invitedByEmail} to join ${requestBody.workspaceName}.</p>
           <p>Click the link below to accept the invitation:</p>
-          <a href="${acceptUrl}">Accept Invitation</a>
+          <a href="${acceptUrl}" style="display: inline-block; background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">Accept Invitation</a>
+          <p>Or copy and paste this URL into your browser:</p>
+          <p>${acceptUrl}</p>
           <p>This invitation link will expire in 7 days.</p>
+          <p>If you didn't expect this invitation, you can safely ignore this email.</p>
         `,
       }),
     })
