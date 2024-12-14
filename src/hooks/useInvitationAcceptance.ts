@@ -6,7 +6,6 @@ import { useSession } from "@supabase/auth-helpers-react"
 
 export const useInvitationAcceptance = (token: string | null) => {
   const [isProcessing, setIsProcessing] = useState(true)
-  const navigate = useNavigate()
   const { toast } = useToast()
   const session = useSession()
 
@@ -18,8 +17,7 @@ export const useInvitationAcceptance = (token: string | null) => {
         title: "Invalid invitation",
         description: "No invitation token provided"
       })
-      navigate('/')
-      return
+      return null
     }
 
     try {
@@ -51,34 +49,31 @@ export const useInvitationAcceptance = (token: string | null) => {
         throw new Error('This invitation has expired')
       }
 
-      console.log('useInvitationAcceptance: Invitation is valid')
       return invitation
     } catch (error: any) {
       console.error('useInvitationAcceptance: Error:', error)
       toast({
         variant: "destructive",
         title: "Invalid invitation",
-        description: error.message || "Please try again or contact support"
+        description: error.message || "Please check your invitation link and try again"
       })
-      navigate('/')
       return null
     }
   }
 
-  const addWorkspaceMember = async (workspaceId: string, userId: string, role: string) => {
-    console.log('Adding workspace member:', { workspaceId, userId, role })
-    const { error } = await supabase
-      .from('workspace_members')
-      .insert({
-        workspace_id: workspaceId,
-        user_id: userId,
-        role: role
-      })
-
-    if (error) {
-      console.error('Error adding workspace member:', error)
-      throw error
+  const checkUserRegistration = async (email: string) => {
+    console.log('useInvitationAcceptance: Checking if user exists:', email)
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('email', email)
+      .single()
+    
+    if (error && error.code !== 'PGRST116') {
+      console.error('useInvitationAcceptance: Error checking user registration:', error)
     }
+    
+    return !!data && !error
   }
 
   const handleExistingUser = async (invitation: any) => {
@@ -89,17 +84,19 @@ export const useInvitationAcceptance = (token: string | null) => {
 
       console.log('handleExistingUser: Processing invitation for user:', session.user.id)
 
-      // First update the invitation status to prevent race conditions
-      const { error: updateError } = await supabase
+      // First delete the invitation to prevent race conditions
+      const { error: deleteError } = await supabase
         .from('workspace_invitations')
         .delete()
         .eq('id', invitation.id)
         .eq('is_pending', true)
 
-      if (updateError) {
-        console.error('Error updating invitation:', updateError)
-        throw new Error('Failed to accept invitation')
+      if (deleteError) {
+        console.error('Error deleting invitation:', deleteError)
+        throw deleteError
       }
+
+      console.log('handleExistingUser: Deleted invitation:', invitation.id)
 
       // Update user profile with invitation data
       const { error: profileError } = await supabase.rpc(
@@ -115,17 +112,28 @@ export const useInvitationAcceptance = (token: string | null) => {
         throw profileError
       }
 
-      // Add user to workspace with invited role
-      await addWorkspaceMember(invitation.workspace_id, session.user.id, invitation.role)
+      console.log('handleExistingUser: Updated user profile')
 
-      console.log('Successfully processed invitation')
+      // Add user to workspace with invited role
+      const { error: memberError } = await supabase
+        .from('workspace_members')
+        .insert({
+          workspace_id: invitation.workspace_id,
+          user_id: session.user.id,
+          role: invitation.role
+        })
+
+      if (memberError) {
+        console.error('Error adding workspace member:', memberError)
+        throw memberError
+      }
+
+      console.log('handleExistingUser: Added user to workspace')
       
       toast({
-        title: "Welcome!",
-        description: "You've successfully joined the workspace."
+        title: "Success!",
+        description: "You've successfully joined the workspace.",
       })
-
-      navigate('/dashboard')
     } catch (error: any) {
       console.error('Error processing invitation:', error)
       toast({
@@ -133,18 +141,8 @@ export const useInvitationAcceptance = (token: string | null) => {
         title: "Error accepting invitation",
         description: error.message || "Please try again or contact support"
       })
-      navigate('/')
+      throw error
     }
-  }
-
-  const checkUserRegistration = async (email: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('email')
-      .eq('email', email)
-      .single()
-    
-    return !!data && !error
   }
 
   return {
