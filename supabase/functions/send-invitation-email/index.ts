@@ -119,15 +119,15 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Found invitation:', invitation)
 
     // Get the origin from the request headers
-    const origin = req.headers.get('origin') || 'https://your-app-domain.com' // Replace with your actual domain
+    const origin = req.headers.get('origin') || 'https://lovable.dev'
     console.log('Using origin:', origin)
 
     // Construct the accept invitation URL
     const acceptUrl = `${origin}/accept-invitation?token=${invitation.token}`
     console.log('Accept URL:', acceptUrl)
 
-    // IMPORTANT: Replace 'your-domain.com' with your verified domain in Resend
-    const fromEmail = 'workspace@your-domain.com' // Update this with your verified domain
+    // Using the verified domain kampeyn.com
+    const fromEmail = 'workspace@kampeyn.com'
     
     console.log('Sending email via Resend...')
     // Send email using Resend
