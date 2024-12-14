@@ -20,6 +20,7 @@ const AcceptInvitation = () => {
 
   useEffect(() => {
     const processInvitation = async () => {
+      console.log('AcceptInvitation: Starting invitation process')
       const invitation = await checkInvitation()
       if (!invitation) return
 

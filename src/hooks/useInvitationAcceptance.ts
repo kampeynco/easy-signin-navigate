@@ -23,11 +23,14 @@ export const useInvitationAcceptance = (token: string | null) => {
     }
 
     try {
+      console.log('useInvitationAcceptance: Checking invitation with token:', token)
+      
       // Get invitation details
       const { data: invitation, error: invitationError } = await supabase
         .from('workspace_invitations')
         .select('*')
         .eq('token', token)
+        .eq('status', 'pending')
         .single()
 
       if (invitationError || !invitation) {
@@ -35,17 +38,20 @@ export const useInvitationAcceptance = (token: string | null) => {
         throw new Error('Invalid or expired invitation')
       }
 
-      if (invitation.status !== 'pending') {
-        console.error('useInvitationAcceptance: Invitation is not pending')
-        throw new Error('This invitation has already been used or expired')
+      // Check if invitation has expired
+      const expiresAt = new Date(invitation.expires_at)
+      if (expiresAt < new Date()) {
+        console.error('useInvitationAcceptance: Invitation has expired')
+        throw new Error('This invitation has expired')
       }
 
+      console.log('useInvitationAcceptance: Valid invitation found:', invitation)
       return invitation
     } catch (error: any) {
       console.error('useInvitationAcceptance: Error checking invitation:', error)
       toast({
         variant: "destructive",
-        title: "Error checking invitation",
+        title: "Invalid invitation",
         description: error.message || "Please try again or contact support"
       })
       navigate('/')
@@ -75,6 +81,8 @@ export const useInvitationAcceptance = (token: string | null) => {
         throw new Error('No authenticated user found')
       }
 
+      console.log('handleExistingUser: Processing invitation for user:', session.user.id)
+
       // Update user profile with invitation data
       const { error: profileError } = await supabase.rpc(
         'update_profile_from_invitation',
@@ -95,7 +103,10 @@ export const useInvitationAcceptance = (token: string | null) => {
       // Update invitation status
       const { error: updateError } = await supabase
         .from('workspace_invitations')
-        .update({ status: 'accepted' })
+        .update({ 
+          status: 'accepted',
+          updated_at: new Date().toISOString()
+        })
         .eq('id', invitation.id)
 
       if (updateError) {
