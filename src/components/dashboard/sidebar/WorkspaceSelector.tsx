@@ -13,6 +13,7 @@ import { CreateWorkspaceDialog } from "./CreateWorkspaceDialog"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/use-toast"
+import { useEffect } from "react"
 
 export function WorkspaceSelector() {
   const session = useSession()
@@ -21,8 +22,17 @@ export function WorkspaceSelector() {
   const { data: workspaces, isLoading, error } = useWorkspaces(session?.user?.id)
   const { selectedWorkspaceId, setSelectedWorkspaceId, selectedWorkspace } = useWorkspace()
 
+  // Automatically select the first workspace if none is selected
+  useEffect(() => {
+    if (workspaces?.length && !selectedWorkspaceId) {
+      console.log('WorkspaceSelector: Auto-selecting first workspace:', workspaces[0].id)
+      handleWorkspaceSelect(workspaces[0].id)
+    }
+  }, [workspaces, selectedWorkspaceId])
+
   const handleWorkspaceSelect = async (workspaceId: string) => {
     try {
+      console.log('WorkspaceSelector: Switching to workspace:', workspaceId)
       setSelectedWorkspaceId(workspaceId)
       
       // Invalidate all queries to refresh data
@@ -60,11 +70,6 @@ export function WorkspaceSelector() {
         <span className="flex-1 text-left text-sm">Error loading workspaces</span>
       </button>
     )
-  }
-
-  // If there are workspaces but none is selected, select the first one
-  if (workspaces?.length > 0 && !selectedWorkspaceId) {
-    handleWorkspaceSelect(workspaces[0].id)
   }
 
   return (
