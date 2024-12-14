@@ -24,6 +24,7 @@ const ProfileSettings = () => {
     lastName: string;
     email: string;
   } | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const { toast } = useToast()
   const navigate = useNavigate()
 
@@ -55,6 +56,7 @@ const ProfileSettings = () => {
 
   const handleDeleteAccount = async () => {
     try {
+      setIsDeleting(true)
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('No active session')
@@ -80,6 +82,9 @@ const ProfileSettings = () => {
         title: "Account Deleted",
         description: "Your account has been successfully deleted.",
       })
+      
+      // Sign out and redirect to signin page
+      await supabase.auth.signOut()
       navigate('/signin')
     } catch (error: any) {
       console.error('Delete account error:', error)
@@ -88,6 +93,8 @@ const ProfileSettings = () => {
         description: error.message || "Failed to delete account. Please try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -125,7 +132,9 @@ const ProfileSettings = () => {
             <CardContent>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete Account</Button>
+                  <Button variant="destructive" disabled={isDeleting}>
+                    {isDeleting ? "Deleting..." : "Delete Account"}
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -140,8 +149,9 @@ const ProfileSettings = () => {
                     <AlertDialogAction 
                       onClick={handleDeleteAccount}
                       className="bg-destructive hover:bg-destructive/90"
+                      disabled={isDeleting}
                     >
-                      Delete Account
+                      {isDeleting ? "Deleting..." : "Delete Account"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
