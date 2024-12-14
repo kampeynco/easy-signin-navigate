@@ -5,6 +5,7 @@ import {
   History,
   AppWindow,
   BookOpen,
+  Settings,
 } from "lucide-react"
 import {
   SidebarMenu,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
+import { useWorkspace } from "@/contexts/WorkspaceContext"
 
 const topMenuItems = [
   { icon: LayoutGrid, label: "Dashboard", to: "/dashboard" },
@@ -28,6 +30,7 @@ const bottomMenuItems = [
 export function NavigationMenu() {
   const { toast } = useToast()
   const location = useLocation()
+  const { selectedWorkspace } = useWorkspace()
 
   const handleNavigation = (label: string) => {
     if (location.pathname !== "/dashboard") {
@@ -75,6 +78,26 @@ export function NavigationMenu() {
           </SidebarMenuButton>
         </SidebarMenuItem>
       ))}
+
+      {selectedWorkspace && (
+        <>
+          <Separator className="my-4 bg-white/10" />
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="hover:bg-white/10 data-[active=true]:bg-white/10 hover:text-white"
+            >
+              <Link 
+                to="/workspace/settings"
+                onClick={() => handleNavigation("Workspace Settings")}
+              >
+                <Settings className="h-5 w-5 opacity-70" />
+                <span>Workspace Settings</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </>
+      )}
     </SidebarMenu>
   )
 }

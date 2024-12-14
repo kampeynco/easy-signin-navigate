@@ -118,11 +118,6 @@ export function UserMenu() {
             Profile Settings
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/workspace/settings" className="w-full cursor-pointer text-foreground hover:text-white focus:text-white">
-            Workspace Settings
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <AlertDialog>
           <AlertDialogTrigger asChild>
