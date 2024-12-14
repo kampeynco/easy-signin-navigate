@@ -62,21 +62,13 @@ const ProfileSettings = () => {
         throw new Error('No active session')
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      )
+      const { error } = await supabase.functions.invoke('delete-user', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      })
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Failed to delete account')
-      }
+      if (error) throw error
 
       toast({
         title: "Account Deleted",
