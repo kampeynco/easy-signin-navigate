@@ -51,13 +51,18 @@ export function WorkspaceSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <WorkspaceSelectorButton 
-          workspaceName={selectedWorkspace?.name}
-          isLoading={isLoading}
-          error={error as Error}
-        />
+        <div>
+          <WorkspaceSelectorButton 
+            workspaceName={selectedWorkspace?.name}
+            isLoading={isLoading}
+            error={error as Error}
+          />
+        </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[240px]">
+      <DropdownMenuContent 
+        align="start" 
+        className="w-[240px] bg-popover"
+      >
         <WorkspaceList 
           workspaces={workspaces || []} 
           onSelect={handleWorkspaceSelect}
