@@ -37,6 +37,15 @@ export const AuthCallback = () => {
 
         console.log('AuthCallback: User authenticated:', session.user.email)
         
+        // Check for pending invitation
+        const pendingInvitationToken = localStorage.getItem('pendingInvitationToken')
+        if (pendingInvitationToken) {
+          console.log('AuthCallback: Found pending invitation, redirecting to accept invitation')
+          localStorage.removeItem('pendingInvitationToken')
+          navigate(`/accept-invitation?token=${pendingInvitationToken}`, { replace: true })
+          return
+        }
+        
         // Check for existing workspaces
         const { data: workspaces, error: workspacesError } = await supabase
           .from('workspaces')

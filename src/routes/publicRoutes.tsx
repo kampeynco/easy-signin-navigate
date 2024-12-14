@@ -17,5 +17,5 @@ export const publicRoutes = [
   <Route key="/signin" path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />,
   <Route key="/signup" path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />,
   <Route key="/reset-password" path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />,
-  <Route key="/accept-invitation" path="/accept-invitation" element={<PublicRoute><AcceptInvitation /></PublicRoute>} />,
+  <Route key="/accept-invitation" path="/accept-invitation" element={<AcceptInvitation />} />,
 ]
