@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,9 +12,27 @@ const Onboarding = () => {
   const [step, setStep] = useState(1)
   const [workspaceName, setWorkspaceName] = useState("")
   const [isCreating, setIsCreating] = useState(false)
+  const [hasWorkspace, setHasWorkspace] = useState(false)
   const navigate = useNavigate()
   const { toast } = useToast()
   const session = useSession()
+
+  useEffect(() => {
+    const checkWorkspace = async () => {
+      if (!session?.user?.id) return
+
+      const { data: workspaces, error } = await supabase
+        .from('workspaces')
+        .select('id')
+        .single()
+
+      if (!error && workspaces) {
+        setHasWorkspace(true)
+      }
+    }
+
+    checkWorkspace()
+  }, [session])
 
   const handleCreateWorkspace = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,7 +94,13 @@ const Onboarding = () => {
   }
 
   const handleProfileSubmit = () => {
-    setStep(2)
+    if (hasWorkspace) {
+      // If user already has a workspace (invited user), go directly to dashboard
+      navigate('/dashboard')
+    } else {
+      // Otherwise, proceed to workspace creation
+      setStep(2)
+    }
   }
 
   return (

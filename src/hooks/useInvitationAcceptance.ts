@@ -55,6 +55,20 @@ export const useInvitationAcceptance = (token: string | null) => {
 
   const handleExistingUser = async (invitation: any) => {
     try {
+      // Update user profile with invitation data
+      const { error: profileError } = await supabase.rpc(
+        'update_profile_from_invitation',
+        { 
+          _user_id: session?.user.id,
+          _invitation_id: invitation.id
+        }
+      )
+
+      if (profileError) {
+        console.error('useInvitationAcceptance: Error updating profile:', profileError)
+        throw profileError
+      }
+
       // Add user to workspace
       const { error: memberError } = await supabase
         .from('workspace_members')

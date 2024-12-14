@@ -303,6 +303,13 @@ export type Database = {
         }
         Returns: string
       }
+      update_profile_from_invitation: {
+        Args: {
+          _user_id: string
+          _invitation_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
