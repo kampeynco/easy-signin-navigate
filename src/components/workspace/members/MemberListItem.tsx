@@ -15,13 +15,15 @@ interface MemberListItemProps {
   isOnlyAdmin: boolean
   onRoleChange: (memberId: string, currentRole: string) => void
   onRemove: (memberId: string, isPending: boolean, email: string) => void
+  onResendInvite?: (email: string) => void
 }
 
 export function MemberListItem({ 
   member, 
   isOnlyAdmin, 
   onRoleChange, 
-  onRemove 
+  onRemove,
+  onResendInvite
 }: MemberListItemProps) {
   return (
     <div className="flex items-center justify-between py-2">
@@ -63,6 +65,13 @@ export function MemberListItem({
                   onClick={() => onRoleChange(member.id, member.role)}
                 >
                   Change Role
+                </DropdownMenuItem>
+              )}
+              {member.status === 'pending' && onResendInvite && (
+                <DropdownMenuItem 
+                  onClick={() => onResendInvite(member.email)}
+                >
+                  Resend Invitation
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem 

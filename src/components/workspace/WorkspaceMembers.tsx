@@ -5,6 +5,9 @@ import { useWorkspaceMembers } from "@/hooks/useWorkspaceMembers"
 import { useMemberActions } from "./members/MemberActions"
 import { useWorkspace } from "@/contexts/WorkspaceContext"
 import { AddMemberDialog } from "./members/AddMemberDialog"
+import { useSession } from "@supabase/auth-helpers-react"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +22,8 @@ import {
 export function WorkspaceMembers() {
   const { selectedWorkspace } = useWorkspace()
   const { data: members, isLoading, error } = useWorkspaceMembers()
+  const session = useSession()
+  const { toast } = useToast()
   const { 
     handleRoleChange, 
     handleRemoveMember, 
@@ -26,6 +31,44 @@ export function WorkspaceMembers() {
     cancelRemoveMember,
     pendingDeletion 
   } = useMemberActions()
+
+  const handleResendInvite = async (email: string) => {
+    if (!selectedWorkspace || !session?.user) return
+
+    try {
+      const { data: invitation, error: invitationError } = await supabase
+        .from('workspace_invitations')
+        .select('id, token')
+        .eq('email', email)
+        .eq('workspace_id', selectedWorkspace.id)
+        .eq('status', 'pending')
+        .single()
+
+      if (invitationError) throw invitationError
+
+      const { error: resendError } = await supabase.functions.invoke('send-invitation-email', {
+        body: {
+          invitationId: invitation.id,
+          workspaceName: selectedWorkspace.name,
+          invitedByEmail: session.user.email,
+        },
+      })
+
+      if (resendError) throw resendError
+
+      toast({
+        title: "Invitation Resent",
+        description: `A new invitation email has been sent to ${email}`,
+      })
+    } catch (error: any) {
+      console.error('Error resending invitation:', error)
+      toast({
+        title: "Error",
+        description: "Failed to resend invitation email",
+        variant: "destructive",
+      })
+    }
+  }
 
   console.log('WorkspaceMembers component state:', { members, isLoading, error, selectedWorkspace })
 
@@ -89,6 +132,7 @@ export function WorkspaceMembers() {
         members={members || []}
         onRoleChange={handleRoleChange}
         onRemove={handleRemoveMember}
+        onResendInvite={handleResendInvite}
       />
 
       <AlertDialog 

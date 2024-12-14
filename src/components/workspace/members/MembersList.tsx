@@ -6,9 +6,10 @@ interface MembersListProps {
   members: WorkspaceMember[]
   onRoleChange: (memberId: string, currentRole: string) => void
   onRemove: (memberId: string, isPending: boolean, email: string) => void
+  onResendInvite: (email: string) => void
 }
 
-export function MembersList({ members, onRoleChange, onRemove }: MembersListProps) {
+export function MembersList({ members, onRoleChange, onRemove, onResendInvite }: MembersListProps) {
   const adminCount = members.filter(member => member.role === 'admin').length
   const isOnlyAdmin = adminCount === 1
 
@@ -29,6 +30,7 @@ export function MembersList({ members, onRoleChange, onRemove }: MembersListProp
               isOnlyAdmin={isOnlyAdmin && member.role === 'admin'}
               onRoleChange={onRoleChange}
               onRemove={onRemove}
+              onResendInvite={onResendInvite}
             />
           ))}
         </div>
