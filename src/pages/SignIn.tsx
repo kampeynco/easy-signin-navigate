@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { useSession } from "@supabase/auth-helpers-react"
 import { EmailSignInForm } from "@/components/auth/EmailSignInForm"
 import { supabase } from "@/integrations/supabase/client"
@@ -17,6 +17,8 @@ const SignIn = () => {
   const session = useSession()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const [searchParams] = useSearchParams()
+  const invitationToken = searchParams.get('invitation')
 
   const handleSignIn = async (email: string, password: string) => {
     try {
@@ -27,11 +29,11 @@ const SignIn = () => {
 
       if (error) throw error
 
-      // Check for pending invitation
-      const pendingInvitationToken = localStorage.getItem('pendingInvitationToken')
-      if (pendingInvitationToken) {
+      // Check for invitation token in URL params first, then localStorage
+      const token = invitationToken || localStorage.getItem('pendingInvitationToken')
+      if (token) {
         localStorage.removeItem('pendingInvitationToken')
-        navigate(`/accept-invitation?token=${pendingInvitationToken}`)
+        navigate(`/accept-invitation?token=${token}`)
         return
       }
       
@@ -46,6 +48,14 @@ const SignIn = () => {
   }
 
   if (session?.user) {
+    // If there's an invitation token, process it
+    const token = invitationToken || localStorage.getItem('pendingInvitationToken')
+    if (token) {
+      localStorage.removeItem('pendingInvitationToken')
+      navigate(`/accept-invitation?token=${token}`)
+      return null
+    }
+    
     navigate('/dashboard')
     return null
   }

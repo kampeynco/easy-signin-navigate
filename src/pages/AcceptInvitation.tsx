@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useSession } from "@supabase/auth-helpers-react"
 import { InvitationLoadingState } from "@/components/invitation/InvitationLoadingState"
@@ -23,12 +23,10 @@ const AcceptInvitation = () => {
       const invitation = await checkInvitation()
       if (!invitation) return
 
-      // If user is logged in but not the invited user, sign them out
+      // If user is logged in but not the invited user, redirect to dashboard
       if (session?.user && session.user.email !== invitation.email) {
-        console.log('AcceptInvitation: Signing out current user as they are not the invitee')
-        await supabase.auth.signOut()
-        localStorage.setItem('pendingInvitationToken', token!)
-        window.location.href = `/signin?invitation=${token}`
+        console.log('AcceptInvitation: User is not invitee, redirecting to dashboard')
+        window.location.href = '/dashboard'
         return
       }
 
