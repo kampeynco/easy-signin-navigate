@@ -25,30 +25,42 @@ export const useInvitationAcceptance = (token: string | null) => {
     try {
       console.log('useInvitationAcceptance: Checking invitation with token:', token)
       
-      // Get invitation details
+      // Get invitation details without status filter first
       const { data: invitation, error: invitationError } = await supabase
         .from('workspace_invitations')
         .select('*')
         .eq('token', token)
-        .eq('status', 'pending')
         .single()
 
-      if (invitationError || !invitation) {
+      if (invitationError) {
         console.error('useInvitationAcceptance: Error fetching invitation:', invitationError)
-        throw new Error('Invalid or expired invitation')
+        throw new Error('Invalid invitation')
+      }
+
+      if (!invitation) {
+        console.error('useInvitationAcceptance: No invitation found')
+        throw new Error('Invalid invitation')
+      }
+
+      console.log('useInvitationAcceptance: Found invitation:', invitation)
+
+      // Now check the status
+      if (invitation.status !== 'pending') {
+        console.error('useInvitationAcceptance: Invitation status is:', invitation.status)
+        throw new Error('This invitation has already been used')
       }
 
       // Check if invitation has expired
       const expiresAt = new Date(invitation.expires_at)
       if (expiresAt < new Date()) {
-        console.error('useInvitationAcceptance: Invitation has expired')
+        console.error('useInvitationAcceptance: Invitation expired at:', expiresAt)
         throw new Error('This invitation has expired')
       }
 
-      console.log('useInvitationAcceptance: Valid invitation found:', invitation)
+      console.log('useInvitationAcceptance: Invitation is valid')
       return invitation
     } catch (error: any) {
-      console.error('useInvitationAcceptance: Error checking invitation:', error)
+      console.error('useInvitationAcceptance: Error:', error)
       toast({
         variant: "destructive",
         title: "Invalid invitation",
@@ -83,6 +95,21 @@ export const useInvitationAcceptance = (token: string | null) => {
 
       console.log('handleExistingUser: Processing invitation for user:', session.user.id)
 
+      // First update the invitation status to prevent race conditions
+      const { error: updateError } = await supabase
+        .from('workspace_invitations')
+        .update({ 
+          status: 'accepted',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', invitation.id)
+        .eq('status', 'pending') // Only update if still pending
+
+      if (updateError) {
+        console.error('Error updating invitation:', updateError)
+        throw new Error('Failed to accept invitation')
+      }
+
       // Update user profile with invitation data
       const { error: profileError } = await supabase.rpc(
         'update_profile_from_invitation',
@@ -99,20 +126,6 @@ export const useInvitationAcceptance = (token: string | null) => {
 
       // Add user to workspace with invited role
       await addWorkspaceMember(invitation.workspace_id, session.user.id, invitation.role)
-
-      // Update invitation status
-      const { error: updateError } = await supabase
-        .from('workspace_invitations')
-        .update({ 
-          status: 'accepted',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', invitation.id)
-
-      if (updateError) {
-        console.error('Error updating invitation:', updateError)
-        throw updateError
-      }
 
       console.log('Successfully processed invitation')
       
