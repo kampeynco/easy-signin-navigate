@@ -25,11 +25,11 @@ export const useInvitationAcceptance = (token: string | null) => {
     try {
       console.log('useInvitationAcceptance: Checking invitation with token:', token)
       
-      // Get invitation details without status filter first
       const { data: invitation, error: invitationError } = await supabase
         .from('workspace_invitations')
         .select('*')
         .eq('token', token)
+        .eq('is_pending', true)
         .single()
 
       if (invitationError) {
@@ -43,12 +43,6 @@ export const useInvitationAcceptance = (token: string | null) => {
       }
 
       console.log('useInvitationAcceptance: Found invitation:', invitation)
-
-      // Now check the status
-      if (invitation.status !== 'pending') {
-        console.error('useInvitationAcceptance: Invitation status is:', invitation.status)
-        throw new Error('This invitation has already been used')
-      }
 
       // Check if invitation has expired
       const expiresAt = new Date(invitation.expires_at)
@@ -98,12 +92,9 @@ export const useInvitationAcceptance = (token: string | null) => {
       // First update the invitation status to prevent race conditions
       const { error: updateError } = await supabase
         .from('workspace_invitations')
-        .update({ 
-          status: 'accepted',
-          updated_at: new Date().toISOString()
-        })
+        .delete()
         .eq('id', invitation.id)
-        .eq('status', 'pending') // Only update if still pending
+        .eq('is_pending', true)
 
       if (updateError) {
         console.error('Error updating invitation:', updateError)

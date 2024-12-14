@@ -176,9 +176,9 @@ export type Database = {
           first_name: string | null
           id: string
           invited_by: string
+          is_pending: boolean
           last_name: string | null
           role: string
-          status: string
           token: string
           updated_at: string | null
           workspace_id: string
@@ -190,9 +190,9 @@ export type Database = {
           first_name?: string | null
           id?: string
           invited_by: string
+          is_pending?: boolean
           last_name?: string | null
           role?: string
-          status?: string
           token?: string
           updated_at?: string | null
           workspace_id: string
@@ -204,9 +204,9 @@ export type Database = {
           first_name?: string | null
           id?: string
           invited_by?: string
+          is_pending?: boolean
           last_name?: string | null
           role?: string
-          status?: string
           token?: string
           updated_at?: string | null
           workspace_id?: string

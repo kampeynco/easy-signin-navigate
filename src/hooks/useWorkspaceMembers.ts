@@ -43,7 +43,7 @@ export function useWorkspaceMembers() {
         .from('workspace_invitations')
         .select('*')
         .eq('workspace_id', selectedWorkspace.id)
-        .eq('status', 'pending')
+        .eq('is_pending', true)
 
       if (invitationsError) {
         console.error('Error fetching workspace invitations:', invitationsError)
@@ -64,8 +64,8 @@ export function useWorkspaceMembers() {
       const pendingMembers = invitations.map((invitation): WorkspaceMember => ({
         id: invitation.id,
         email: invitation.email,
-        first_name: '',
-        last_name: '',
+        first_name: invitation.first_name || '',
+        last_name: invitation.last_name || '',
         role: invitation.role,
         status: 'pending'
       }))
